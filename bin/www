@@ -1,0 +1,350 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var app = require('../app');
+var debug = require('debug')('gameproject:server');
+var http = require('http');
+
+/**
+ * Get port from environment and store in Express.
+ */
+
+var port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
+
+/**
+ * Create HTTP server.
+ */
+
+var server = http.createServer(app);
+
+/**
+ * Listen on provided port, on all network interfaces.
+ */
+
+server.listen(port);
+server.on('error', onError);
+server.on('listening', onListening);
+
+/**
+ * Normalize a port into a number, string, or false.
+ */
+
+function normalizePort(val) {
+  var port = parseInt(val, 10);
+
+  if (isNaN(port)) {
+    // named pipe
+    return val;
+  }
+
+  if (port >= 0) {
+    // port number
+    return port;
+  }
+
+  return false;
+}
+
+/**
+ * Event listener for HTTP server "error" event.
+ */
+
+function onError(error) {
+  if (error.syscall !== 'listen') {
+    throw error;
+  }
+
+  var bind = typeof port === 'string'
+    ? 'Pipe ' + port
+    : 'Port ' + port;
+
+  // handle specific listen errors with friendly messages
+  switch (error.code) {
+    case 'EACCES':
+      console.error(bind + ' requires elevated privileges');
+      process.exit(1);
+      break;
+    case 'EADDRINUSE':
+      console.error(bind + ' is already in use');
+      process.exit(1);
+      break;
+    default:
+      throw error;
+  }
+}
+
+/**
+ * Event listener for HTTP server "listening" event.
+ */
+
+function onListening() {
+  var addr = server.address();
+  var bind = typeof addr === 'string'
+    ? 'pipe ' + addr
+    : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+}
+
+var pool = require("../models/connection");
+process.once('SIGTERM', end);
+function end() {
+  server.close(function (err) {
+    if (err) throw err;
+    console.log('Server endded!'); 
+    pool.end(function (err) {
+      if (err) throw err; 
+      process.exit();
+    });
+  });
+}
+
+/////////////////////////////////////////////////////////////////
+/* app.get('/battle_states', async function( req, res) {
+  console.log('helo')
+  let sql = 'select * from battle_states'
+  let result = await pool.query(sql)
+    try{
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+})
+
+app.get('/deck', async function( req, res) {
+  console.log('helo')
+  let sql = 'select * from deck where deck_player_id = 1'
+
+    try{
+      let result = await pool.query(sql)
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+    /* let card_id = result.row[0].deck_card_id
+    print(card_id) 
+}) */
+
+/* app.get('/player_info/:playerid', async function( req, res) {
+  let playerid = req.params.playerid
+  let sql = 'select * from player, room  where room_player_id = $1  order by player_num asc'
+    try{
+      let result = await pool.query(sql,[playerid])
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+// gets both player tile (player as your tile / enemy as the enemy's tile )
+/* app.get('/player_tile/:playerid', async function( req, res) {
+  let playerid = req.params.playerid
+  let sql = `select player_tile_id , player_num
+  from room , player ,
+  (select room_num as the_room from room where room_player_id = $1 ) temptable1
+  where room_num = the_room and player_id = room_player_id
+order by player_num asc`
+    try{
+      let result = await pool.query(sql,[playerid])
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+})
+
+app.get('/round_num/:playerid', async function( req, res) {
+  let playerid = req.params.playerid;
+  let sql = 'select room_state_id ,room_num, room_round_number , state_name from room , battle_states where room_player_id = $1 and room_state_id = state_id '
+
+    try{
+      let result = await pool.query(sql, [playerid])
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.post('/deck', async function( req, res) {
+  let plyId = req.body.plyId;
+  let sql = 'select card_id from card';
+
+    try{
+      let result = await pool.query(sql);
+      if(result.rows.length > 0){
+        sql = `insert into deck (deck_player_id,deck_order,deck_card_id) values`;
+
+        for(let i = 0; i < result.rows.length; i++){
+          sql += `(${plyId}, ${i+1}, ${result.rows[i].card_id})`;
+
+          if(result.rows.length -1 == i){
+            sql += `;`;
+          } else{
+            sql += `,`;
+          }
+        }
+      }
+
+      result = await pool.query(sql);
+      res.status(200).send({ms: "Created a Deck"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.get('/get_deck/:playerid', async function( req, res) {
+  let playerid = req.params.playerid;
+  let sql = 'select * from deck , card, type_range , type_cast ,card_state  where deck_card_state_id = card_state_id and card_type_range_id = type_range_id and card_type_cast_id = type_cast_id and deck_player_id = $1 and deck_card_id = card_id order by deck_order';
+
+    try{
+      let result = await pool.query(sql,[playerid]);
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.post('/player_information_change', async function( req, res) {
+  let ply_health = req.body.ply_health;
+  let ply_mana = req.body.ply_mana;
+  let ply_total_mana = req.body.ply_total_mana;
+  let ply_energy = req.body.ply_energy;
+  let ply_id = req.body.ply_id
+    try{
+      sql = `UPDATE player
+            SET player_mana = ${ply_mana},
+            player_total_mana = ${ply_total_mana},
+            player_health = ${ply_health} ,
+            player_energy = ${ply_energy}
+
+            WHERE player_id = ${ply_id}`;
+
+      let result = await pool.query(sql);
+      console.log(result.rows);
+      res.status(200).send({ms: "Player Information Updated"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+})  */
+
+/* app.post('/player_location_change', async function( req, res) {
+  let player_tile = req.body.player_tile;
+  let ply_id = req.body.ply_id
+    try{
+      sql = `UPDATE player
+            SET player_tile_id = ${player_tile}
+            WHERE player_id = ${ply_id}`;
+
+      let result = await pool.query(sql);
+      console.log(result.rows);
+      res.status(200).send({ms: "Player Position Updated"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+})  */
+
+/* app.post('/deck_card_state_change', async function( req, res) {
+  let card_state_id = req.body.card_state_id;
+  let card_id = req.body.card_id;
+  let ply_id = req.body.ply_id
+    try{
+      sql = `UPDATE deck
+            SET deck_card_state_id = ${card_state_id}
+            WHERE deck_player_id = ${ply_id} and deck_card_id = ${card_id}`;
+
+      let result = await pool.query(sql);
+      console.log(result.rows);
+      res.status(200).send({ms: "A card's state was updated"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.post('/play', async function( req, res) {
+  let room_id = req.body.room_id
+  let round_number = req.body.round_number
+  let play_num = req.body.play_num
+  let play_tp_id = req.body.play_tp_id
+  let play_tile_id = req.body.play_tile_id
+  let play_player_id = req.body.player_id
+  let play_state_id = req.body.play_state_id
+
+
+    try{
+      
+        sql = `insert into play (play_room_id, play_round_number, play_state_id, play_num, play_tp_id, play_tile_id, play_player_id) values`;
+        sql += `(${room_id}, ${round_number},${play_state_id}, ${play_num}, ${play_tp_id}, ${play_tile_id}, ${play_player_id});`;
+        
+
+      result = await pool.query(sql);
+      res.status(200).send({ms: "Posted a Play"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.get('/getplays/:playerid', async function( req, res) {
+  let playerid = req.params.playerid;
+  let sql = 'select * from (select room_num as thenum from room where room_player_id = $1)temptable , play where play_room_id = thenum order by play_num Desc ';
+
+    try{
+      let result = await pool.query(sql,[playerid]);
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.get('/getRoom/:playerid', async function( req, res) {
+  let playerid = req.params.playerid;
+  let sql = 'select * from room where room_player_id = $1'  ;
+    try{
+      let result = await pool.query(sql,[playerid]);
+      console.log(result.rows);
+      res.status(200).send(result.rows);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+}) */
+
+/* app.post('/round_number', async function( req, res) {
+  let newstate = req.body.newstate
+  let newround = req.body.newround
+  let room_num = req.body.room_num
+    try{
+      sql = `UPDATE room
+            SET room_round_number = ${newround},
+            room_state_id = ${newstate}
+
+            WHERE room_num = ${room_num}`;
+
+      let result = await pool.query(sql);
+      console.log(result.rows);
+      res.status(200).send({ms: "Round information Changed"});
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+})  */
