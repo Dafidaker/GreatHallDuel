@@ -1,7 +1,9 @@
-async function getplayerinformation(player_id) {
+async function getplayerinformation() {
     try {
-        const response = await fetch(`api/players/player_info/${player_id}`);
+        const response = await fetch(`api/players/player_info`);
         if (response.status == 200) {
+            player_id = result.player_id 
+            print('user id ' + player_id)
            var playerinfo = await response.json();
            if(playerinfo[0].player_id == player_id ){
                var playerindex = 0

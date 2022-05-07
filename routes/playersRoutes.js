@@ -49,10 +49,10 @@ router.post('/player_information_change', async function(req, res, next) {
     res.status(result.status).send(result.result);
 });
 
-router.get('/player_info/:playerid', async function( req, res) {
+router.get('/player_info',auth.checkAuthentication, async function( req, res) {
   console.log("Get Player Info") 
-    let playerid = req.params.playerid
-    let result = await uModel.get_player_info(playerid);
+  console.log(req.userId)
+    let result = await uModel.get_player_info(req.userId);
     res.status(result.status).send(result.result);
   })
 

@@ -75,7 +75,10 @@ module.exports.loginCheck = async function (name,password) {
       try{
         let result = await pool.query(sql,[player_id])
         console.log(result.rows);
-        return {status:200 , result : result.rows};
+        
+
+
+        return {status:200 , result : result.rows ,  player_id };
       } catch(err) {
         console.log(err);
         return {status:500 , result : err};

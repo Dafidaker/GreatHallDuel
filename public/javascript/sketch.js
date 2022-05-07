@@ -56,7 +56,7 @@ var EnemyState = 2
 var Cards 
 //////////////////////////////////////SETUP///////////////////////////////////////////
 function setup() {
-
+    noLoop()
     //Create canvas
     canvasx = windowWidth 
     canvasy = windowHeight 
@@ -80,8 +80,10 @@ function setup() {
     //creates the squares for the board
     create_all_rect()
 
-    setInterval(InicialInformation(),1000);
+    GameManager.createcards()
 
+    setInterval(InicialInformation(),1000);
+    loop()
 }
 
 function SetInicialState() {
@@ -166,6 +168,8 @@ function draw() {
     scale(scalen)
 
     //Always
+        GameManager.draw()
+
         DrawGrid();
 
         /// draw ur cards
