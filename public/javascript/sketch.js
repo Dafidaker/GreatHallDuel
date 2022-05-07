@@ -69,7 +69,7 @@ function setup() {
     }
     scalen = (biggerside/1920)
     let canvas = createCanvas(canvasx -25  , canvasy -25);
-    canvas.parent('game');
+    //canvas.parent('game');
 
     //Updates the database ( with the state we want)
     //SetInicialState()

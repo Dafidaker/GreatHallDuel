@@ -1,16 +1,15 @@
-/* const width = 120
-const height = 170 
-const y = canvasy*0.8;
-const x = canvasx*0.5; */
+const cardWidth = 120
+const cardHeight = 170 
+
 
 class Card{
-    static cardImages = {};
-    constructor(name,card,clicked,order,state,mana,range,type_range,type_cast) {
-        this.width = 120;
-        this.height = 170;
-        this.x = canvasx*0.5;
-        this.y = canvasy*0.8; 
-        this.card = card;
+    //static cardImages = {};
+    constructor(name,id,clicked,order,state,mana,range,type_range,type_cast,x,y) {
+        this.width = cardWidth;
+        this.height = cardHeight;
+        this.x = x;
+        this.y = y; 
+        this.id = id;
         this.clicked = clicked;
         this.state = state;
         this.order = order ;
@@ -30,13 +29,19 @@ class Card{
         Card.cardImages = imgHash;
     }  */
     draw() {
-        fill(100,100,100);
         stroke(0,0,0);
+        if(this.clicked){
+            fill(100,200,100);
+        }else{
+            fill(100,100,100);
+        }
+        
         if(this.state == 1){
-            //rect(this.x,this.y,this.width,this.height,5,5,5,5);
-            rect(10,10,100,100,5,5,5,5);
-            fill(0,0,0)
-            text(this.name ,this.x+(this.width/2),this.y+(this.height/2))
+            rect(this.x,this.y,this.width,this.height,5,5,5,5);
+            //rect(this.x,this.y,this.width,100,5,5,5,5);
+            fill(255,255,255)
+            textSize(14)
+            text(this.name ,this.x+(this.width/2) - (textWidth(this.name)/2) ,this.y+(this.height/2))
         }
         
         /* if (this.card) {
@@ -52,8 +57,12 @@ class Card{
         } */
     }
     getCard() { return this.card; }
-    clicked(x,y) {
-        return (x > this.x && x < (this.x+this.width) &&
-            y > this.y && y < (this.y+this.height));
+    click(x,y) {
+        if(x > this.x && x < (this.x+this.width) &&
+            y > this.y && y < (this.y+this.height)){
+                this.clicked = true 
+            }else{
+                this.clicked = false
+            }
     }
 }

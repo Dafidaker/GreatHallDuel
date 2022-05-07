@@ -2,7 +2,7 @@ var pool = require('./connection.js')
     
 module.exports.loginCheck = async function (name,password) {
     try {
-      let sql = `Select player_id from player where player_name = $1 and player_password = $2`;
+      let sql = `select player_id from player where player_name = $1 and player_password = $2`;
       let result = await pool.query(sql,[name,password]);
       console.log(name)
       console.log(password)
@@ -20,7 +20,7 @@ module.exports.loginCheck = async function (name,password) {
 
   module.exports.getLoggedUserInfo = async function (playerId) {
     try {
-        let sql = `Select ply_name from player where ply_id = $1`;
+        let sql = `select ply_name from player where ply_id = $1`;
         let result = await pool.query(sql, [playerId]);
         if (result.rows.length > 0) {
             let player = result.rows[0];
@@ -37,7 +37,7 @@ module.exports.loginCheck = async function (name,password) {
 
   module.exports.registerPlayer = async function(player) {
     try  {
-      let sql = "Insert into player(ply_name,ply_passwd) values ($1,$2)";
+      let sql = "insert into player(ply_name,ply_passwd) values ($1,$2)";
       let result = await pool.query(sql,[player.name, player.password]); 
       return { status: 200, result:result }
     } catch (err){
@@ -78,7 +78,7 @@ module.exports.loginCheck = async function (name,password) {
         
 
 
-        return {status:200 , result : result.rows ,  player_id };
+        return {status:200 , result : result.rows  ,  player_id  };
       } catch(err) {
         console.log(err);
         return {status:500 , result : err};

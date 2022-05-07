@@ -1,10 +1,11 @@
 async function getplayerinformation() {
     try {
-        const response = await fetch(`api/players/player_info`);
+        const response = await fetch(`/api/players/player_info`);
         if (response.status == 200) {
-            player_id = result.player_id 
-            print('user id ' + player_id)
+            /* player_id = response.player_id 
+            print('user id ' + player_id) */
            var playerinfo = await response.json();
+           print('user id ' + playerinfo[0].player_id)
            if(playerinfo[0].player_id == player_id ){
                var playerindex = 0
                var enemyindex = 1
@@ -175,7 +176,7 @@ async function GetPlays(player_id) {
 
 async function login(name, password) {
     try {
-        const response = await fetch(`/api/players/login`,
+        const response = await fetch(`api/players/login`,
         {
             method: "POST",
             headers: {
@@ -185,7 +186,7 @@ async function login(name, password) {
         });
         var  result= await response.json();
         console.log(result)
-        return {logged: response.status=200 , result: result };
+        return {logged: response.status  , result: result };
 
     } catch (err) {
         // Treat 500 errors here
