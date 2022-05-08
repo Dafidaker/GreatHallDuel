@@ -5,8 +5,8 @@ async function getplayerdeck(player_id) {
            var playerdeck = await response.json();
            //print(playerdeck);
            //print(playerdeck.length)
-           for(i = 0; i < playerdeck.length; i++){
-                playerdk[i] = {
+           /* for(i = 0; i < playerdeck.length; i++){
+                let playerdk[i] = {
                     card_id: playerdeck[i].deck_card_id,
                     card_name : playerdeck[i].card_name,
                     card_state: playerdeck[i].card_state_name,
@@ -18,8 +18,8 @@ async function getplayerdeck(player_id) {
                     card_cast : playerdeck[i].type_cast_name
                     
                 }
-           }
-           print(playerdk)
+           } */
+           //print(playerdk)
            return playerdeck ;
            //print('num of cards per deck' + Object.keys(playerdk).length)
         } else {

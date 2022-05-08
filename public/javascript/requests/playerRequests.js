@@ -5,11 +5,12 @@ async function getplayerinformation() {
             /* player_id = response.player_id 
             print('user id ' + player_id) */
            var playerinfo = await response.json();
-           print('user id ' + playerinfo[0].player_id)
-           if(playerinfo[0].player_id == player_id ){
+           print('player id ' + playerinfo.result[0].player_id)
+           print('user id ' + playerinfo.player_id)
+           if(playerinfo.result[0].player_id == playerinfo.player_id ){
                var playerindex = 0
                var enemyindex = 1
-            }else if(playerinfo[1].player_id == player_id) {
+            }else if(playerinfo.result[1].player_id == playerinfo.player_id) {
                 var playerindex = 1
                 var enemyindex = 0
             }
@@ -17,22 +18,26 @@ async function getplayerinformation() {
                 console.log('enemyindex' + enemyindex)
 
            
-           playerif = {
-            mana:playerinfo[playerindex].player_mana,
-            mana_total:playerinfo[playerindex].player_total_mana,
-            health:playerinfo[playerindex].player_health,
-            energy:playerinfo[playerindex].player_energy,
-            num:playerinfo[playerindex].player_num}
+            let playerif = {
+                mana:playerinfo.result[playerindex].player_mana,
+                mana_total:playerinfo.result[playerindex].player_total_mana,
+                health:playerinfo.result[playerindex].player_health,
+                energy:playerinfo.result[playerindex].player_energy,
+                num:playerinfo.result[playerindex].player_num,
+                name:playerinfo.result[playerindex].player_name,
+                id:playerinfo.result[playerindex].player_id}
 
-            enemyif = {
-                mana:playerinfo[enemyindex].player_mana,
-                mana_total:playerinfo[enemyindex].player_total_mana,
-                health:playerinfo[enemyindex].player_health,
-                energy:playerinfo[enemyindex].player_energy,
-                num:playerinfo[enemyindex].player_num}
+            let enemyif = {
+                mana:playerinfo.result[enemyindex].player_mana,
+                mana_total:playerinfo.result[enemyindex].player_total_mana,
+                health:playerinfo.result[enemyindex].player_health,
+                energy:playerinfo.result[enemyindex].player_energy,
+                num:playerinfo.result[enemyindex].player_num,
+                name:playerinfo.result[enemyindex].player_name,
+                id:playerinfo.result[enemyindex].player_id}
         
 
-           return playerif , enemyif ;
+           return{ playerif , enemyif };
         } else {
             // Treat errors like 404 here
             console.log(response);

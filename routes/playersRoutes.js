@@ -45,7 +45,7 @@ router.post('/player_information_change', async function(req, res, next) {
     let ply_energy = req.body.ply_energy;
     let ply_id = req.body.ply_id
     let result = await uModel.player_information_change(ply_health,ply_mana,ply_total_mana,ply_energy,ply_id);
-    console.log(result)
+    console.log('result' + result)
     res.status(result.status).send(result.result);
 });
 
@@ -53,6 +53,7 @@ router.get('/player_info',auth.checkAuthentication, async function( req, res) {
   console.log("Get Player Info") 
   console.log(req.userId)
     let result = await uModel.get_player_info(req.userId);
+    console.log('result' + JSON.stringify(result.result))
     res.status(result.status).send(result.result);
   })
 

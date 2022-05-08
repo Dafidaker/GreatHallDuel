@@ -29,8 +29,9 @@ async function setup() {
     noLoop();
     let canvas = createCanvas(width, height);
     canvas.parent('game');
-    //await createDeck()
-    //await createPlayers()
+    //getplayerinformation()
+    await createDeck()
+    await createPlayers()
     loop();
 }
 
@@ -51,8 +52,30 @@ async function createDeck(){
 }
 
 async function createPlayers(){
-    let print = await getplayerinformation()
-    print('player' + print)
+    let playerif =  (await getplayerinformation()).playerif
+    let enemyif =  (await getplayerinformation()).enemyif
+
+    playerInfo = []
+    //for (let row of playerif){
+        playerInfo.push(new Player(playerif.name,playerif.id,
+                        false,
+                        null,playerif.mana,
+                        null,null,
+                        playerif.health,playerif.mana_total,
+                        playerif.energy,playerif.num))
+        print('playerInfo'+ JSON.stringify(playerInfo))
+    //}
+
+    enemyInfo = []
+    //for (let row of enemyif){
+        enemyInfo.push(new Player(enemyif.name,enemyif.id,
+                                    false,
+                                    null,enemyif.mana,
+                                    null,null,
+                                    enemyif.health,enemyif.mana_total,
+                                    enemyif.energy,enemyif.num))
+        print('enemyInfo'+ JSON.stringify(enemyInfo))
+    //}
 }
 
 
