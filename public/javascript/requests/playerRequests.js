@@ -5,8 +5,8 @@ async function getplayerinformation() {
             /* player_id = response.player_id 
             print('user id ' + player_id) */
            var playerinfo = await response.json();
-           print('player id ' + playerinfo.result[0].player_id)
-           print('user id ' + playerinfo.player_id)
+           /* print('player id ' + playerinfo.result[0].player_id)
+           print('user id ' + playerinfo.player_id) */
            if(playerinfo.result[0].player_id == playerinfo.player_id ){
                var playerindex = 0
                var enemyindex = 1
@@ -25,7 +25,8 @@ async function getplayerinformation() {
                 energy:playerinfo.result[playerindex].player_energy,
                 num:playerinfo.result[playerindex].player_num,
                 name:playerinfo.result[playerindex].player_name,
-                id:playerinfo.result[playerindex].player_id}
+                id:playerinfo.result[playerindex].player_id,
+                position:playerinfo.result[playerindex].player_tile_id}
 
             let enemyif = {
                 mana:playerinfo.result[enemyindex].player_mana,
@@ -34,7 +35,8 @@ async function getplayerinformation() {
                 energy:playerinfo.result[enemyindex].player_energy,
                 num:playerinfo.result[enemyindex].player_num,
                 name:playerinfo.result[enemyindex].player_name,
-                id:playerinfo.result[enemyindex].player_id}
+                id:playerinfo.result[enemyindex].player_id,
+                position:playerinfo.result[enemyindex].player_tile_id}
         
 
            return{ playerif , enemyif };
@@ -72,21 +74,25 @@ async function ChangePlayerInfo(id,health,total_mana,mana,energy) {
     }
 }
 
-async function getplayersposition(player_id) {
+async function getplayersposition() {
     try {
-        const response = await fetch(`api/players/player_tile/${player_id}`);
+        const response = await fetch(`api/players/player_tile`);
         if (response.status == 200) {
-           playersposition = await response.json();
-           if (playerif.num == 1) {
+           let result = await response.json();
+           /* if (playersposition.player_num == 1) {
             player_tile = playersposition[0].player_tile_id
             enemy_tile = playersposition[1].player_tile_id
 
            }else {
             player_tile = playersposition[1].player_tile_id
             enemy_tile = playersposition[0].player_tile_id
-           }
+           } */
+           let player_tile = result.player.resultPlayer.player_tile_id
+           let enemy_tile = result.enemy.resultEnemy.player_tile_id
+
            /* print('players position '+ playersposition[0].player_tile_id);
            print('players position '+ playersposition[1].player_tile_id); */
+           return{player_tile , enemy_tile}
         } else {
             // Treat errors like 404 here
             console.log(response);

@@ -86,15 +86,20 @@ module.exports.loginCheck = async function (name,password) {
   } 
 
   module.exports.player_tile = async function(playerid) {
-    let sql = `select player_tile_id , player_num
-                from room , player ,
-                (select room_num as the_room from room where room_player_id = $1 ) temptable1
-                where room_num = the_room and player_id = room_player_id
-                order by player_num asc`
+    let sqlPlayer = `select player_tile_id 
+                from  player 
+                where  player_id = $1`
+                
+
+    let sqlEnemy = `select player_tile_id , player_num, player_id
+                    from room , player ,
+                    (select room_num as the_room from room where room_player_id = $1 ) temptable1
+                    where room_num = the_room and player_id = room_player_id and player_id != $1`
       try{
-        let result = await pool.query(sql,[playerid])
-        console.log(result.rows);
-        return {status:200 , result : result.rows};
+        let resultPlayer = await pool.query(sqlPlayer,[playerid])
+        let resultEnemy = await pool.query(sqlEnemy,[playerid])
+        //console.log(result.rows);
+        return {status:200 , result:{ player : resultPlayer.rows , enemy : resultEnemy.rows , playerid:playerid }};
       } catch(err) {
         console.log(err);
         return {status:500 , result : err};

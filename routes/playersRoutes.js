@@ -50,18 +50,25 @@ router.post('/player_information_change', async function(req, res, next) {
 });
 
 router.get('/player_info',auth.checkAuthentication, async function( req, res) {
-  console.log("Get Player Info") 
-  console.log(req.userId)
+  //console.log("Get Player Info") 
+  //console.log(req.userId)
     let result = await uModel.get_player_info(req.userId);
     console.log('result' + JSON.stringify(result.result))
     res.status(result.status).send(result.result);
   })
 
-  router.get('/player_tile/:playerid', async function( req, res) {
+  /* router.get('/player_tile/:playerid', async function( req, res) {
     console.log("Get Player position/tile") 
     let playerid = req.params.playerid
     let result = await uModel.player_tile(playerid);
     res.status(result.status).send(result.result);
+  })  */
+
+  router.get('/player_tile',auth.checkAuthentication, async function( req, res) {
+    console.log("Get Player position/tile") 
+    let result = await uModel.player_tile(req.userId);
+    console.log('Tile result' + JSON.stringify(result.result.player))
+    res.status(result.status).send(result);
   }) 
 
   router.post('/player_location_change', async function( req, res) {

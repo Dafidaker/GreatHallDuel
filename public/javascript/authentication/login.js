@@ -6,7 +6,6 @@ async function loginUser() {
         let result = await login(name, password);
         console.log(result)
         if (result.logged == 200 ) {
-            alert('wait a swedc')
             window.location = "game.html"
         } else {
             document.getElementById("result").innerHTML = "Wrong username or password";

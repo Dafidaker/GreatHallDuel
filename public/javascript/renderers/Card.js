@@ -61,8 +61,10 @@ class Card{
         if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
                 this.clicked = true 
+                return true 
             }else{
                 this.clicked = false
+                return false 
             }
     }
 }
