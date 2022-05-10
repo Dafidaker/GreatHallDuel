@@ -8,13 +8,13 @@ var playerDeck = []
 
 var boardTiles = []
 
-var gameState = 0
-var basicState = 0
-var myRoundState = 1
-    var movingState = 1.1
-    var playingCardState = 1.2
-var enemyState = 2
-    var counterState = 2.1
+var gameState = 1
+const basicState = 0
+const myRoundState = 1
+    const movingState = 1.1
+    const playingCardState = 1.2
+const enemyState = 2
+    const counterState = 2.1
 
 
 function preload() {
@@ -28,7 +28,6 @@ async function setup() {
     createboard()
     await createDeck()
     await createPlayers()
-    await updatePlayers()
     loop();
 }
 
@@ -50,16 +49,14 @@ async function createDeck(){
 async function createPlayers(){
     let playerif =  (await getplayerinformation()).playerif
     let enemyif =  (await getplayerinformation()).enemyif
-
-    //let playerpos = (await getplayersposition()).player_tile
-    //let enemypos = (await getplayersposition()).enemy_tile
-
+    let playerPos = await receiveObject(boardTiles, playerif.position)
+    let enemyPos = await receiveObject(boardTiles, enemyif.position)
 
     playerInfo = []
     playerInfo.push(new Player(playerif.name,playerif.id,
                     false,
                     playerif.position,playerif.mana,
-                    null,null,
+                    playerPos.x,playerPos.y,
                     playerif.health,playerif.mana_total,
                     playerif.energy,playerif.num,true))
     //print('playerInfo'+ JSON.stringify(playerInfo))
@@ -69,7 +66,7 @@ async function createPlayers(){
     enemyInfo.push(new Player(enemyif.name,enemyif.id,
                                 false,
                                 enemyif.position,enemyif.mana,
-                                null,null,
+                                enemyPos.x,enemyPos.y,
                                 enemyif.health,enemyif.mana_total,
                                 enemyif.energy,enemyif.num,false))
     //print('enemyInfo'+ JSON.stringify(enemyInfo))
@@ -97,24 +94,16 @@ function createboard(){
     }
 }
 
-async function updatePlayers(){
-     for(let player of playerInfo){
-        a = await receiveObject(boardTiles, player.tileIndex)
-        player.x = a.x
-        player.y = a.y
-    }
-
-    for(let enemy of enemyInfo){
-        a = await receiveObject(boardTiles, enemy.tileIndex)
-        enemy.x = a.x
-        enemy.y = a.y
-    } 
-}
 
 function draw() {
     background(220); 
     scale(1)
     
+    textSize(20)
+    fill(0,0,0)
+    text(gameState,100,100)
+
+
     for(let tile of boardTiles){
         tile.draw()
     }
@@ -133,18 +122,67 @@ function draw() {
 }
 
 function mouseClicked(){
-    for(let card of playerDeck){
+    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
+       
+        for(let card of playerDeck){
         card.click(mouseX,mouseY);
-    }
+        }
 
-    for(let tile of boardTiles){
-        tile.click(mouseX,mouseY)
+        for(let tile of boardTiles){
+            tile.click(mouseX,mouseY)
+        }
+
+        for(let player of playerInfo){
+            player.click(mouseX,mouseY)
+        } 
+
+        changeGameState()
+        highlighingTiles()
+    }
+    
+}
+
+function changeGameState(){
+
+    let isSelected = 0 ;
+
+    for(let card of playerDeck){
+        if(card.selected == true) isSelected =+ 1
     }
 
     for(let player of playerInfo){
-        player.click(mouseX,mouseY)
+        if(player.selected == true) isSelected =+ 1
     }
+
+    if(isSelected == 0 ) gameState = myRoundState
 }
+
+
+function highlighingTiles(){
+    let selectedCard
+    let selectedPlayer
+    
+    if(gameState == playingCardState){
+
+
+        for(let card of playerDeck){
+            if(card.selected == true) selectedCard = card
+        }
+
+
+    }else if(gameState == movingState){
+
+
+        for(let player of playerInfo){
+            if(player.selected == true) selectedPlayer = player
+        }
+
+        
+    }
+    
+
+}
+
 
 function receiveObject(table, id){
     for(let row of table){
