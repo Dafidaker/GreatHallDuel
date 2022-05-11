@@ -4,13 +4,13 @@ const cardHeight = 170
 
 class Card{
     //static cardImages = {};
-    constructor(name,id,clicked,order,state,mana,range,type_range,type_cast,x,y) {
+    constructor(name,id,selected,order,state,mana,range,type_range,type_cast,x,y) {
         this.width = cardWidth;
         this.height = cardHeight;
         this.x = x;
         this.y = y; 
         this.id = id;
-        this.clicked = clicked;
+        this.selected = selected;
         this.state = state;
         this.order = order ;
         this.mana = mana ;
@@ -30,7 +30,7 @@ class Card{
     }  */
     draw() {
         stroke(0,0,0);
-        if(this.clicked){
+        if(this.selected){
             fill(100,200,100);
         }else{
             fill(100,100,100);
@@ -60,10 +60,11 @@ class Card{
     click(x,y) {
         if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
-                this.clicked = true 
+                this.selected = true
+                gameState = playingCardState 
                 return true 
             }else{
-                this.clicked = false
+                this.selected = false
                 return false 
             }
     }

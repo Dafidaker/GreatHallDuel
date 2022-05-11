@@ -21,11 +21,6 @@ class GameManager {
             print('card_id'+ row.card_id)
         }
         
-        //print('Cards' + JSON.stringify(Cards[1]))
-        /*  for(let card of Cards){
-             print(card.state)
-            card.draw()
-        }  */
     }
     static draw(){
         //print('Cards' + JSON.stringify(Cards[1]))
