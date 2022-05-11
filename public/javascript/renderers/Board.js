@@ -3,7 +3,7 @@ const tileHeight = 60
 
 
 class Board {
-    constructor(id,selected,highlighted,x,y,letter,number) {
+    constructor(id,selected,highlighted,x,y,row,column) {
         this.width = tileWidth;
         this.height = tileHeight;
         this.x = x;
@@ -11,8 +11,8 @@ class Board {
         this.id = id;
         this.selected = selected;
         this.highlighted = highlighted;
-        this.letter = letter; 
-        this.number = number;
+        this.row = row; 
+        this.column = column;
     }
     draw(){
         //tiles
@@ -30,7 +30,7 @@ class Board {
         }
 
         //text
-        /* textSize(15)
+        textSize(15)
         if (this.id % 2 == 0){
             fill(0,0,0)
             rect(this.x , this.y, this.width, this.height)
@@ -42,7 +42,8 @@ class Board {
             rect(this.x , this.y, this.width, this.height)
             fill(0,0,0)
             text(this.id, this.x +30 , this.y + 30 );
-        } */
+
+        } 
 
         //if highlighted
         if (this.highlighted == true){
@@ -70,5 +71,4 @@ class Board {
             }
     }
 
-    getTile(id){return }
 }

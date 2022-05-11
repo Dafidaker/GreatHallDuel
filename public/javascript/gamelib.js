@@ -25,6 +25,7 @@ async function setup() {
     noLoop();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent('game');
+    textFont('Dogica Pixel')  
     createboard()
     await createDeck()
     await createPlayers()
@@ -125,7 +126,7 @@ function mouseClicked(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
        
         for(let card of playerDeck){
-        card.click(mouseX,mouseY);
+            card.click(mouseX,mouseY);
         }
 
         for(let tile of boardTiles){
@@ -155,6 +156,7 @@ function changeGameState(){
     }
 
     if(isSelected == 0 ) gameState = myRoundState
+    
 }
 
 
@@ -162,19 +164,31 @@ function highlighingTiles(){
     let selectedCard
     let selectedPlayer
     
+    for(let tile of boardTiles){
+        tile.highlighted = false
+    }
+    
+    
+    
     if(gameState == playingCardState){
 
 
         for(let card of playerDeck){
-            if(card.selected == true) selectedCard = card
+            if(card.selected == true) {
+                //selectedCard = card
+                highlightClickable(card)
+            }
         }
 
-
+        
     }else if(gameState == movingState){
 
 
         for(let player of playerInfo){
-            if(player.selected == true) selectedPlayer = player
+            if(player.selected == true) {
+            //selectedPlayer = player
+            highlightClickable(player)
+            }
         }
 
         
@@ -182,6 +196,62 @@ function highlighingTiles(){
     
 
 }
+
+function highlightClickable(object){
+    // get type 
+    let type = null 
+    let range = null
+    
+    if (object.player == true){
+
+        type = 4
+        range = 1
+
+    } else {
+
+        type = object.type_of_range
+        range = object.range
+
+    }
+
+    //get player position
+    let playerTile = receiveObject(boardTiles, playerInfo[0].tileIndex)
+    let inicialRow = playerTile.row
+    let inicialColumn = playerTile.column
+
+    let rows = []
+    let columns = []
+    //set the 'clickcable tiles' as highlighted
+
+    for (i = range ; i > 0 ; i--){
+        rows.push (inicialRow + i)
+        rows.push (inicialRow - i)
+
+
+        columns.push(inicialColumn + i)
+        columns.push(inicialColumn - i)
+    }
+
+    if(type = 4) {
+        for(let tile of boardTiles){
+            if(tile.column == inicialColumn){
+                for(let possibleRow of rows){
+                    if(tile.row == possibleRow) tile.highlighted = true 
+                }
+            }
+
+            if(tile.row == inicialRow){
+                for(let possiblecolumn of columns){
+                    if(tile.column == possiblecolumn) tile.highlighted = true 
+                }
+            }
+        } 
+    }
+  
+}
+    
+    
+
 
 
 function receiveObject(table, id){
