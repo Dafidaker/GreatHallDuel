@@ -35,10 +35,10 @@ module.exports.loginCheck = async function (name,password) {
   }
 
 
-  module.exports.registerPlayer = async function(player) {
+  module.exports.registerPlayer = async function(player_name, player_password) {
     try  {
       let sql = "insert into player(player_name,player_password) values ($1,$2)";
-      let result = await pool.query(sql,[player.name, player.password]); 
+      let result = await pool.query(sql,[player_name, player_password]); 
       return { status: 200, result:result }
     } catch (err){
       console.log(err);

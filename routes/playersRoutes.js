@@ -4,11 +4,12 @@ var uModel = require("../models/playersModel");
 var auth = require("../models/authentication")
 
 
-router.post('/', async function(req,res,next) {
-    let player = req.body;
+router.post('/register', async function(req,res,next) {
+    let player_name = req.body.player_name;
+    let player_password = req.body.player_password;
     console.log("Register user with info: ");
-    console.log(player);
-    let result = await uModel.registerPlayer(player);
+    //console.log(player);
+    let result = await uModel.registerPlayer(player_name, player_password);
     res.status(result.status).send(result.result);
 })
             

@@ -1,3 +1,23 @@
+async function register(player){
+    try {
+        const response = await fetch(`/api/players/register`,
+        {
+            //to do verify user information give erros 
+
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
+            body: JSON.stringify({player_name : player.name, player_password : player.password}) 
+        });
+        var  result= await response.json();
+        return {inserted: response.status==200 , result: result };
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+}
+
 async function getplayerinformation() {
     try {
         const response = await fetch(`/api/players/player_info`);
