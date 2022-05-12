@@ -16,6 +16,9 @@ const myRoundState = 1
 const enemyState = 2
     const counterState = 2.1
 
+let selectedCard
+let selectedPlayer
+let selectedTile
 
 function preload() {
 
@@ -40,8 +43,8 @@ async function createDeck(){
         playerDeck.push(new Card(row.card_name,row.deck_card_id,
                                 false,row.deck_order,
                                 row.card_state_id,row.card_mana,
-                                row.card_range,row.card_type_range
-                                ,row.card_type_cast,
+                                row.card_range,row.card_type_range_id
+                                ,row.card_type_cast_id,
                                 (row.deck_order*150),400))
         
     }
@@ -125,19 +128,81 @@ function draw() {
 function mouseClicked(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
        
+        /* selectedCard = null
+        selectedTile = null 
+        selectedPlayer = null 
+ */
+        let selected = false 
+
+        //let isSelected = 0 
+
+    
         for(let card of playerDeck){
-            card.click(mouseX,mouseY);
+
+            if( playerInfo[0].mana >= card.mana ) {
+
+                card.click(mouseX,mouseY);
+                if (card.selected == true) {
+                    selected = true
+                    //isSelected =+ 1
+                    selectedCard = card
+                }
+
+            //}else if ( playerInfo[0].mana <= card.mana){
+
+                //alert('Not enough Mana')
+
+            }
+            
         }
+
+    
+        for(let player of playerInfo){
+            
+            //player.click(mouseX,mouseY)
+            
+            if(player.energy >= 1) {
+
+                player.click(mouseX,mouseY)
+                
+                if (player.selected == true) {
+                    //isSelected =+ 1
+                    selected = true
+                    selectedPlayer = player
+                }
+            }
+
+            if(player.energy <= 0){
+
+                if(gameState == movingState) gameState = myRoundState
+
+            }
+
+            
+        }
+            
+
+        
+
 
         for(let tile of boardTiles){
             tile.click(mouseX,mouseY)
+            
+            if(tile.selected == true){
+                selectedTile = tile 
+                if(tile.highlighted == true){
+                if(tile.id != enemyInfo.tileIndex){
+                   makePlay(); 
+                }
+                (gameState == movingState)? selected = true : null;
+               } 
+            } 
         }
 
-        for(let player of playerInfo){
-            player.click(mouseX,mouseY)
-        } 
 
-        changeGameState()
+        //if(isSelected == 0 ) gameState = myRoundState
+        (selected == false)? gameState = myRoundState : null;
+        //changeGameState()
         highlighingTiles()
     }
     
@@ -156,42 +221,28 @@ function changeGameState(){
     }
 
     if(isSelected == 0 ) gameState = myRoundState
-    
+
 }
 
 
 function highlighingTiles(){
-    let selectedCard
-    let selectedPlayer
     
     for(let tile of boardTiles){
+
         tile.highlighted = false
+
     }
     
     
     
     if(gameState == playingCardState){
-
-
-        for(let card of playerDeck){
-            if(card.selected == true) {
-                //selectedCard = card
-                highlightClickable(card)
-            }
-        }
-
         
+        highlightClickable(selectedCard)
+
     }else if(gameState == movingState){
 
+        highlightClickable(selectedPlayer)
 
-        for(let player of playerInfo){
-            if(player.selected == true) {
-            //selectedPlayer = player
-            highlightClickable(player)
-            }
-        }
-
-        
     }
     
 
@@ -209,7 +260,7 @@ function highlightClickable(object){
 
     } else {
 
-        type = object.type_of_range
+        type = object.type_range
         range = object.range
 
     }
@@ -219,10 +270,12 @@ function highlightClickable(object){
     let inicialRow = playerTile.row
     let inicialColumn = playerTile.column
 
+
+    //creates tables of nº rows and columns where the tiles are clicable
     let rows = []
     let columns = []
-    //set the 'clickcable tiles' as highlighted
-
+    
+    
     for (i = range ; i > 0 ; i--){
         rows.push (inicialRow + i)
         rows.push (inicialRow - i)
@@ -232,7 +285,8 @@ function highlightClickable(object){
         columns.push(inicialColumn - i)
     }
 
-    if(type = 4) {
+    //set the 'clickcable tiles' as highlighted
+    if(type == 4) {
         for(let tile of boardTiles){
             if(tile.column == inicialColumn){
                 for(let possibleRow of rows){
@@ -252,7 +306,40 @@ function highlightClickable(object){
     
     
 
+function makePlay() {
+    if(gameState == playingCardState){
+        //needs to check and change database 
+        playerInfo[0].mana -= selectedCard.mana
+        selectedCard.x = null 
+        selectedCard.y = null 
+        selectedCard.state = 2 
+    }else if (gameState == movingState){
+        if(playerInfo[0].energy > 0 && selectedTile ){
+        playerInfo[0].energy -= 1
+        playerInfo[0].tileIndex = selectedTile.id
+        playerInfo[0].selected = true
+        updatePlayers()  
+        } else if (playerInfo[0].energy = 0){
+            alert('Not enough energy')
+        }
+        
+    }
+}
 
+async function updatePlayers(){
+    for(let player of playerInfo){
+       a = await receiveObject(boardTiles, player.tileIndex)
+       player.x = a.x
+       player.y = a.y
+   }
+
+
+   for(let enemy of enemyInfo){
+       a = await receiveObject(boardTiles, enemy.tileIndex)
+       enemy.x = a.x
+       enemy.y = a.y
+   } 
+}
 
 function receiveObject(table, id){
     for(let row of table){

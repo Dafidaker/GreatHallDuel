@@ -71,10 +71,10 @@ class Player {
             y > this.y && y < (this.y+this.height)){
                 this.selected = true 
                 gameState = movingState 
-                return true 
+                //return true 
             }else{
                 this.selected = false
-                return false 
+                //return false 
             }
     }
 }

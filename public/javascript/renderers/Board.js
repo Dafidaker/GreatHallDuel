@@ -65,9 +65,9 @@ class Board {
     click(x,y) {
         if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
-                if(this.highlighted){
-
-                }
+                /* if(this.highlighted){
+                    makePlay()  
+                } */
                 this.selected = true 
             }else{
                 this.selected = false

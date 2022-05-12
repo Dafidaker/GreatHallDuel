@@ -62,10 +62,10 @@ class Card{
             y > this.y && y < (this.y+this.height)){
                 this.selected = true
                 gameState = playingCardState 
-                return true 
+                //return true 
             }else{
                 this.selected = false
-                return false 
+                //return false 
             }
     }
 }
