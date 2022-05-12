@@ -1,6 +1,6 @@
 const tileWidth = 60
 const tileHeight = 60
-
+let a = 0
 
 class Board {
     constructor(id,selected,highlighted,x,y,row,column) {
@@ -30,18 +30,18 @@ class Board {
         }
 
         //text
-        textSize(15)
+        textSize(12)
         if (this.id % 2 == 0){
             fill(0,0,0)
             rect(this.x , this.y, this.width, this.height)
             fill(127, 101, 57)
-            text(this.id, this.x +30 , this.y + 30 ); 
+            text(this.id, this.x +30 -(textWidth(this.id.toString())/2) , this.y + 30 ); 
 
         } else {
             fill(127, 101, 57)
             rect(this.x , this.y, this.width, this.height)
             fill(0,0,0)
-            text(this.id, this.x +30 , this.y + 30 );
+            text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 );
 
         } 
 
@@ -55,7 +55,12 @@ class Board {
 
         if (this.selected == true){
             fill(255, 255, 255)
+            //stoke(255, 255, 255)
+            //a+=2
+            //if (a == this.width)  a = 0 ;
+            //rect(this.x , this.y, 1+a, 1+a)
             rect(this.x , this.y, this.width, this.height)
+
            // fill(0,0,0)
            // text(this.id, this.x +30 , this.y + 30 )
         }

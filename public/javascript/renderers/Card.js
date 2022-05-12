@@ -40,7 +40,7 @@ class Card{
             rect(this.x,this.y,this.width,this.height,5,5,5,5);
             //rect(this.x,this.y,this.width,100,5,5,5,5);
             fill(255,255,255)
-            textSize(14)
+            textSize(10)
             text(this.name ,this.x+(this.width/2) - (textWidth(this.name)/2) ,this.y+(this.height/2))
         }
         

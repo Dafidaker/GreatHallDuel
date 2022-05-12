@@ -20,15 +20,26 @@ let selectedCard
 let selectedPlayer
 let selectedTile
 
-function preload() {
 
+
+let dogica
+let dogicaBold
+let dogicaPixel
+let dogicaPixelBold
+
+
+function preload() {
+    dogica = loadFont('assets/dogica.otf')
+    dogicaBold = loadFont('assets/dogicabold.otf')
+    dogicaPixel = loadFont('assets/dogicapixel.otf')
+    dogicaPixelBold = loadFont('assets/dogicapixelbold.otf')
 }
 
 async function setup() {
     noLoop();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent('game');
-    textFont('Dogica Pixel')  
+    textFont(dogicaPixel)  
     createboard()
     await createDeck()
     await createPlayers()
@@ -128,56 +139,51 @@ function draw() {
 function mouseClicked(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
        
-        /* selectedCard = null
-        selectedTile = null 
-        selectedPlayer = null 
- */
+        
         let selected = false 
 
-        //let isSelected = 0 
 
-    
         for(let card of playerDeck){
 
-            if( playerInfo[0].mana >= card.mana ) {
 
-                card.click(mouseX,mouseY);
-                if (card.selected == true) {
-                    selected = true
-                    //isSelected =+ 1
-                    selectedCard = card
+            card.click(mouseX,mouseY);
+            
+            if (card.selected == true) {
+                selected = true
+                //isSelected =+ 1
+                selectedCard = card
+
+                if (playerInfo[0].mana < selectedCard.mana ){
+                    alert('Not enough mana')
+                    selectedCard = null
+                    card.selected = false
+                    gameState = myRoundState
+        
                 }
-
-            //}else if ( playerInfo[0].mana <= card.mana){
-
-                //alert('Not enough Mana')
-
             }
             
         }
 
     
         for(let player of playerInfo){
-            
-            //player.click(mouseX,mouseY)
-            
-            if(player.energy >= 1) {
 
-                player.click(mouseX,mouseY)
-                
+            if(gameState != movingState){
+
+                player.click(mouseX,mouseY) ;
+                    
                 if (player.selected == true) {
-                    //isSelected =+ 1
+
                     selected = true
                     selectedPlayer = player
+                
+                    if(player.energy <= 0){
+                        selectedPlayer = null
+                        if(gameState == movingState) gameState = myRoundState
+                        alert('Not enough energy')
+                        
+                    } 
                 }
             }
-
-            if(player.energy <= 0){
-
-                if(gameState == movingState) gameState = myRoundState
-
-            }
-
             
         }
             
@@ -186,19 +192,21 @@ function mouseClicked(){
 
 
         for(let tile of boardTiles){
+
             tile.click(mouseX,mouseY)
             
             if(tile.selected == true){
+
                 selectedTile = tile 
                 if(tile.highlighted == true){
-                if(tile.id != enemyInfo.tileIndex){
-                   makePlay(); 
+                    (gameState == movingState)? selected = true : null;
+                    makePlay(); 
                 }
-                (gameState == movingState)? selected = true : null;
-               } 
-            } 
-        }
 
+            } 
+
+        } 
+        
 
         //if(isSelected == 0 ) gameState = myRoundState
         (selected == false)? gameState = myRoundState : null;
@@ -234,7 +242,6 @@ function highlighingTiles(){
     }
     
     
-    
     if(gameState == playingCardState){
         
         highlightClickable(selectedCard)
@@ -245,7 +252,6 @@ function highlighingTiles(){
 
     }
     
-
 }
 
 function highlightClickable(object){
@@ -309,18 +315,28 @@ function highlightClickable(object){
 function makePlay() {
     if(gameState == playingCardState){
         //needs to check and change database 
-        playerInfo[0].mana -= selectedCard.mana
-        selectedCard.x = null 
-        selectedCard.y = null 
-        selectedCard.state = 2 
+        if(playerInfo[0].mana >= selectedCard.mana){
+            playerInfo[0].mana -= selectedCard.mana
+            selectedCard.x = null 
+            selectedCard.y = null 
+            selectedCard.state = 2  
+
+        }
+
     }else if (gameState == movingState){
-        if(playerInfo[0].energy > 0 && selectedTile ){
-        playerInfo[0].energy -= 1
-        playerInfo[0].tileIndex = selectedTile.id
-        playerInfo[0].selected = true
-        updatePlayers()  
+        if(selectedTile.id == enemyInfo[0].tileIndex ){
+            alert('Can`t move into the enemy')
+            gameState = myRoundState
+
+        }else if(playerInfo[0].energy > 0){
+            playerInfo[0].energy -= 1
+            playerInfo[0].tileIndex = selectedTile.id
+            playerInfo[0].selected = true
+            updatePlayers()  
+
         } else if (playerInfo[0].energy = 0){
             alert('Not enough energy')
+
         }
         
     }
