@@ -46,6 +46,19 @@ class Player {
         }
 
         if(this.player == false){
+            fill(255,255,255)
+            stroke(51)
+            strokeWeight(1)
+            rect((canvasWidth * 0.1) ,(canvasHeight * 0.05),(canvasWidth * 0.18),(canvasHeight * 0.18))
+            noStroke()
+            textSize(20)
+            fill(0, 153, 15)
+            text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.09) )
+            fill(0, 175, 235)
+            text('MANA : ' + this.mana + '/' + this.totalMana,(canvasWidth * 0.1) +10 ,(canvasHeight * 0.14) )
+            fill(228, 164, 7)
+            text('ENERGY : ' + this.energy +' /3',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.19) )
+       
             fill(87, 135, 239)
             circle(this.x + 30 ,this.y + 30,60)
             fill(255,255,255)
