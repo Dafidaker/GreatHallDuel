@@ -82,7 +82,7 @@ async function ChangePlayerInfo(id,health,total_mana,mana,energy) {
             body: JSON.stringify({ ply_id: id, ply_health: health, ply_total_mana: total_mana, ply_mana: mana,ply_energy: energy }) 
         });
         if (response.status == 200) {
-           var  result= await response.json();
+           var  result = await response.json();
            console.log('player change' + result);
         } else {
             // Treat errors like 404 here

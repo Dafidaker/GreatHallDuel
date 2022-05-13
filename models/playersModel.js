@@ -71,7 +71,9 @@ module.exports.loginCheck = async function (name,password) {
 
 
    module.exports.get_player_info =  async function(player_id) {
-    let sql = 'select * from player, room  where room_player_id = $1  order by player_num asc'
+    let sql = `select distinct(player_name ), player_id  , player_mana , player_total_mana , player_energy , player_health , player_num , player_tile_id
+    from player, room  
+    where player_room_id = (select room_num  from room where room_player_id = $1)`
       try{
         let result = await pool.query(sql,[player_id])
         console.log(result.rows);

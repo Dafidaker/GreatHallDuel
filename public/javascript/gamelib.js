@@ -35,6 +35,43 @@ function preload() {
     dogicaPixelBold = loadFont('assets/dogicapixelbold.otf')
 }
 
+
+async function Reset(){
+    SetInicialState()
+}
+
+function SetInicialState() {
+    
+    ChangePlayerInfo(1,18,4,4,3) //(id,health,total_mana,mana,energy)
+    ChangePlayerPosition(1,59) // (id,position)
+    ChangeCardState(1,1,1)  // (id,card,newstate)
+    ChangeCardState(1,4,1)  // (id,card,newstate)
+    
+    ChangePlayerInfo(2,20,3,3,3) //(id,health,total_mana,mana,energy)
+    ChangePlayerPosition(2,40) // (id,position)
+    ChangeCardState(2,2,1)  // (id,card,newstate)
+    ChangeCardState(2,3,1)  // (id,card,newstate)
+    
+
+    ChangeRound_Num_State(1,7,1)
+}
+
+function InicialInformation() {
+    getBattleRound(player_id) //Gets the round number and state as a nice string
+    getplayerinformation(player_id) // gets all the information from one player , 
+    getplayerdeck(player_id) // gets the deck from one player 
+    getplayersposition(player_id) // gets position from both players 
+    GameState= MyRoundState
+    
+     /* if(playerif.num == Round.State ){
+        GameState= MyRoundState
+    }else if (playerif.num != Round.State ){
+        GameState= EnemyState
+    }   */
+    //GetPlays()
+
+}
+
 async function setup() {
     noLoop();
     let canvas = createCanvas(canvasWidth, canvasHeight);
@@ -43,7 +80,10 @@ async function setup() {
     createboard()
     await createDeck()
     await createPlayers()
+    //setInterval(updatePlayers,500) 
     loop();
+
+   
 }
 
 async function createDeck(){
@@ -88,6 +128,32 @@ async function createPlayers(){
    
 }
 
+async function updatePlayers(){
+    let playerif =  (await getplayerinformation()).playerif
+    let enemyif =  (await getplayerinformation()).enemyif
+    let playerPos = await receiveObject(boardTiles, playerif.position)
+    let enemyPos = await receiveObject(boardTiles, enemyif.position)
+
+    print('update players ')
+    for(let player of playerInfo){
+        player.update(playerif.position,
+                        playerif.mana,
+                        playerInfo[0].x,playerInfo[0].y,
+                        playerif.health,playerif.mana_total,
+                        playerif.energy)
+    }
+
+
+    for(let enemy of enemyInfo){
+        enemy.update(enemyif.position,
+                        enemyif.mana,
+                        enemyInfo[0].x,enemyInfo[0].y,
+                        enemyif.health,enemyif.mana_total,
+                        enemyif.energy)
+    }
+   
+}
+
 function createboard(){
     let YOffSet = 400 
     let XOffSet = ((9*60)/2)+60 // number of columns * width / half of the whole square 
@@ -126,9 +192,9 @@ function draw() {
         card.draw()
     }
     
-    for(let player of playerInfo){
-        player.draw()
-    }
+    
+    playerInfo[0].draw()
+    
 
     for(let enemy of enemyInfo){
         enemy.draw()
@@ -326,23 +392,32 @@ function makePlay() {
     }else if (gameState == movingState){
         if(selectedTile.id == enemyInfo[0].tileIndex ){
             alert('Can`t move into the enemy')
+            playerInfo[0].selected = false
             gameState = myRoundState
 
         }else if(playerInfo[0].energy > 0){
             playerInfo[0].energy -= 1
             playerInfo[0].tileIndex = selectedTile.id
             playerInfo[0].selected = true
-            updatePlayers()  
+            ChangePlayerInfo(playerInfo[0].id,
+                            playerInfo[0].health,
+                            playerInfo[0].totalMana,
+                            playerInfo[0].mana,
+                            playerInfo[0].energy )
+            ChangePlayerPosition(playerInfo[0].id,selectedTile.id)
+            updatePosPlayers()  
 
-        } else if (playerInfo[0].energy = 0){
+        } else if (playerInfo[0].energy == 0){
             alert('Not enough energy')
+            playerInfo[0].selected = false
+            gameState= myRoundState
 
         }
         
     }
 }
 
-async function updatePlayers(){
+async function updatePosPlayers(){
     for(let player of playerInfo){
        a = await receiveObject(boardTiles, player.tileIndex)
        player.x = a.x
@@ -355,7 +430,7 @@ async function updatePlayers(){
        enemy.x = a.x
        enemy.y = a.y
    } 
-}
+} 
 
 function receiveObject(table, id){
     for(let row of table){
