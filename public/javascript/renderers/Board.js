@@ -1,6 +1,7 @@
 const tileWidth = 60
 const tileHeight = 60
-let a = 0
+let value = 0
+let valueHighlight = 0 
 
 class Board {
     constructor(id,selected,highlighted,x,y,row,column) {
@@ -13,6 +14,8 @@ class Board {
         this.highlighted = highlighted;
         this.row = row; 
         this.column = column;
+        this.valueHighlight = valueHighlight
+        this.value = value
     }
     draw(){
         //tiles
@@ -47,18 +50,24 @@ class Board {
 
         //if highlighted
         if (this.highlighted == true){
-            fill(100, 200, 100)
+            fill(100, 200, 100,this.valueHighlight)
+
+            this.valueHighlight +=  5;
+            if (this.valueHighlight > 255) this.valueHighlight = 0;
             rect(this.x , this.y, this.width, this.height)
             //fill(0,0,0)
             //text(this.id, this.x +30 , this.y + 30 )
         }
 
         if (this.selected == true){
-            fill(255, 255, 255)
+            fill(255,255,255,this.value)
             //stoke(255, 255, 255)
             //a+=2
             //if (a == this.width)  a = 0 ;
             //rect(this.x , this.y, 1+a, 1+a)
+            this.value += 5;
+            if (this.value > 255) this.value = 0;
+            
             rect(this.x , this.y, this.width, this.height)
 
            // fill(0,0,0)
@@ -76,6 +85,7 @@ class Board {
                 this.selected = true 
             }else{
                 this.selected = false
+                this.value = 0
             }
     }
 

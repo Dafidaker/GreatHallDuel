@@ -1,17 +1,20 @@
 body {
   background-color: rgb(255, 255, 255);
+  color: rgb(34, 34, 34); 
   height: 100vh;
   margin:0;
+  font-size: 1.2em;
   display: grid;
   grid-template-columns: auto ;
+  
   grid-template-areas: 'h' 'm' 'f';
-  grid-template-rows: 500px auto 100px;
+  grid-template-rows: 500px auto 200px;
 }
 
 header {
    grid-area: h;
-   background-color: rgb(255, 255, 255);
-   color: white;
+   /* background-color: rgb(255, 255, 255);*/
+   color: white; 
    font-size: 1.2em;
    padding:10px;
    display: flex;
@@ -30,10 +33,11 @@ header > img {
 }
 footer { 
   grid-area: f;
-  /* padding: 10px 20%; */
+  /* padding: 10px 20%;  */
+  font-size: 1.4em;
   text-align: center;
-  background-color: rgb(206, 206, 206);
-    color: rgb(0, 0, 0)
+  background-color: rgba(17, 16, 16, 0.256); 
+  color: white; 
 }
 main {
   grid-area: m;

@@ -1,5 +1,13 @@
 const cardWidth = 120
 const cardHeight = 170 
+const cardsBox ={
+    width: 650,
+    height: 300,
+    x : 600,
+    y:850 ,
+    color: 100 
+}
+let inside = false
 
 
 class Card{
@@ -67,5 +75,35 @@ class Card{
                 this.selected = false
                 //return false 
             }
+    }
+
+    static mouseMoved(x,y){ 
+        if(x > cardsBox.x && x < (cardsBox.x+cardsBox.width) &&
+            y > cardsBox.y && y < (cardsBox.y+cardsBox.height)){
+                cardsBox.color = 200
+                if(inside == false){
+                    for(let card of playerDeck){
+                        card.y -= 100
+                    }
+                    inside = true    
+                }
+                
+        }else{
+            if(inside == true  ){
+                inside = false
+
+                cardsBox.color = 100
+
+                for(let card of playerDeck){
+                    card.y += 100
+                }
+            }
+                
+
+        }
+    }
+    static drawCardsBox(){
+        fill(cardsBox.color)
+        rect(cardsBox.x,cardsBox.y,cardsBox.width,cardsBox.height)
     }
 }

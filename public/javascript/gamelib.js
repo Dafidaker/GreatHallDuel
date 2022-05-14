@@ -138,7 +138,7 @@ async function updatePlayers(){
     for(let player of playerInfo){
         player.update(playerif.position,
                         playerif.mana,
-                        playerInfo[0].x,playerInfo[0].y,
+                        playerPos.x,playerPos.y,
                         playerif.health,playerif.mana_total,
                         playerif.energy)
     }
@@ -147,7 +147,7 @@ async function updatePlayers(){
     for(let enemy of enemyInfo){
         enemy.update(enemyif.position,
                         enemyif.mana,
-                        enemyInfo[0].x,enemyInfo[0].y,
+                        enemyPos.x,enemyPos.y,
                         enemyif.health,enemyif.mana_total,
                         enemyif.energy)
     }
@@ -200,8 +200,12 @@ function draw() {
         enemy.draw()
     }
 
-}
+    Card.drawCardsBox()
 
+}
+function mouseMoved(){
+    Card.mouseMoved(mouseX,mouseY)
+}
 function mouseClicked(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
        
@@ -242,12 +246,12 @@ function mouseClicked(){
                     selected = true
                     selectedPlayer = player
                 
-                    if(player.energy <= 0){
+                     if(player.energy <= 0){
                         selectedPlayer = null
                         if(gameState == movingState) gameState = myRoundState
                         alert('Not enough energy')
                         
-                    } 
+                    }  
                 }
             }
             
@@ -304,7 +308,7 @@ function highlighingTiles(){
     for(let tile of boardTiles){
 
         tile.highlighted = false
-
+        tile.valueHighlight = 0 
     }
     
     
@@ -386,6 +390,12 @@ function makePlay() {
             selectedCard.x = null 
             selectedCard.y = null 
             selectedCard.state = 2  
+            ChangeCardState(1,selectedCard.id,selectedCard.state)
+            ChangePlayerInfo(playerInfo[0].id,
+                playerInfo[0].health,
+                playerInfo[0].totalMana,
+                playerInfo[0].mana,
+                playerInfo[0].energy)
 
         }
 
@@ -407,12 +417,12 @@ function makePlay() {
             ChangePlayerPosition(playerInfo[0].id,selectedTile.id)
             updatePosPlayers()  
 
-        } else if (playerInfo[0].energy == 0){
+        }  else if (playerInfo[0].energy == 0){
             alert('Not enough energy')
             playerInfo[0].selected = false
             gameState= myRoundState
 
-        }
+        } 
         
     }
 }
