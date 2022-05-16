@@ -66,13 +66,13 @@ async function getRoundState(){
 
 function SetInicialState() {
     
-    ChangePlayerInfo(1,18,4,4,3) //(id,health,total_mana,mana,energy)
-    ChangePlayerPosition(1,59) // (id,position)
+    ChangePlayerInfo(1,20,0,0,3) //(id,health,total_mana,mana,energy)
+    ChangePlayerPosition(1,68) // (id,position)
     ChangeCardState(1,1,1)  // (id,card,newstate)
     ChangeCardState(1,4,1)  // (id,card,newstate)
     
-    ChangePlayerInfo(2,20,3,3,3) //(id,health,total_mana,mana,energy)
-    ChangePlayerPosition(2,40) // (id,position)
+    ChangePlayerInfo(2,20,0,0,3) //(id,health,total_mana,mana,energy)
+    ChangePlayerPosition(2,14) // (id,position)
     ChangeCardState(2,2,1)  // (id,card,newstate)
     ChangeCardState(2,3,1)  // (id,card,newstate)
     
