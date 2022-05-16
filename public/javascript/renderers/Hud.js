@@ -28,5 +28,6 @@ class Hud{
                 print(this.text + 'clicked')
             }
     }
+    
 
 }

@@ -268,6 +268,10 @@ function draw() {
 
 function mouseMoved(){
     Card.mouseMoved(mouseX,mouseY)
+
+    for(let button of buttonTable){
+        button.mouseMoved(mouseX,mouseY)
+    }
 }
 
 function mouseClicked(){
