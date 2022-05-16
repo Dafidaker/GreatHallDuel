@@ -1,19 +1,25 @@
 var express = require('express');
 var router = express.Router();
-var uModel = require("../models/roundModel.js");
+var rModel = require("../models/roundModel.js");
+var auth = require("../models/authentication")
 
   router.post('/change_round_number', async function( req, res) {
     let newstate = req.body.newstate;
     let newroundnum = req.body.newround
     let room_num = req.body.room_num
-    let result = await uModel.change_round_number(room_num,newroundnum,newstate);
+    let result = await rModel.change_round_number(room_num,newroundnum,newstate);
     res.status(result.status).send(result.result);
   })  
 
-  router.get('/round_number/:player_id', async function( req, res) {
+  router.get('/round_number/:player_id', auth.checkAuthentication, async function( req, res) {
     console.log('routes');
     let playerid = req.params.player_id
-    let result = await uModel.get_round(playerid);
+    let result = await rModel.get_round(req.userId);
+    res.status(result.status).send(result.result);
+  })  
+
+  router.post('/next_round', auth.checkAuthentication, async function( req, res) {    
+    let result = await rModel.next_round(req.userId);
     res.status(result.status).send(result.result);
   })  
 

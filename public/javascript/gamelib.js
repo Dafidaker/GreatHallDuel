@@ -8,7 +8,7 @@ var playerDeck = []
 
 var boardTiles = []
 
-var gameState = 1
+var gameState = 0
 const basicState = 0
 const myRoundState = 1
     const movingState = 1.1
@@ -20,6 +20,10 @@ let selectedCard
 let selectedPlayer
 let selectedTile
 
+let roundinfo  
+
+let hudTable
+let buttonTable
 
 
 let dogica
@@ -27,17 +31,37 @@ let dogicaBold
 let dogicaPixel
 let dogicaPixelBold
 
+let backgroundImg
+
 
 function preload() {
     dogica = loadFont('assets/dogica.otf')
     dogicaBold = loadFont('assets/dogicabold.otf')
     dogicaPixel = loadFont('assets/dogicapixel.otf')
     dogicaPixelBold = loadFont('assets/dogicapixelbold.otf')
+
+    backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
+    
 }
 
 
 async function Reset(){
     SetInicialState()
+}
+
+async function getRoundState(){
+    await getBattleRound(1)
+    if(Round.PlayerState == 2){
+        if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState ){
+            return
+        }else{
+            gameState = myRoundState
+        }
+        
+    }else if (Round.PlayerState == 1){
+        gameState =  enemyState
+    }
+
 }
 
 function SetInicialState() {
@@ -78,12 +102,24 @@ async function setup() {
     canvas.parent('game');
     textFont(dogicaPixel)  
     createboard()
+    await createButtons()
     await createDeck()
     await createPlayers()
-    //setInterval(updatePlayers,500) 
+    await createHud()
+    setInterval(updateGame,1000) 
     loop();
 
    
+}
+
+async function updateGame(){
+    await getRoundState()
+    
+    if(gameState == enemyState){
+       updatePlayers(); 
+    } 
+    
+    
 }
 
 async function createDeck(){
@@ -95,10 +131,27 @@ async function createDeck(){
                                 false,row.deck_order,
                                 row.card_state_id,row.card_mana,
                                 row.card_range,row.card_type_range_id
-                                ,row.card_type_cast_id,
-                                (row.deck_order*150),400))
+                                ,row.card_type_cast_id))
         
     }
+}
+
+async function createHud(){
+    roundinfo = await getBattleRound(1)
+
+    hudTable=[]
+    hudTable.push(new Hud(0.5 , 0.1 , 700 , 100,'info' ,'placeholder',roundinfo.Round.String))
+
+}
+
+async function createButtons(){
+    buttonTable =[]
+
+    buttonTable.push ( new Button (0.1,0.75,120,120,'a','Get Card'))
+    buttonTable.push ( new Button (0.2,0.85,120,120,'a','Basic Attack'))
+    buttonTable.push ( new Button (0.75,0.45,300,100,'a','End Turn'))
+
+
 }
 
 async function createPlayers(){
@@ -178,12 +231,15 @@ function createboard(){
 
 function draw() {
     background(220); 
+    image(backgroundImg,0,0)
     scale(1)
     
     textSize(20)
     fill(0,0,0)
     text(gameState,100,100)
+    //text(Round.PlayerState,100,200)
 
+    Card.drawCardsBox()
 
     for(let tile of boardTiles){
         tile.draw()
@@ -200,15 +256,26 @@ function draw() {
         enemy.draw()
     }
 
-    Card.drawCardsBox()
+    for(let hudelement of hudTable){
+        hudelement.draw()
+    }
+
+    for(let button of buttonTable){
+        button.draw()
+    }
 
 }
+
 function mouseMoved(){
     Card.mouseMoved(mouseX,mouseY)
 }
+
 function mouseClicked(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
        
+        for(let button of buttonTable){
+            button.click(mouseX,mouseY);
+        }
         
         let selected = false 
 
@@ -390,12 +457,13 @@ function makePlay() {
             selectedCard.x = null 
             selectedCard.y = null 
             selectedCard.state = 2  
-            ChangeCardState(1,selectedCard.id,selectedCard.state)
+            ChangeCardState(playerInfo[0].id,selectedCard.id,selectedCard.state)
             ChangePlayerInfo(playerInfo[0].id,
                 playerInfo[0].health,
                 playerInfo[0].totalMana,
                 playerInfo[0].mana,
                 playerInfo[0].energy)
+            
 
         }
 
@@ -413,7 +481,7 @@ function makePlay() {
                             playerInfo[0].health,
                             playerInfo[0].totalMana,
                             playerInfo[0].mana,
-                            playerInfo[0].energy )
+                            playerInfo[0].energy)
             ChangePlayerPosition(playerInfo[0].id,selectedTile.id)
             updatePosPlayers()  
 

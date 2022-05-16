@@ -1,7 +1,7 @@
 const tileWidth = 60
 const tileHeight = 60
-let value = 0
-let valueHighlight = 0 
+let value = 100
+let valueHighlight = 100
 
 class Board {
     constructor(id,selected,highlighted,x,y,row,column) {
@@ -22,57 +22,51 @@ class Board {
 
         //stroke(0)
         
+        strokeWeight(1) 
+        stroke(0,0,0)
 
         if (this.id % 2 == 0){
             fill(0,0,0)
-            rect(this.x , this.y, this.width, this.height)
-
         } else {
-            fill(127, 101, 57)
-            rect(this.x , this.y, this.width, this.height)
+            fill(127, 101, 57) 
         }
+        rect(this.x , this.y, this.width, this.height)
+
 
         //text
         textSize(12)
         if (this.id % 2 == 0){
-            fill(0,0,0)
-            rect(this.x , this.y, this.width, this.height)
             fill(127, 101, 57)
-            text(this.id, this.x +30 -(textWidth(this.id.toString())/2) , this.y + 30 ); 
-
         } else {
-            fill(127, 101, 57)
-            rect(this.x , this.y, this.width, this.height)
             fill(0,0,0)
-            text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 );
-
         } 
-
+        text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 )
+        
         //if highlighted
-        if (this.highlighted == true){
-            fill(100, 200, 100,this.valueHighlight)
+         if (this.highlighted == true){
 
-            this.valueHighlight +=  5;
-            if (this.valueHighlight > 255) this.valueHighlight = 0;
-            rect(this.x , this.y, this.width, this.height)
-            //fill(0,0,0)
-            //text(this.id, this.x +30 , this.y + 30 )
+            this.valueHighlight +=  1.5;
+            if (this.valueHighlight > 200) this.valueHighlight = 100;
+
+            stroke(100, 200, 100,/* this.valueHighligh */)
+            strokeWeight(4) 
+            noFill()
+            rect(this.x+5 , this.y + 5 , 50, 50)
+            
         }
 
         if (this.selected == true){
-            fill(255,255,255,this.value)
-            //stoke(255, 255, 255)
-            //a+=2
-            //if (a == this.width)  a = 0 ;
-            //rect(this.x , this.y, 1+a, 1+a)
-            this.value += 5;
-            if (this.value > 255) this.value = 0;
-            
-            rect(this.x , this.y, this.width, this.height)
 
-           // fill(0,0,0)
-           // text(this.id, this.x +30 , this.y + 30 )
-        }
+            this.value += 3;
+            if (this.value > 200) this.value = 70;
+            
+            stroke(255, 255, 255/* ,this.value */);
+            strokeWeight(4) 
+            fill(255,255,255,0)
+            rect(this.x+5 , this.y + 5 , 50, 50)
+            
+
+        } 
 
         
     } 

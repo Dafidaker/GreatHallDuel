@@ -8,14 +8,17 @@ const cardsBox ={
     color: 100 
 }
 let inside = false
+const y = 1050
+const spaceBetweenCards = 150 
+const cardsXOffset = 500 
 
 
 class Card{
     //static cardImages = {};
-    constructor(name,id,selected,order,state,mana,range,type_range,type_cast,x,y) {
+    constructor(name,id,selected,order,state,mana,range,type_range,type_cast) {
         this.width = cardWidth;
         this.height = cardHeight;
-        this.x = x;
+        this.x = (order * spaceBetweenCards) + cardsXOffset ;
         this.y = y; 
         this.id = id;
         this.selected = selected;
@@ -37,6 +40,7 @@ class Card{
         Card.cardImages = imgHash;
     }  */
     draw() {
+        strokeWeight(4) 
         stroke(0,0,0);
         if(this.selected){
             fill(100,200,100);
@@ -83,7 +87,7 @@ class Card{
                 cardsBox.color = 200
                 if(inside == false){
                     for(let card of playerDeck){
-                        card.y -= 100
+                        card.y -= 170
                     }
                     inside = true    
                 }
@@ -95,7 +99,7 @@ class Card{
                 cardsBox.color = 100
 
                 for(let card of playerDeck){
-                    card.y += 100
+                    card.y += 170
                 }
             }
                 
@@ -103,7 +107,7 @@ class Card{
         }
     }
     static drawCardsBox(){
-        fill(cardsBox.color)
-        rect(cardsBox.x,cardsBox.y,cardsBox.width,cardsBox.height)
+        //fill(cardsBox.color)
+        //rect(cardsBox.x,cardsBox.y,cardsBox.width,cardsBox.height)
     }
 }
