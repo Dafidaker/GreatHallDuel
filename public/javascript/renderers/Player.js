@@ -27,6 +27,8 @@ class Player {
             rect((canvasWidth * 0.8) ,(canvasHeight * 0.79),(canvasWidth * 0.18),(canvasHeight * 0.18))
             noStroke()
             textSize(20)
+            fill(255)
+            text(this.name,(canvasWidth * 0.8)  ,(canvasHeight * 0.78))
             fill(0, 153, 15)
             text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.8) +10 ,(canvasHeight * 0.84) )
             fill(0, 175, 235)
@@ -52,6 +54,8 @@ class Player {
             rect((canvasWidth * 0.1) ,(canvasHeight * 0.05),(canvasWidth * 0.18),(canvasHeight * 0.18))
             noStroke()
             textSize(20)
+            fill(0,0,0)
+            text(this.name,(canvasWidth * 0.1)  ,(canvasHeight * 0.04))
             fill(0, 153, 15)
             text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.09) )
             fill(0, 175, 235)
@@ -77,11 +81,11 @@ class Player {
                 //return false 
             }
     }
-    update(position,mana,x,y,health,totalMana,energy){
-        this.tileIndex = position ;
+    update(mana,health,totalMana,energy){
+        //this.tileIndex = position ;
         this.mana = mana;
-        this.x = x ;
-        this.y = y ;
+        //this.x = x ;
+        //this.y = y ;
         this.health = health;
         this.totalMana = totalMana;
         this.energy = energy;

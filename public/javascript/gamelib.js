@@ -100,13 +100,6 @@ function InicialInformation() {
     getplayerdeck(player_id) // gets the deck from one player 
     getplayersposition(player_id) // gets position from both players 
     GameState= MyRoundState
-    
-     /* if(playerif.num == Round.State ){
-        GameState= MyRoundState
-    }else if (playerif.num != Round.State ){
-        GameState= EnemyState
-    }   */
-    //GetPlays()
 
 }
 
@@ -199,23 +192,19 @@ async function createPlayers(){
 async function updatePlayers(){
     let playerif =  (await getplayerinformation()).playerif
     let enemyif =  (await getplayerinformation()).enemyif
-    let playerPos = await receiveObject(boardTiles, playerif.position)
-    let enemyPos = await receiveObject(boardTiles, enemyif.position)
+    //let playerPos = await receiveObject(boardTiles, playerif.position)
+    //let enemyPos = await receiveObject(boardTiles, enemyif.position)
 
     print('update players ')
     for(let player of playerInfo){
-        player.update(playerif.position,
-                        playerif.mana,
-                        playerPos.x,playerPos.y,
+        player.update(playerif.mana,
                         playerif.health,playerif.mana_total,
                         playerif.energy)
     }
 
 
     for(let enemy of enemyInfo){
-        enemy.update(enemyif.position,
-                        enemyif.mana,
-                        enemyPos.x,enemyPos.y,
+        enemy.update(enemyif.mana,
                         enemyif.health,enemyif.mana_total,
                         enemyif.energy)
     }
@@ -443,20 +432,51 @@ function highlightClickable(object){
     //creates tables of nº rows and columns where the tiles are clicable
     let rows = []
     let columns = []
+    let diagonal = []
     
     
-    for (i = range ; i > 0 ; i--){
+    for (i = 1 ; i < range+1 ; i++){
         rows.push (inicialRow + i)
         rows.push (inicialRow - i)
 
 
         columns.push(inicialColumn + i)
         columns.push(inicialColumn - i)
+
+        diagonal.push({row: inicialRow + i , column: inicialColumn + i})
+        diagonal.push({row: inicialRow + i , column: inicialColumn - i })
+
+
+        diagonal.push({row: inicialRow - i , column: inicialColumn + i })
+        diagonal.push({row: inicialRow - i , column: inicialColumn - i })
+
+
     }
 
     //set the 'clickcable tiles' as highlighted
-    if(type == 4) {
+    if(type == 4  ) {
         for(let tile of boardTiles){
+            if(tile.column == inicialColumn){
+                for(let possibleRow of rows){
+                    if(tile.row == possibleRow) tile.highlighted = true 
+                }
+            }
+
+            if(tile.row == inicialRow){
+                for(let possiblecolumn of columns){
+                    if(tile.column == possiblecolumn) tile.highlighted = true 
+                }
+            }
+        } 
+    }
+
+    if(type == 8){
+        for(let tile of boardTiles){
+
+            for(let possiblediagonal of diagonal){
+                if((tile.row == possiblediagonal.row) && (tile.column == possiblediagonal.column)) tile.highlighted = true 
+            }
+
             if(tile.column == inicialColumn){
                 for(let possibleRow of rows){
                     if(tile.row == possibleRow) tile.highlighted = true 
@@ -490,8 +510,7 @@ function makePlay() {
                 playerInfo[0].mana,
                 playerInfo[0].energy)
             useCard(selectedCard,selectedTile)
-            
-
+        
         }
 
     }else if (gameState == movingState){
