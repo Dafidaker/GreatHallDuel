@@ -11,14 +11,12 @@ var auth = require("../models/authentication")
     res.status(result.status).send(result.result);
   })  
 
-  router.get('/round_number/:player_id', auth.checkAuthentication, async function( req, res) {
-    console.log('routes');
-    let playerid = req.params.player_id
+  router.get('/round_number',  auth.checkAuthentication,  async function( req, res) {
     let result = await rModel.get_round(req.userId);
     res.status(result.status).send(result.result);
   })  
 
-  router.post('/next_round', auth.checkAuthentication, async function( req, res) {    
+  router.post('/next_round',  auth.checkAuthentication,  async function( req, res) {    
     let result = await rModel.next_round(req.userId);
     res.status(result.status).send(result.result);
   })  

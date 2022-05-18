@@ -23,10 +23,10 @@ async function ChangeRound_Num_State(room_num,newroundnum,newstate) {
     }
 }
 
-async function getBattleRound(player_id) {
+async function getBattleRound() {
     try {
         //console.log('request');
-        const response = await fetch(`api/round/round_number/${player_id}`);
+        const response = await fetch(`api/round/round_number`);
         if (response.status == 200) {
             //console.log('request 2');
             let battleRound = await response.json();

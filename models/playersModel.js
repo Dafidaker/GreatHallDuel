@@ -61,7 +61,7 @@ module.exports.loginCheck = async function (name,password) {
               WHERE player_id = $5`;
   
         let result = await pool.query(sql,[ply_health,ply_mana,ply_total_mana,ply_energy,ply_id]);
-        console.log(result.rows);
+        //console.log(result.rows);
         return {status:200 , result : result};
       } catch(err) {
         console.log(err);
@@ -76,7 +76,7 @@ module.exports.loginCheck = async function (name,password) {
     where player_room_id = (select room_num  from room where room_player_id = $1)`
       try{
         let result = await pool.query(sql,[player_id])
-        console.log(result.rows);
+        //console.log(result.rows);
         
 
 
@@ -114,7 +114,7 @@ module.exports.loginCheck = async function (name,password) {
            WHERE player_id = $2`;
     try{
       let result = await pool.query(sql,[player_tile,ply_id]);
-      console.log(result.rows);
+      //console.log(result.rows);
       return {status:200 , result : result};
     } catch(err) {
       console.log(err);
@@ -142,7 +142,7 @@ module.exports.loginCheck = async function (name,password) {
 
     try{
       let result = await pool.query(sql,[playerid]);
-      console.log(result.rows);
+      //console.log(result.rows);
       return {status:200 , result : result};
     } catch(err) {
       console.log(err);

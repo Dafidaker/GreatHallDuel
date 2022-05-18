@@ -32,6 +32,8 @@ let dogicaPixel
 let dogicaPixelBold
 
 let backgroundImg
+let backgroundImgEnemyState
+
 
 
 function preload() {
@@ -41,6 +43,8 @@ function preload() {
     dogicaPixelBold = loadFont('assets/dogicapixelbold.otf')
 
     backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
+    backgroundImgEnemyState = loadImage('assets/images/Backgrounds/basic.png')
+
     
 }
 
@@ -49,17 +53,27 @@ async function Reset(){
     SetInicialState()
 }
 
+async function AddMana(){
+    ChangePlayerInfo(1,20,4,4,3)
+    ChangePlayerInfo(2,20,4,4,3)
+}
+
 async function getRoundState(){
-    await getBattleRound(1)
+    await getBattleRound()
     if(Round.PlayerState == 2){
         if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState ){
             return
         }else{
             gameState = myRoundState
+            updatePlayers()
         }
         
     }else if (Round.PlayerState == 1){
         gameState =  enemyState
+    }
+
+    for(let hud of hudTable){
+        hud.text = Round.String
     }
 
 }
@@ -81,7 +95,7 @@ function SetInicialState() {
 }
 
 function InicialInformation() {
-    getBattleRound(player_id) //Gets the round number and state as a nice string
+    getBattleRound() //Gets the round number and state as a nice string
     getplayerinformation(player_id) // gets all the information from one player , 
     getplayerdeck(player_id) // gets the deck from one player 
     getplayersposition(player_id) // gets position from both players 
@@ -137,12 +151,13 @@ async function createDeck(){
 }
 
 async function createHud(){
-    roundinfo = await getBattleRound(1)
+    roundinfo = await getBattleRound()
 
     hudTable=[]
     hudTable.push(new Hud(0.5 , 0.1 , 700 , 100,'info' ,'placeholder',roundinfo.Round.String))
 
 }
+
 
 async function createButtons(){
     buttonTable =[]
@@ -231,7 +246,12 @@ function createboard(){
 
 function draw() {
     background(220); 
-    image(backgroundImg,0,0)
+    if(gameState == enemyState){
+        image(backgroundImgEnemyState,0,0)
+    }else{
+      image(backgroundImg,0,0)  
+    }
+    
     scale(1)
     
     textSize(20)
@@ -267,10 +287,12 @@ function draw() {
 }
 
 function mouseMoved(){
-    Card.mouseMoved(mouseX,mouseY)
+    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
+        Card.mouseMoved(mouseX,mouseY)
 
-    for(let button of buttonTable){
-        button.mouseMoved(mouseX,mouseY)
+        for(let button of buttonTable){
+            button.mouseMoved(mouseX,mouseY)
+        }
     }
 }
 
@@ -467,6 +489,7 @@ function makePlay() {
                 playerInfo[0].totalMana,
                 playerInfo[0].mana,
                 playerInfo[0].energy)
+            useCard(selectedCard,selectedTile)
             
 
         }

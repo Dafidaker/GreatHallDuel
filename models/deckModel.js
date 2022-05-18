@@ -70,3 +70,35 @@ module.exports.get_cards = async function(){
       return { status: 500, result: err }
     }
 }
+
+module.exports.use_card = async function(player_id,card, tile){
+    try{
+      //get enemy id 
+      let getsql =`select room_player_id from room
+      where room_num = (select room_num as num from room where room_player_id = $1 ) and room_player_id != $1 `;
+
+      let result = await pool.query(getsql,[player_id]);
+
+      let getsql1 = `select player_tile_id , player_health from player
+      where player_id = $1 `;
+
+      let result1 = await pool.query(getsql1,[result.rows[0].room_player_id]);
+
+      if(card.id == 4 && tile.id == [result1.rows[0].player_tile_id]){
+        result1.rows[0].player_health -= 4
+      }
+
+       let getsql2 = `UPDATE player
+                    SET player_health = $1 
+                    WHERE player_id = $2`
+
+      await pool.query(getsql2,[result1.rows[0].player_health,result.rows[0].room_player_id]); 
+
+    return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result:err };
+  }
+
+
+}

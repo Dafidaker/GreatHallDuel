@@ -32,4 +32,12 @@ router.get('/get_cards', async function( req, res, next) {
     
 });
 
+router.post('/use_card',auth.checkAuthentication, async function( req, res, next) {
+    console.log("change state of card ");
+    let card = req.body.card;
+    let tile = req.body.tile;
+    let result = await dModel.use_card(req.userId,card, tile);
+    res.status(result.status).send(result.result);
+});
+
 module.exports = router;

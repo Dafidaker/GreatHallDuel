@@ -97,3 +97,27 @@ async function getallcards() {
         console.log(err);
     }
 } 
+
+async function useCard(card,tile){
+    try {
+        const response = await fetch('api/deck/use_card',
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
+            body:JSON.stringify({card:card, tile:tile }) 
+        });
+        if (response.status == 200) {
+            //getBattleRound()
+           var  result= await response.json();
+           print(result);
+        } else {
+            // Treat errors like 404 here
+            console.log(response);
+        }
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+}

@@ -41,14 +41,14 @@ class Button{
            if(x > (this.x - this.width/2) && x < (this.x + this.width/2) &&
             y > (this.y - this.height/2) && y < (this.y + this.height/2)){
                 print(this.text + 'clicked')
-                if(this.text == 'End Turn'){
-                    ChangeRound_Num_State(RoomNum,Round.Number + 1 ,Round.State)
-                }
+                
             } 
         }else{
             if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
-                print(this.text + 'clicked')
+                if(this.text == 'End Turn'){
+                    nextRound()
+                }
             }
         }
         
