@@ -23,17 +23,18 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
                 from room , battle_states
                 where room_player_id = $1 and room_state_id = state_id `  ;
       try{
-        console.log('model');
         let result = await pool.query(sql,[playerid]);
-        console.log(result.rows);
-        return { status: 200, result: result.rows};
+        if(result.rows.length == 0){
+          return { status: 400, result: { msg: "That player is not on a match" } };
+        }
+        return { status: 200, result: result.rows[0]};
       } catch(err) {
         console.log(err);
         return { status: 500, result: err};
       }
   }
 
-  module.exports.next_round = async function(player_id) {
+  module.exports.end_round = async function(player_id) {
     try{
       let getsql =`select room_player_id,room_round_number from room
       where room_num = (select room_num as num from room where room_player_id = $1 ) and room_player_id != $1 `;
@@ -55,8 +56,8 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
                     room_round_number = $1
                     WHERE room_player_id = $2`
                     
-      /* let result1 =  */await pool.query(updatesql,[player_id,result.rows[0].room_round_number]);
-      /* let result2 =  */await pool.query(updatesql1,[result.rows[0].room_round_number,result.rows[0].room_player_id]); 
+      await pool.query(updatesql,[player_id,result.rows[0].room_round_number]);
+      await pool.query(updatesql1,[result.rows[0].room_round_number,result.rows[0].room_player_id]); 
 
 
 
@@ -76,7 +77,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
                     player_energy = $3
                     WHERE player_id = $1`
 
-      /* let player1 =  */await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
+      await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
 
       
 

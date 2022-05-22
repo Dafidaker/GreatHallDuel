@@ -1,4 +1,7 @@
 var pool = require('./connection.js')
+
+var dModel = require("../models/deckModel");
+var rModel = require("../models/roundModel");
     
 module.exports.loginCheck = async function (name,password) {
     try {
@@ -10,7 +13,7 @@ module.exports.loginCheck = async function (name,password) {
           return { status: 401, result: {msg: "Wrong password or username."}}
       }
       let ply_id = result.rows[0].player_id;
-      console.log(ply_id);
+      //console.log(ply_id);
       return { status: 200, result: {msg: "Login correct", userId : ply_id} };
     } catch (err) {
       console.log(err);
@@ -20,7 +23,7 @@ module.exports.loginCheck = async function (name,password) {
 
   module.exports.getLoggedUserInfo = async function (playerId) {
     try {
-        let sql = `select player_name from player where ply_id = $1`;
+        let sql = `select player_name from player where player_id = $1`;
         let result = await pool.query(sql, [playerId]);
         if (result.rows.length > 0) {
             let player = result.rows[0];
@@ -69,7 +72,7 @@ module.exports.loginCheck = async function (name,password) {
       }
   }
 
-
+//gets information for both player and enemy 
    module.exports.get_player_info =  async function(player_id) {
     let sql = `select distinct(player_name ), player_id  , player_mana , player_total_mana , player_energy , player_health , player_num , player_tile_id
     from player, room  
@@ -78,9 +81,24 @@ module.exports.loginCheck = async function (name,password) {
         let result = await pool.query(sql,[player_id])
         //console.log(result.rows);
         
-
-
+    
         return {status:200 , result: { result:result.rows,  player_id: player_id } };
+      } catch(err) {
+        console.log(err);
+        return {status:500 , result : err};
+      }
+  } 
+
+//gets information for just the player and enemy
+  module.exports.getPlayerInfo =  async function(player_id) {
+    let sql = `select * from player  
+    where player_id = $1`
+      try{
+        let result = await pool.query(sql,[player_id])
+        console.log(result.rows);
+        
+    
+        return {status:200 , result: result.rows} ;
       } catch(err) {
         console.log(err);
         return {status:500 , result : err};
@@ -99,8 +117,9 @@ module.exports.loginCheck = async function (name,password) {
                     where room_num = the_room and player_id = room_player_id and player_id != $1`
       try{
         let resultPlayer = await pool.query(sqlPlayer,[playerid])
+        
         let resultEnemy = await pool.query(sqlEnemy,[playerid])
-        //console.log(result.rows);
+  
         return {status:200 , result:{ player : resultPlayer.rows , enemy : resultEnemy.rows , playerid:playerid }};
       } catch(err) {
         console.log(err);
@@ -108,12 +127,12 @@ module.exports.loginCheck = async function (name,password) {
       }
   }
 
-  module.exports.player_location_change = async function(player_tile, ply_id) {
+  module.exports.player_location_change = async function(player_id,player_tile) {
     sql = `UPDATE player
            SET player_tile_id = $1
            WHERE player_id = $2`;
     try{
-      let result = await pool.query(sql,[player_tile,ply_id]);
+      let result = await pool.query(sql,[player_tile,player_id]);
       //console.log(result.rows);
       return {status:200 , result : result};
     } catch(err) {
@@ -148,4 +167,189 @@ module.exports.loginCheck = async function (name,password) {
       console.log(err);
       return {status:500 , result : err};
     }
+}
+
+
+module.exports.playCard = async function(player_id,card,tile) {
+  try{
+   //get enemy id 
+   
+  let getsql =`select room_player_id from room
+  where room_num = (select room_num as num from room where room_player_id = $1 ) and room_player_id != $1 `;
+
+  let result = await pool.query(getsql,[player_id]);
+  let enemyId = result.rows[0]
+
+ //gets enemy´s and player's information 
+  let result1 = await this.getPlayerInfo(enemyId.room_player_id);
+  let enemy = result1.result[0]
+
+  result1 = await this.getPlayerInfo(player_id);
+  let player = result1.result[0]
+
+  //check if he player selected a tile he could   
+
+  
+
+  //get the card
+  result = await dModel.get_deck_card(player_id,card.id) 
+  let cardPlayed = result.result[0]
+  
+  if(cardPlayed.deck_card_state_id == 1) await this.card_logic(player,cardPlayed,tile,enemy);
+
+  
+  return { status: 200, result: {msm:"The card was played"} };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
+}
+
+module.exports.card_logic = async function(player,card,tile,enemy){
+  if(card.card_id == 4){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 4 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+    } 
+  }
+
+
+  // updating the players enemys and cards information  
+  this.player_information_change(player.player_health,
+                                  player.player_mana,
+                                  player.player_total_mana,
+                                  player.player_energy,
+                                  player.player_id)
+
+  this.player_location_change(player.player_id,player.player_tile_id)
+
+  this.player_information_change(enemy.player_health,
+                                  enemy.player_mana,
+                                  enemy.player_total_mana,
+                                  enemy.player_energy,
+                                  enemy.player_id)
+                                  
+  this.player_location_change(enemy.player_id,enemy.player_tile_id)
+
+  dModel.deck_card_state_change(player.player_id, card.card_id, card.deck_card_state_id)
+}
+
+module.exports.checkSelectedTile = async function(playerTile , boardTiles , selectedTile ,range ,type){
+  //get player position
+  
+  for(let tile of boardTiles){
+    if(tile.tile_id == playerTile) playerTile = tile 
+  }
+
+  let inicialRow = playerTile.tile_row
+  let inicialColumn = playerTile.tile_column
+
+
+  //creates tables of nº rows and columns where the tiles are clicable
+  let rows = []
+  let columns = []
+  let diagonal = []
+  
+  
+  for (i = 1 ; i < range+1 ; i++){
+      rows.push (inicialRow + i)
+      rows.push (inicialRow - i)
+
+
+      columns.push(inicialColumn + i)
+      columns.push(inicialColumn - i)
+
+      if(range == 8){
+        diagonal.push({row: inicialRow + i , column: inicialColumn + i})
+        diagonal.push({row: inicialRow + i , column: inicialColumn - i })
+
+
+        diagonal.push({row: inicialRow - i , column: inicialColumn + i })
+        diagonal.push({row: inicialRow - i , column: inicialColumn - i })
+      }
+      
+
+  }
+
+  //see if the tile is 'permited'
+  if(type == 4) {
+      if(selectedTile.column == inicialColumn){
+          for(let possibleRow of rows){
+              if(selectedTile.row == possibleRow) return true
+          }
+      }
+
+      if(selectedTile.row == inicialRow){
+          for(let possiblecolumn of columns){
+              if(selectedTile.column == possiblecolumn)  return true
+          }
+      }
+  }
+
+  if(type == 8){
+     
+      for(let possiblediagonal of diagonal){
+          if((selectedTile.row == possiblediagonal.row) && (selectedTile.column == possiblediagonal.column)) return true
+      }
+
+      if(selectedTile.column == inicialColumn){
+          for(let possibleRow of rows){
+              if(selectedTile.row == possibleRow) return true
+          }
+      }
+
+      if(selectedTile.row == inicialRow){
+          for(let possiblecolumn of columns){
+              if(selectedTile.column == possiblecolumn) return true
+          }
+      }
+  } 
+  
+
+}
+
+
+module.exports.move = async function(player_id,tile) {
+  try{
+    
+    //check the energy and tile of the player 
+
+    let resultplayer = await this.getPlayerInfo(player_id)
+
+    let player = resultplayer.result[0]
+
+    let getSql = `select * from tile`
+    
+    let result= await pool.query(getSql)
+
+    let boardTiles = result.rows
+
+    //check if the tile that is passed is possible
+    if( (this.checkSelectedTile(player.player_tile_id, boardTiles,tile,1,4))  && player.player_energy > 0 ){
+      //If everthing is correct 
+      await this.player_location_change(player_id,tile.id)
+      player.player_energy -= 1
+      await this.player_information_change(player.player_health,player.player_mana,player.player_total_mana,player.player_energy,player.player_id)
+      return { status: 200, result : { msg:"Player moved" } };
+
+    }else{
+      return { status: 400, result : { msg:"Player isnt able to move there" }};
+    }
+
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
+}
+
+
+module.exports.basicAttack = async function(player_id,tile) {
+  try{
+   
+ return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
 }

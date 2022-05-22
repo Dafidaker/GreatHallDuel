@@ -81,14 +81,16 @@ class Player {
                 //return false 
             }
     }
-    update(mana,health,totalMana,energy){
-        //this.tileIndex = position ;
+    updateInfo(mana,health,totalMana,energy){
         this.mana = mana;
-        //this.x = x ;
-        //this.y = y ;
         this.health = health;
         this.totalMana = totalMana;
         this.energy = energy;
 
+    }
+    updatePosition(position,x,y){
+        this.tileIndex = position ;
+        this.x = x ;
+        this.y = y ;
     }
 }

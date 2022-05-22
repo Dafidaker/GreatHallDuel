@@ -8,6 +8,8 @@ var playerDeck = []
 
 var boardTiles = []
 
+
+
 var gameState = 0
 const basicState = 0
 const myRoundState = 1
@@ -15,6 +17,8 @@ const myRoundState = 1
     const playingCardState = 1.2
 const enemyState = 2
     const counterState = 2.1
+
+
 
 let selectedCard
 let selectedPlayer
@@ -65,11 +69,13 @@ async function getRoundState(){
             return
         }else{
             gameState = myRoundState
+            cursor(ARROW)
             updatePlayers()
         }
         
     }else if (Round.PlayerState == 1){
         gameState =  enemyState
+        cursor('not-allowed')
     }
 
     for(let hud of hudTable){
@@ -107,6 +113,7 @@ async function setup() {
     noLoop();
     let canvas = createCanvas(canvasWidth, canvasHeight);
     canvas.parent('game');
+    cursor(WAIT)
     textFont(dogicaPixel)  
     createboard()
     await createButtons()
@@ -121,10 +128,11 @@ async function setup() {
 
 async function updateGame(){
     await getRoundState()
+    updatePlayers();
     
-    if(gameState == enemyState){
+    /* if(gameState == enemyState){
        updatePlayers(); 
-    } 
+    }  */
     
     
 }
@@ -192,24 +200,38 @@ async function createPlayers(){
 async function updatePlayers(){
     let playerif =  (await getplayerinformation()).playerif
     let enemyif =  (await getplayerinformation()).enemyif
-    //let playerPos = await receiveObject(boardTiles, playerif.position)
-    //let enemyPos = await receiveObject(boardTiles, enemyif.position)
+    let playerPos = await receiveObject(boardTiles, playerif.position)
+    let enemyPos = await receiveObject(boardTiles, enemyif.position)
 
     print('update players ')
     for(let player of playerInfo){
-        player.update(playerif.mana,
+        player.updateInfo(playerif.mana,
                         playerif.health,playerif.mana_total,
                         playerif.energy)
+
+        if(gameState == enemyState){
+            player.updatePosition(playerif.position,
+                                    playerPos.x , playerPos.y) 
+        }
+    
+
     }
 
-
+    
     for(let enemy of enemyInfo){
-        enemy.update(enemyif.mana,
+        enemy.updateInfo(enemyif.mana,
                         enemyif.health,enemyif.mana_total,
                         enemyif.energy)
+
+
+        if(gameState == enemyState){
+            enemy.updatePosition(enemyif.position,
+                                    enemyPos.x , enemyPos.y) 
+        }
     }
-   
 }
+    
+   
 
 function createboard(){
     let YOffSet = 400 
@@ -454,7 +476,7 @@ function highlightClickable(object){
     }
 
     //set the 'clickcable tiles' as highlighted
-    if(type == 4  ) {
+    if(type == 4) {
         for(let tile of boardTiles){
             if(tile.column == inicialColumn){
                 for(let possibleRow of rows){
@@ -503,13 +525,14 @@ function makePlay() {
             selectedCard.x = null 
             selectedCard.y = null 
             selectedCard.state = 2  
-            ChangeCardState(playerInfo[0].id,selectedCard.id,selectedCard.state)
+            /* ChangeCardState(playerInfo[0].id,selectedCard.id,selectedCard.state)
             ChangePlayerInfo(playerInfo[0].id,
                 playerInfo[0].health,
                 playerInfo[0].totalMana,
                 playerInfo[0].mana,
-                playerInfo[0].energy)
-            useCard(selectedCard,selectedTile)
+                playerInfo[0].energy) */
+            //useCard(selectedCard,selectedTile)
+            requestPlayCard(selectedCard,selectedTile)
         
         }
 
@@ -523,13 +546,14 @@ function makePlay() {
             playerInfo[0].energy -= 1
             playerInfo[0].tileIndex = selectedTile.id
             playerInfo[0].selected = true
-            ChangePlayerInfo(playerInfo[0].id,
+            /* ChangePlayerInfo(playerInfo[0].id,
                             playerInfo[0].health,
                             playerInfo[0].totalMana,
                             playerInfo[0].mana,
                             playerInfo[0].energy)
-            ChangePlayerPosition(playerInfo[0].id,selectedTile.id)
+            ChangePlayerPosition(playerInfo[0].id,selectedTile.id) */
             updatePosPlayers()  
+            requestMove(selectedTile)
 
         }  else if (playerInfo[0].energy == 0){
             alert('Not enough energy')

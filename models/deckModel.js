@@ -13,6 +13,21 @@ module.exports.get_deck = async function(playerid){
       }
   }
 
+  module.exports.get_deck_card = async function(playerid,card){
+    let sql = `select  *
+    from deck ,card  
+    where deck_player_id = $1 and 
+    deck_card_id = $2 and card_id = deck_card_id  `;
+      try{
+        let result = await pool.query(sql,[playerid,card]);
+        console.log(result.rows);
+        return { status: 200, result: result.rows }
+      } catch(err) {
+        console.log(err);
+        return { status: 500, result:err }
+      }
+  }
+
   module.exports.deck_card_state_change = async function(ply_id, card_id, card_state_id) {
     try{
       sql = `UPDATE deck
@@ -71,6 +86,18 @@ module.exports.get_cards = async function(){
     }
 }
 
+module.exports.get_a_card = async function(id){
+  let sql = 'select * from card where card_id = $1';
+    try{
+      let result = await pool.query(sql,[id]);
+      console.log(result.rows);
+      return { status: 200, result: result.rows }
+    } catch(err) {
+      console.log(err);
+      return { status: 500, result: err }
+    }
+}
+
 module.exports.use_card = async function(player_id,card, tile){
     try{
       //get enemy id 
@@ -99,6 +126,24 @@ module.exports.use_card = async function(player_id,card, tile){
     console.log(err);
     return { status: 500, result:err };
   }
+}
 
+module.exports.drawCard = async function(player_id) {
+  try{
+   
+  //return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
+}
 
+module.exports.discardCard = async function(player_id) {
+  try{
+   
+  //return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
 }

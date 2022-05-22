@@ -34,8 +34,8 @@ async function getplayerinformation() {
                 var playerindex = 1
                 var enemyindex = 0
             }
-                console.log('playerindex' + playerindex)
-                console.log('enemyindex' + enemyindex)
+                /* console.log('playerindex' + playerindex)
+                console.log('enemyindex' + enemyindex) */
 
            
             let playerif = {
@@ -225,3 +225,46 @@ async function login(name, password) {
     }
 }
 
+async function requestAction(data) {
+    try {
+        const response = await fetch(`/api/players/action`, 
+        {
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+          method: "POST",
+          body: JSON.stringify(data)
+        });
+        var result = await response.json();
+        // We are not checking for errors (considering the GUI is only allowing correct choices)
+        return result;
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+}
+
+async function requestEndTurn() {
+    return await requestAction({action: "endTurn"});
+}
+
+async function requestPlayCard(card,tile) {
+    return await requestAction({card: card, tile: tile, action:"playCard"});
+}        
+
+async function requestMove(tile) {
+    return await requestAction({tile: tile, action: "move"});
+}        
+
+async function requestDrawCard() {
+    return await requestAction({action: "drawCard"});
+}
+
+async function requestDiscardCard() {
+    return await requestAction({action: "discardCard"});
+}
+
+async function requestBasicAttack(tile) {
+    return await requestAction({tile: tile , action: "basicAttack"});
+}

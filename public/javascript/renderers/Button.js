@@ -47,7 +47,8 @@ class Button{
             if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
                 if(this.text == 'End Turn'){
-                    nextRound()
+                    //nextRound()
+                    requestEndTurn()
                 }
             }
         }

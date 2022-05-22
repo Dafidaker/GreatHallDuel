@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var pModel = require("../models/playersModel");
+var rModel = require("../models/roundModel");
+var dModel = require("../models/deckModel");
 var auth = require("../models/authentication")
 
 
@@ -46,7 +48,7 @@ router.post('/player_information_change', async function(req, res, next) {
     let ply_energy = req.body.ply_energy;
     let ply_id = req.body.ply_id
     let result = await pModel.player_information_change(ply_health,ply_mana,ply_total_mana,ply_energy,ply_id);
-    console.log('result' + result)
+    //console.log('result' + result)
     res.status(result.status).send(result.result);
 });
 
@@ -54,7 +56,7 @@ router.get('/player_info',auth.checkAuthentication, async function( req, res) {
   //console.log("Get Player Info") 
   //console.log(req.userId)
     let result = await pModel.get_player_info(req.userId);
-    console.log('result' + JSON.stringify(result.result))
+    //console.log('result' + JSON.stringify(result.result))
     res.status(result.status).send(result.result);
   })
 
@@ -68,7 +70,7 @@ router.get('/player_info',auth.checkAuthentication, async function( req, res) {
 router.get('/player_tile',auth.checkAuthentication, async function( req, res) {
     console.log("Get Player position/tile") 
     let result = await pModel.player_tile(req.userId);
-    console.log('Tile result' + JSON.stringify(result.result.player))
+    //console.log('Tile result' + JSON.stringify(result.result.player))
     res.status(result.status).send(result);
   }) 
 
@@ -76,7 +78,7 @@ router.post('/player_location_change', async function( req, res) {
     console.log("Change Player position/tile") 
     let player_tile = req.body.player_tile;
     let ply_id = req.body.ply_id
-    let result = await pModel.player_location_change(player_tile,ply_id);
+    let result = await pModel.player_location_change(ply_id,player_tile);
     res.status(result.status).send(result.result);
   }) 
 
@@ -100,35 +102,49 @@ router.get('/getplays/:playerid', async function( req, res) {
     res.status(result.status).send(result.result);
   })
 
- /*  router.post('/:pId/playermatches/:pmId/actions', async function(req, res, next) {
-    let pId = req.params.pId;
-    let pmId = req.params.pmId;
+router.post('/action',auth.checkAuthentication, async function(req, res, next) {
     let action = req.body.action;
+    let player_id = req.userId
     console.log("Player action: "+ action);
-    let resMatch = await pModel.getMatchOfPlayer(pmId);
+    let resMatch = await rModel.get_round(req.userId);
     if (resMatch.status != 200)
       res.status(result.status).send(result.result);  
-    else if (resMatch.result.mt_finished)
+    else if (resMatch.result.room_player_state_id == 4)
       res.status(423).send({msg: "That match has already finished"});
-    else if (action == "endturn" ) {
-      let result = await pModel.endTurn(pmId);
+    else if (resMatch.result.room_player_state_id == 1){
+      res.status(400).send({msg: "It isn`t the player`s turn"});
+    
+    }else if (action == "endTurn"){
+      let result = await rModel.end_round(req.userId);
       res.status(result.status).send(result.result);
-    } else if (action == "attackCard") {
-      let dId = req.body.deckId;
-      let opDId = req.body.opDeckId;
-      let result = await pModel.attackCard(pmId,dId,opDId);
+    
+    } else if (action == "playCard"){
+      let card = req.body.card;
+      let tile = req.body.tile;
+      let result = await pModel.playCard(player_id,card,tile);
       res.status(result.status).send(result.result);  
-    } else if (action == "play") {
-      let dId = req.body.deckId;
-      let result = await pModel.playCardFromHand(pmId,dId);
+    
+    } else if (action == "move") {
+      let tile = req.body.tile;
+      let result = await pModel.move(player_id,tile);
       res.status(result.status).send(result.result);
-    } else  if (action == "attackPlayer") {
-      let dId = req.body.deckId;
-      let result = await pModel.attackPlayer(pmId,dId);
+    
+    } else  if (action == "drawCard") {
+      let result = await dModel.drawCard(player_id);
       res.status(result.status).send(result.result);
+
+    } else  if (action == "discardCard") {
+      let result = await dModel.discardCard(player_id);
+      res.status(result.status).send(result.result);
+
+    } else  if (action == "basicAttack") {
+      let tile = req.body.tile;
+      let result = await pModel.basicAttack(player_id,tile);
+      res.status(result.status).send(result.result);
+
     } else
       res.status(400).send({msg:"Invalid action"}) 
-  }); */
+  }); 
 
 
 

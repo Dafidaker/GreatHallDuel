@@ -30,15 +30,15 @@ async function getBattleRound() {
         if (response.status == 200) {
             //console.log('request 2');
             let battleRound = await response.json();
-            //console.log(battleRound)
+            console.log(battleRound)
             
            Round = {
-                State :battleRound[0].room_state_id , 
-                Number : battleRound[0].room_round_number,
-                String : 'Turn ' + (battleRound[0].room_round_number) + ' - '  + (battleRound[0].state_name),
-                PlayerState: battleRound[0].room_player_state_id
+                State :battleRound.room_state_id , 
+                Number : battleRound.room_round_number,
+                String : 'Turn ' + (battleRound.room_round_number) + ' - '  + (battleRound.state_name),
+                PlayerState: battleRound.room_player_state_id
            }
-           RoomNum = battleRound[0].room_num   
+           RoomNum = battleRound.room_num   
 
            return {Round , RoomNum}; 
         } else {
