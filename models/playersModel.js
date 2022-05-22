@@ -175,7 +175,8 @@ module.exports.playCard = async function(player_id,card,tile) {
    //get enemy id 
    
   let getsql =`select room_player_id from room
-  where room_num = (select room_num as num from room where room_player_id = $1 ) and room_player_id != $1 `;
+  where room_num = (select room_num as num from room where room_player_id = $1 ) and 
+  room_player_id != $1 `;
 
   let result = await pool.query(getsql,[player_id]);
   let enemyId = result.rows[0]
@@ -187,16 +188,19 @@ module.exports.playCard = async function(player_id,card,tile) {
   result1 = await this.getPlayerInfo(player_id);
   let player = result1.result[0]
 
-  //check if he player selected a tile he could   
-
-  
-
   //get the card
   result = await dModel.get_deck_card(player_id,card.id) 
   let cardPlayed = result.result[0]
-  
-  if(cardPlayed.deck_card_state_id == 1) await this.card_logic(player,cardPlayed,tile,enemy);
 
+  if(cardPlayed.deck_card_state_id == 1){
+    if(await this.checkSelectedTile(player.player_tile_id,tile,cardPlayed.card_range,cardPlayed.card_type_range_id)){ //check if he player selected a tile he could 
+      if(cardPlayed.deck_card_state_id == 1) await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
+    }else{
+      return { status: 400, result: {msm:"the player can`t selected that tile"} };
+    }
+  }else{
+    return { status: 400, result: {msm:"the player can`t play a card that isn`t in his hand"} };
+  }
   
   return { status: 200, result: {msm:"The card was played"} };
   } catch(err) {
@@ -235,9 +239,12 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   dModel.deck_card_state_change(player.player_id, card.card_id, card.deck_card_state_id)
 }
 
-module.exports.checkSelectedTile = async function(playerTile , boardTiles , selectedTile ,range ,type){
+module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,range ,type){
   //get player position
-  
+  let getSql = `select * from tile`
+    let result= await pool.query(getSql)
+    let boardTiles = result.rows
+
   for(let tile of boardTiles){
     if(tile.tile_id == playerTile) playerTile = tile 
   }
@@ -319,14 +326,8 @@ module.exports.move = async function(player_id,tile) {
 
     let player = resultplayer.result[0]
 
-    let getSql = `select * from tile`
-    
-    let result= await pool.query(getSql)
-
-    let boardTiles = result.rows
-
     //check if the tile that is passed is possible
-    if( (this.checkSelectedTile(player.player_tile_id, boardTiles,tile,1,4))  && player.player_energy > 0 ){
+    if( (this.checkSelectedTile(player.player_tile_id,tile,1,4))  && player.player_energy > 0 ){
       //If everthing is correct 
       await this.player_location_change(player_id,tile.id)
       player.player_energy -= 1
