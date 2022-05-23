@@ -8,7 +8,8 @@ const cardsBox ={
     color: 100 
 }
 let inside = false
-const y = 1050
+const yMax = 1050
+const yMin = 880
 const spaceBetweenCards = 150 
 const cardsXOffset = 500 
 
@@ -18,8 +19,7 @@ class Card{
     constructor(name,id,selected,order,state,mana,range,type_range,type_cast) {
         this.width = cardWidth;
         this.height = cardHeight;
-        this.x = (order * spaceBetweenCards) + cardsXOffset ;
-        this.y = y; 
+        
         this.id = id;
         this.selected = selected;
         this.state = state;
@@ -29,6 +29,12 @@ class Card{
         this.type_range = type_range;
         this.type_cast = type_cast;
         this.name = name
+        
+        if(state == 1){
+            this.x = (order * spaceBetweenCards) + cardsXOffset ;
+            this.y = yMax;
+        }
+         
     }
     /*constructor(name,state){
         this.x = canvasx*0.5 ;
@@ -69,37 +75,60 @@ class Card{
         } */
     }
     getCard() { return this.card; }
+    update(state,order){
+        
+        if(order != this.order ){
+            this.y = yMax 
+        }
+
+        if(state != 1){
+            this.x = null ;
+        }else if( state == 1 ){
+            this.x = (order * spaceBetweenCards) + cardsXOffset ;
+        }
+        
+        this.state = state;
+        this.order = order ;
+    }
     click(x,y) {
         if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
-                this.selected = true
-                gameState = playingCardState 
-                //return true 
+                
+                if(gameState == discardCardState){
+                    requestDiscardCard(this)
+                }else{
+                   this.selected = true
+                    gameState = playingCardState  
+                }
+
             }else{
                 this.selected = false
-                //return false 
+                
             }
     }
 
     static mouseMoved(x,y){ 
         if(x > cardsBox.x && x < (cardsBox.x+cardsBox.width) &&
             y > cardsBox.y && y < (cardsBox.y+cardsBox.height)){
-                cardsBox.color = 200
+                
+                    cardsBox.color = 200
+
                 if(inside == false){
                     for(let card of playerDeck){
-                        card.y -= 170
+                        card.y = yMin
                     }
                     inside = true    
                 }
                 
         }else{
-            if(inside == true  ){
+            if(inside == true){
+                
                 inside = false
 
                 cardsBox.color = 100
 
                 for(let card of playerDeck){
-                    card.y += 170
+                    card.y = yMax
                 }
             }
                 

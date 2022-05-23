@@ -1,6 +1,6 @@
-async function getplayerdeck(player_id) {
+async function getplayerdeck() {
     try {
-        const response = await fetch(`/api/deck/get_deck/${player_id}`);
+        const response = await fetch(`/api/deck/get_deck`);
         if (response.status == 200) {
            var playerdeck = await response.json();
            //print(playerdeck);
@@ -56,15 +56,15 @@ async function ChangeCardState(id,card,newstate) {
     }
 }
 
-async function MakeDeck(player_id) {
+async function MakeDeck() {
     try {
-        const response = await fetch(`api/deck/makedeck/${player_id}`,
+        const response = await fetch(`api/deck/make_deck`,
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
               },
-            //body: JSON.stringify({ plyId: player_id}) 
+            body: null
         });
         if (response.status == 200) {
            var  result= await response.json();
@@ -110,6 +110,29 @@ async function useCard(card,tile){
         });
         if (response.status == 200) {
             //getBattleRound()
+           var  result= await response.json();
+           print(result);
+        } else {
+            // Treat errors like 404 here
+            console.log(response);
+        }
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+}
+
+async function destroyDeck() {
+    try {
+        const response = await fetch(`api/deck/destroy_deck`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
+            body: null
+        });
+        if (response.status == 200) {
            var  result= await response.json();
            print(result);
         } else {

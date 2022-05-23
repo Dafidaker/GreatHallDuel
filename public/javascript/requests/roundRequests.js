@@ -28,19 +28,23 @@ async function getBattleRound() {
         //console.log('request');
         const response = await fetch(`api/round/round_number`);
         if (response.status == 200) {
-            //console.log('request 2');
-            let battleRound = await response.json();
-            console.log(battleRound)
             
-           Round = {
-                State :battleRound.room_state_id , 
+            let battleRound = await response.json();
+            
+            Round = {
+                //State :battleRound.room_state_id , 
                 Number : battleRound.room_round_number,
-                String : 'Turn ' + (battleRound.room_round_number) + ' - '  + (battleRound.state_name),
-                PlayerState: battleRound.room_player_state_id
-           }
-           RoomNum = battleRound.room_num   
+                
+                String: {StringNum : 'Turn ' + (battleRound.room_round_number) ,
+                        StringState : (battleRound.player_name)  + '  ' +(battleRound.state_name)},
 
-           return {Round , RoomNum}; 
+                PlayerState: battleRound.room_player_state_id
+            }
+
+            //console.log(StringNum  + ' ' +StringState )
+            RoomNum = battleRound.room_num   
+
+            return {Round , RoomNum}; 
         } else {
             // Treat errors like 404 here
             console.log(response);

@@ -7,8 +7,8 @@ module.exports.loginCheck = async function (name,password) {
     try {
       let sql = `select player_id from player where player_name = $1 and player_password = $2`;
       let result = await pool.query(sql,[name,password]);
-      console.log(name)
-      console.log(password)
+      //console.log(name)
+      //console.log(password)
       if (result.rows.length == 0) {
           return { status: 401, result: {msg: "Wrong password or username."}}
       }
@@ -89,13 +89,13 @@ module.exports.loginCheck = async function (name,password) {
       }
   } 
 
-//gets information for just the player and enemy
+//gets information for just the player OR enemy
   module.exports.getPlayerInfo =  async function(player_id) {
     let sql = `select * from player  
     where player_id = $1`
       try{
         let result = await pool.query(sql,[player_id])
-        console.log(result.rows);
+        //console.log(result.rows);
         
     
         return {status:200 , result: result.rows} ;
@@ -192,10 +192,10 @@ module.exports.playCard = async function(player_id,card,tile) {
   result = await dModel.get_deck_card(player_id,card.id) 
   let cardPlayed = result.result[0]
 
-  if(cardPlayed.deck_card_state_id == 1){
-    if(await this.checkSelectedTile(player.player_tile_id,tile,cardPlayed.card_range,cardPlayed.card_type_range_id)){ //check if he player selected a tile he could 
-      if(cardPlayed.deck_card_state_id == 1) await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
-    }else{
+  if(cardPlayed.deck_card_state_id == 1 && player.player_mana >= cardPlayed.card_mana){
+    if(await this.checkSelectedTile(player.player_tile_id,tile, cardPlayed.card_range, cardPlayed.card_type_range_id)){ //check if he player selected a tile he could 
+       await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
+    }else{  
       return { status: 400, result: {msm:"the player can`t selected that tile"} };
     }
   }else{
@@ -213,12 +213,16 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 4){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
-      card.deck_card_state_id = 2 // state of the card becomes deck
     } 
+    
   }
-
-
+  if (card.card_id == 2){
+    
+  }
+ 
+ 
+  player.player_mana -= card.card_mana // removes the mana from player 
+  dModel.discardCard(player.player_id,card.card_id);
   // updating the players enemys and cards information  
   this.player_information_change(player.player_health,
                                   player.player_mana,
@@ -236,7 +240,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
                                   
   this.player_location_change(enemy.player_id,enemy.player_tile_id)
 
-  dModel.deck_card_state_change(player.player_id, card.card_id, card.deck_card_state_id)
 }
 
 module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,range ,type){

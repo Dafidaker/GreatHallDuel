@@ -9,7 +9,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
               WHERE room_num = $3`;
   
         let result = await pool.query(sql,[newroundnum,newstate,room_num]);
-        console.log(result.rows);
+        //console.log(result.rows);
         let round = result.rows[0]
         return { status: 200, result: round};
       } catch(err) {
@@ -19,9 +19,9 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
   }
 
   module.exports.get_round = async function(playerid) {
-    let sql = `select room_state_id ,room_num, room_round_number , state_name , room_player_state_id
-                from room , battle_states
-                where room_player_id = $1 and room_state_id = state_id `  ;
+    let sql = `select room_num, room_round_number , state_name , room_player_state_id , player_name
+    from room , battle_states , player
+    where room_player_id = $1 and room_player_state_id = state_id and room_player_id = player_id `  ;
       try{
         let result = await pool.query(sql,[playerid]);
         if(result.rows.length == 0){
@@ -43,7 +43,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       result.rows[0].room_round_number += 1
 
-      console.log(' 1111' + result.rows[0].room_round_number)
+      //console.log(' 1111' + result.rows[0].room_round_number)
 
       let updatesql=`UPDATE room
                     SET room_player_state_id = 1 , 
@@ -66,10 +66,14 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       let player = await pool.query(getsql1,[result.rows[0].room_player_id]);
 
-      player.rows[0].player_total_mana += 1
+      if(player.rows[0].player_total_mana >= 10){
+        player.rows[0].player_total_mana = 10
+      }else{
+        player.rows[0].player_total_mana += 1
+      } 
       player.rows[0].player_energy = 3
 
-      console.log('aaaaaaaaaaaaaaa ' + JSON.stringify(player.rows))
+      //console.log('aaaaaaaaaaaaaaa ' + JSON.stringify(player.rows))
 
       let getsql2 = `UPDATE player
                     SET player_total_mana = $2 , 
