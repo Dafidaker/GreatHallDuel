@@ -1,7 +1,7 @@
 body {
   background-color: rgb(255, 255, 255);
   color: rgb(34, 34, 34); 
-  height: 100vh;
+  height: 0vh; /*100*/
   margin:0;
   font-size: 1.2em;
   display: grid;
