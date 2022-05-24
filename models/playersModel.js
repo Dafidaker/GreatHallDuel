@@ -192,7 +192,7 @@ module.exports.playCard = async function(player_id,card,tile) {
   result = await dModel.get_deck_card(player_id,card.id) 
   let cardPlayed = result.result[0]
 
-  if(cardPlayed.deck_card_state_id == 1 && player.player_mana >= cardPlayed.card_mana){
+  if(cardPlayed.deck_card_state_id == 1 && player.player_mana >= cardPlayed.card_mana){ //checks if card is in the hand and if the player has the energy to play the card 
     if(await this.checkSelectedTile(player.player_tile_id,tile, cardPlayed.card_range, cardPlayed.card_type_range_id)){ //check if he player selected a tile he could 
        await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
     }else{  
@@ -212,26 +212,24 @@ module.exports.playCard = async function(player_id,card,tile) {
 module.exports.card_logic = async function(player,card,tile,enemy){
   //Layla Winifred Help
   if(card.card_id == 1){
-    player.player_mana -= card.card_mana // removes the mana from playe
     card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
   }
 
   //Barrel Roll
   if(card.card_id == 2){ 
-    if(tile.id == card.card_range){
-      player.player_mana -= card.card_mana // removes the mana from player
-      player.play_tile_id = tile.id // move player to tile
-      card.deck_card_state_id = 2 // state of the card becomes deck
-    } 
+    
+    player.player_tile_id = tile.id // move player to tile
+    
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
 
   //Shot Dart
   if(card.card_id == 3){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 1 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
-    } 
+    }
+     card.deck_card_state_id = 2 // state of the card becomes deck
   }
 
   //Dorugham Cobble
@@ -239,49 +237,49 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
     } 
-    
+    card.deck_card_state_id = 2
   }
 
   //Thomaz Osric Illusion
   if(card.card_id == 5){
     if(tile.id == enemy.player_tile_id){
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2
   }
 
-  //Fire Arrow
+  //Fire Arrow //  :)
   if(card.card_id == 6){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
 
   //Rain Song
   if(card.card_id == 7){
     if(tile.id == card.card_range){
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
    
   //Ice Arrow
   if(card.card_id == 8){
     if(tile.id == enemy.player_tile_id){
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Kazamir's Order
   if(card.card_id == 9){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Shield Up
@@ -294,9 +292,9 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 11){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Layla Winifred Command
@@ -315,16 +313,16 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 14){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Bellbroke Boulder
   if(card.card_id == 15){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
-      card.deck_card_state_id = 2 // state of the card becomes deck
     } 
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
 
   player.player_mana -= card.card_mana // removes the mana from player 
@@ -455,6 +453,43 @@ module.exports.move = async function(player_id,tile) {
 
 module.exports.basicAttack = async function(player_id,tile) {
   try{
+    //get enemy id 
+   
+    let getsql =`select room_player_id from room
+    where room_num = (select room_num as num from room where room_player_id = $1 ) and 
+    room_player_id != $1 `;
+
+    let result = await pool.query(getsql,[player_id]);
+    let enemyId = result.rows[0]
+
+  //gets enemy´s and player's information 
+    let result1 = await this.getPlayerInfo(enemyId.room_player_id);
+    let enemy = result1.result[0]
+
+    result1 = await this.getPlayerInfo(player_id);
+    let player = result1.result[0]
+
+    if(player.player_energy >= 1){
+      if(await this.checkSelectedTile(player.player_tile_id,tile, 1, 4)){  //check if he player selected a tile he could 
+        player.player_energy -= 1
+        enemy.player_health -= 1
+      }
+      
+    this.player_information_change(player.player_health,
+      player.player_mana,
+      player.player_total_mana,
+      player.player_energy,
+      player.player_id)
+
+
+    this.player_information_change(enemy.player_health,
+      enemy.player_mana,
+      enemy.player_total_mana,
+      enemy.player_energy,
+      enemy.player_id)
+      return { status: 200, result:result }
+    }
+
    
  return { status: 200, result:result };
   } catch(err) {

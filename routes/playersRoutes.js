@@ -122,6 +122,9 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
       let card = req.body.card;
       let tile = req.body.tile;
       let result = await pModel.playCard(player_id,card,tile);
+      if(result.status == 200){
+        result = await dModel.discardCard(player_id,card.id);
+      }
       res.status(result.status).send(result.result);  
     
     } else if (action == "move") {

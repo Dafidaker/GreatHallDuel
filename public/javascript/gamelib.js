@@ -234,7 +234,7 @@ async function updatePlayers(){
                         playerif.health,playerif.mana_total,
                         playerif.energy)
 
-        if(gameState == enemyState){
+        if(gameState != movingState){
             player.updatePosition(playerif.position,
                                     playerPos.x , playerPos.y) 
         }
@@ -249,7 +249,7 @@ async function updatePlayers(){
                         enemyif.energy)
 
 
-        if(gameState == enemyState){
+    if(gameState != movingState){
             enemy.updatePosition(enemyif.position,
                                     enemyPos.x , enemyPos.y) 
         }
@@ -300,13 +300,11 @@ function draw() {
     for(let tile of boardTiles){
         tile.draw()
     }
-    for(let card of playerDeck){
-        card.draw()
+    
+    //playerInfo[0].draw()
+    for(let player of playerInfo){
+        player.draw()
     }
-    
-    
-    playerInfo[0].draw()
-    
 
     for(let enemy of enemyInfo){
         enemy.draw()
@@ -320,6 +318,15 @@ function draw() {
         button.draw()
     }
 
+
+    Hud.drawState()
+
+
+    for(let card of playerDeck){
+            card.draw()
+        }
+
+    
 }
 
 function mouseMoved(){
@@ -496,9 +503,9 @@ function highlightClickable(object){
         columns.push(inicialColumn + i)
         columns.push(inicialColumn - i)
 
+        
         diagonal.push({row: inicialRow + i , column: inicialColumn + i})
         diagonal.push({row: inicialRow + i , column: inicialColumn - i })
-
 
         diagonal.push({row: inicialRow - i , column: inicialColumn + i })
         diagonal.push({row: inicialRow - i , column: inicialColumn - i })
@@ -543,8 +550,33 @@ function highlightClickable(object){
             }
         } 
     }
-  
+
+    if(type == 0){
+        for(let tile of boardTiles){
+            tile.highlighted = true 
+        }
+    }
+    if(type == 10){
+        for(let tile of boardTiles){
+            let areaRange = (range-1)/2
+
+            if( (tile.row >= (inicialRow - areaRange)) && (tile.row <= (inicialRow + areaRange)) ){
+                if((tile.column >= (inicialColumn - areaRange)) && (tile.column <= (inicialColumn + areaRange))){
+                    tile.highlighted = true 
+                } 
+            }
+
+
+
+
+        }
+
+    }
+            
 }
+
+    
+    
     
     
 
@@ -553,9 +585,9 @@ function makePlay() {
         //needs to check and change database 
         if(playerInfo[0].mana >= selectedCard.mana){
             playerInfo[0].mana -= selectedCard.mana
-            selectedCard.x = null 
+            /* selectedCard.x = null 
             selectedCard.y = null 
-            selectedCard.state = 2  
+            selectedCard.state = 2  */ 
             /* ChangeCardState(playerInfo[0].id,selectedCard.id,selectedCard.state)
             ChangePlayerInfo(playerInfo[0].id,
                 playerInfo[0].health,
@@ -564,6 +596,7 @@ function makePlay() {
                 playerInfo[0].energy) */
             //useCard(selectedCard,selectedTile)
             requestPlayCard(selectedCard,selectedTile)
+            updatePosPlayers()  
         
         }
 

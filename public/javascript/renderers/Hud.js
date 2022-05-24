@@ -21,14 +21,31 @@ class Hud{
         if(this.id == 2){
             textSize(18)
         }
-        textSize(22)
+        textSize(24)
         fill(200)
         strokeWeight(4) 
         stroke(0,0,0);
         //textSize(18)
         rect(this.x , this.y , this.width , this.height)
-        print(this.text)
+        //print(this.text)
+        fill(255)
         text(this.text, this.x + (this.width/2) - (textWidth((this.text)/* .toString() */)/2) , this.y + (this.height/2) + 10  )
+        
+
+
+    }
+    static drawState(){
+
+        if(gameState == discardCardState){
+           let discardScreenText = 'Select a card to discard'
+            textSize(55)
+            fill(0,0,0,90)
+            strokeWeight(4) 
+            stroke(0,0,0);
+            rect(0 , 0 , canvasWidth , canvasHeight)
+            fill(255)
+            text(discardScreenText, (0.5*canvasWidth) /* + (this.width/2) */ - (textWidth((discardScreenText))/2) , (0.5*canvasHeight)  + 10 ) 
+        }
         
 
 
