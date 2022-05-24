@@ -52,6 +52,10 @@ function preload() {
     backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
     backgroundImgEnemyState = loadImage('assets/images/Backgrounds/basic.png')
 
+    for(i = 1 ; i < 16 ;i++ ){
+        let a = loadImage('assets/images/cards/'+i+'.png');
+        Card.cardImages.push(a)
+    }
     
 }
 

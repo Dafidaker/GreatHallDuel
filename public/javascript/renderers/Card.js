@@ -1,5 +1,5 @@
-const cardWidth = 120
-const cardHeight = 170 
+const cardWidth = 140
+const cardHeight = 190 
 const cardsBox ={
     width: 650,
     height: 300,
@@ -14,8 +14,11 @@ const spaceBetweenCards = 150
 const cardsXOffset = 500 
 
 
+const imgCenterVertical = 1; //0.4
+const imgRelWidth = 1; //0.6
+
 class Card{
-    //static cardImages = {};
+    static cardImages = [];
     constructor(name,id,selected,order,state,mana,range,type_range,type_cast) {
         this.width = cardWidth;
         this.height = cardHeight;
@@ -36,17 +39,11 @@ class Card{
         }
          
     }
-    /*constructor(name,state){
-        this.x = canvasx*0.5 ;
-        this.y = canvasy*0.8;
-        this.name = name
-        this.state = state;
-    }*/
     /* static initImgs(imgHash) {
         Card.cardImages = imgHash;
     }  */
     draw() {
-        strokeWeight(4) 
+        /* strokeWeight(4) 
         stroke(0,0,0);
         if(this.selected){
             fill(100,200,100);
@@ -60,19 +57,17 @@ class Card{
             fill(255,255,255)
             textSize(10)
             text(this.name ,this.x+(this.width/2) - (textWidth(this.name)/2) ,this.y+(this.height/2))
-        }
-        
-        /* if (this.card) {
-            imageMode(CENTER);
-            let img = Card.cardImages[this.card];
-            let ratio = (this.width*imgRelWidth)/img.width;
-            image(img,this.x+this.width/2,
-                  this.y+this.height*imgCenterVertical,
-                 this.width*imgRelWidth,img.height*ratio);
-            fill(0,0,0);
-            textAlign(CENTER,CENTER);
-            text(this.card,this.x+this.width/2,this.y+this.height*textCenterVertical);
         } */
+        
+        if (this.id && this.state == 1 ) {
+            //imageMode(CENTER);
+            let img = Card.cardImages[this.id - 1];
+            let ratio = (this.width*imgRelWidth)/img.width;
+            /* image(img,this.x+this.width/2,
+                  this.y+this.height*imgCenterVertical,
+                 this.width*imgRelWidth,img.height*ratio); */
+        image(img,this.x,this.y,img.width *ratio,img.height *ratio);
+        }  
     }
     getCard() { return this.card; }
     update(state,order){
