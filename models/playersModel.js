@@ -210,7 +210,129 @@ module.exports.playCard = async function(player_id,card,tile) {
 }
 
 module.exports.card_logic = async function(player,card,tile,enemy){
+  //Layla Winifred Help
+  if(card.card_id == 1){
+    player.player_mana -= card.card_mana // removes the mana from playe
+    card.deck_card_state_id = 2 // state of the card becomes deck
+    //Create Card Logic
+  }
+
+  //Barrel Roll
+  if(card.card_id == 2){ 
+    if(tile.id == card.card_range){
+      player.player_mana -= card.card_mana // removes the mana from player
+      player.play_tile_id = tile.id // move player to tile
+      card.deck_card_state_id = 2 // state of the card becomes deck
+    } 
+  }
+
+  //Shot Dart
+  if(card.card_id == 3){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 1 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+    } 
+  }
+
+  //Dorugham Cobble
   if(card.card_id == 4){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 4 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+    } 
+  }
+
+  //Thomaz Osric Illusion
+  if(card.card_id == 5){
+    if(tile.id == enemy.player_tile_id){
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+
+  //Fire Arrow
+  if(card.card_id == 6){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 2 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+
+  //Rain Song
+  if(card.card_id == 7){
+    if(tile.id == card.card_range){
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+   
+  //Ice Arrow
+  if(card.card_id == 8){
+    if(tile.id == enemy.player_tile_id){
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+  
+  //Kazamir's Order
+  if(card.card_id == 9){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 2 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+  
+  //Shield Up
+  if(card.card_id == 10){
+    player.player_mana -= card.card_mana // removes the mana from player 
+    card.deck_card_state_id = 2 // state of the card becomes deck
+    //Create Card Logic
+  }
+  
+  //Osric's Bow
+  if(card.card_id == 11){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 2 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+      //Create Card Logic
+    } 
+  }
+  
+  //Layla Winifred Command
+  if(card.card_id == 12){
+    player.player_mana -= card.card_mana // removes the mana from player 
+    card.deck_card_state_id = 2 // state of the card becomes deck
+    //Create Card Logic
+  }
+  
+  //Kazamir Blessing
+  if(card.card_id == 13){
+    player.player_mana -= card.card_mana // removes the mana from player 
+    card.deck_card_state_id = 2 // state of the card becomes deck
+    //Create Card Logic
+  }
+  
+  //Rissingshire Pebble
+  if(card.card_id == 14){
+    if(tile.id == enemy.player_tile_id){
+      enemy.player_health -= 2 // removes health from enemy player
+      player.player_mana -= card.card_mana // removes the mana from player 
+      card.deck_card_state_id = 2 // state of the card becomes deck
+    } 
+  }
+  
+  //Bellbroke Boulder
+  if(card.card_id == 15){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
       player.player_mana -= card.card_mana // removes the mana from player 
