@@ -15,6 +15,7 @@ const basicState = 0
 const myRoundState = 1
     const movingState = 1.1
     const playingCardState = 1.2
+    const discardCardState = 1.3
 const enemyState = 2
     const counterState = 2.1
 
@@ -38,7 +39,9 @@ let dogicaPixelBold
 let backgroundImg
 let backgroundImgEnemyState
 
-
+function discardCardTest(){
+    requestDiscardCard(selectedCard)
+}
 
 function preload() {
     dogica = loadFont('assets/dogica.otf')
@@ -65,7 +68,7 @@ async function AddMana(){
 async function getRoundState(){
     await getBattleRound()
     if(Round.PlayerState == 2){
-        if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState ){
+        if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState || gameState == discardCardState){
             return
         }else{
             gameState = myRoundState
@@ -79,7 +82,7 @@ async function getRoundState(){
     }
 
     for(let hud of hudTable){
-        hud.text = Round.String
+        hud.update(Round.String) 
     }
 
 }
@@ -103,7 +106,7 @@ function SetInicialState() {
 function InicialInformation() {
     getBattleRound() //Gets the round number and state as a nice string
     getplayerinformation(player_id) // gets all the information from one player , 
-    getplayerdeck(player_id) // gets the deck from one player 
+    getplayerdeck() // gets the deck from one player 
     getplayersposition(player_id) // gets position from both players 
     GameState= MyRoundState
 
@@ -128,8 +131,8 @@ async function setup() {
 
 async function updateGame(){
     await getRoundState()
-    updatePlayers();
-    
+    await updatePlayers();
+    await updateDeck()
     /* if(gameState == enemyState){
        updatePlayers(); 
     }  */
@@ -138,7 +141,7 @@ async function updateGame(){
 }
 
 async function createDeck(){
-    let deck = await getplayerdeck(1);
+    let deck = await getplayerdeck();
     playerDeck = [];
     for (let row of deck){
         ///if (row.card_state_id == 1)  // posible use to turn a variable (enabled) true 
@@ -151,11 +154,33 @@ async function createDeck(){
     }
 }
 
+async function updateDeck(){
+    let numCardsHand = 0
+    let deck = await getplayerdeck()
+    for(let row of deck){
+        for(let card of playerDeck){
+            if(row.deck_card_id == card.id){
+                card.update(row.deck_card_state_id , row.deck_order)
+                if (row.deck_card_state_id == 1) numCardsHand +=1 ;
+            }
+            
+            
+        }
+    }
+    if (numCardsHand >= 5) gameState = discardCardState;
+    if(gameState == discardCardState && numCardsHand <= 4 ){
+        gameState = myRoundState
+    }
+    
+}
+
 async function createHud(){
     roundinfo = await getBattleRound()
 
     hudTable=[]
-    hudTable.push(new Hud(0.5 , 0.1 , 700 , 100,'info' ,'placeholder',roundinfo.Round.String))
+    hudTable.push(new Hud(2 ,0.5 , 0.08 , 600 , 100,'info' ,'placeholder',roundinfo.Round.String))
+    hudTable.push(new Hud(1 ,0.5 , 0.14 , 400 , 50,'info' ,'placeholder',roundinfo.Round.String))
+
 
 }
 
@@ -298,7 +323,7 @@ function draw() {
 }
 
 function mouseMoved(){
-    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
+    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState || gameState == enemyState || gameState == discardCardState ){
         Card.mouseMoved(mouseX,mouseY)
 
         for(let button of buttonTable){
@@ -387,7 +412,13 @@ function mouseClicked(){
         //changeGameState()
         highlighingTiles()
     }
-    
+    if(gameState == discardCardState){
+        for(let card of playerDeck){
+
+            card.click(mouseX,mouseY);
+            
+        }
+    }
 }
 
 function changeGameState(){

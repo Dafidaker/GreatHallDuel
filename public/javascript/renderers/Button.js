@@ -41,6 +41,11 @@ class Button{
            if(x > (this.x - this.width/2) && x < (this.x + this.width/2) &&
             y > (this.y - this.height/2) && y < (this.y + this.height/2)){
                 print(this.text + 'clicked')
+                if(this.text == 'Get Card'){
+                    //nextRound()
+                    requestDrawCard()
+                    //updateDeck()
+                }
                 
             } 
         }else{
@@ -59,7 +64,14 @@ class Button{
         if(this.width == this.height){
             if(x > (this.x - this.width/2) && x < (this.x + this.width/2) &&
             y > (this.y - this.height/2) && y < (this.y + this.height/2)){
+
+                if (gameState == enemyState || gameState == discardCardState){ 
+                    this.color = [209, 26, 26] 
+                }else {
                     this.color = 200
+                }
+                
+                
                     if(this.inside == false){
                         this.inside = true    
                     }
@@ -74,7 +86,13 @@ class Button{
         }else{
             if(x > this.x && x < (this.x+this.width) &&
                 y > this.y && y < (this.y+this.height)){
-                this.color = 200
+
+                    if (gameState == enemyState || gameState == discardCardState){ 
+                        this.color = [209, 26, 26] 
+                    }else {
+                        this.color = 200
+                    }
+                
                 if(this.inside == false){
                     this.inside = true    
                 }

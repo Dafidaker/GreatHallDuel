@@ -261,8 +261,8 @@ async function requestDrawCard() {
     return await requestAction({action: "drawCard"});
 }
 
-async function requestDiscardCard() {
-    return await requestAction({action: "discardCard"});
+async function requestDiscardCard(card) {
+    return await requestAction({card:card, action: "discardCard"});
 }
 
 async function requestBasicAttack(tile) {

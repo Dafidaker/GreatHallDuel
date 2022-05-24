@@ -134,7 +134,8 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
       res.status(result.status).send(result.result);
 
     } else  if (action == "discardCard") {
-      let result = await dModel.discardCard(player_id);
+      let card = req.body.card;
+      let result = await dModel.discardCard(player_id,card.id);
       res.status(result.status).send(result.result);
 
     } else  if (action == "basicAttack") {

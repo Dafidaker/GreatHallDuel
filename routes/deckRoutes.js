@@ -3,7 +3,7 @@ var router = express.Router();
 var dModel = require("../models/deckModel");
 var auth = require("../models/authentication")
 
-router.get('/get_deck/:player_id',auth.checkAuthentication,  async function(req, res, next) {
+router.get('/get_deck',auth.checkAuthentication,  async function(req, res, next) {
     console.log("Get deck of player ");
     let result = await dModel.get_deck(req.userId);
     res.status(result.status).send(result.result);
@@ -18,10 +18,9 @@ router.post('/deck_card_state_change', async function( req, res, next) {
     res.status(result.status).send(result.result);
 });
 
-router.post('/makedeck/:player_id', async function( req, res, next) {
-    let player_id = req.params.player_id
+router.post('/make_deck', auth.checkAuthentication,async function( req, res, next) {
     console.log("create deck ");
-    let result = await dModel.make_deck(player_id);
+    let result = await dModel.make_deck(req.userId);
     res.status(result.status).send(result.result);
 });
 
@@ -37,6 +36,12 @@ router.post('/use_card',auth.checkAuthentication, async function( req, res, next
     let card = req.body.card;
     let tile = req.body.tile;
     let result = await dModel.use_card(req.userId,card, tile);
+    res.status(result.status).send(result.result);
+});
+
+router.post('/destroy_deck',auth.checkAuthentication, async function( req, res, next) {
+    console.log("destroy player`s deck");
+    let result = await dModel.destroyDeck(req.userId);
     res.status(result.status).send(result.result);
 });
 

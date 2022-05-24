@@ -1,11 +1,12 @@
 var pool = require('./connection.js')
+var pModel = require("../models/playersModel");
 
 
 module.exports.get_deck = async function(playerid){
     let sql = 'select * from deck , card, type_range , type_cast ,card_state  where deck_card_state_id = card_state_id and card_type_range_id = type_range_id and card_type_cast_id = type_cast_id and deck_player_id = $1 and deck_card_id = card_id order by deck_order';
       try{
         let result = await pool.query(sql,[playerid]);
-        console.log(result.rows);
+        //console.log(result.rows);
         return { status: 200, result: result.rows }
       } catch(err) {
         console.log(err);
@@ -20,7 +21,7 @@ module.exports.get_deck = async function(playerid){
     deck_card_id = $2 and card_id = deck_card_id  `;
       try{
         let result = await pool.query(sql,[playerid,card]);
-        console.log(result.rows);
+        //console.log(result.rows);
         return { status: 200, result: result.rows }
       } catch(err) {
         console.log(err);
@@ -33,9 +34,9 @@ module.exports.get_deck = async function(playerid){
       sql = `UPDATE deck
             SET deck_card_state_id = $1
             WHERE deck_player_id = $2 and deck_card_id = $3`;
-      console.log(sql)
+      //console.log(sql)
       let result = await pool.query(sql,[card_state_id,ply_id,card_id]);
-      console.log(result.rows);
+      //console.log(result.rows);
       return { status: 200, result:result };
     } catch(err) {
       console.log(err);
@@ -57,7 +58,7 @@ module.exports.make_deck = async function(plyId) {
             sql += `($1, ${i+1}, ${result.rows[i].card_id},2)`;
           }
           
-          console.log(sql)
+          //console.log(sql)
           if(result.rows.length -1 == i){
             sql += `;`;
           } else{
@@ -78,7 +79,7 @@ module.exports.get_cards = async function(){
   let sql = 'select * from card';
     try{
       let result = await pool.query(sql);
-      console.log(result.rows);
+      //console.log(result.rows);
       return { status: 200, result: result.rows }
     } catch(err) {
       console.log(err);
@@ -90,7 +91,7 @@ module.exports.get_a_card = async function(id){
   let sql = 'select * from card where card_id = $1';
     try{
       let result = await pool.query(sql,[id]);
-      console.log(result.rows);
+      //console.log(result.rows);
       return { status: 200, result: result.rows }
     } catch(err) {
       console.log(err);
@@ -98,7 +99,7 @@ module.exports.get_a_card = async function(id){
     }
 }
 
-module.exports.use_card = async function(player_id,card, tile){
+/* module.exports.use_card = async function(player_id,card, tile){
     try{
       //get enemy id 
       let getsql =`select room_player_id from room
@@ -126,22 +127,94 @@ module.exports.use_card = async function(player_id,card, tile){
     console.log(err);
     return { status: 500, result:err };
   }
-}
+} */
 
 module.exports.drawCard = async function(player_id) {
   try{
-   
-  //return { status: 200, result:result };
+    let result = await this.get_deck(player_id)
+    let deck = result.result
+
+    let result1 = await pModel.getPlayerInfo(player_id);
+    let player = result1.result[0]
+
+    if(player.player_mana >= 2 ){
+      for(let row of deck){
+      if(row.deck_card_state_id == 2 ){
+        this.deck_card_state_change(player_id,row.deck_card_id,1)
+        player.player_mana -= 2
+        pModel.player_information_change(player.player_health,
+        player.player_mana,
+        player.player_total_mana,
+        player.player_energy,
+        player.player_id)
+        
+        return { status: 200, result:{msm : "the player got the card"} } }
+      }
+      
+    }
+
+    
+    
+
+
+    return { status: 400, result:{msm : "the player doesnt have enough mana"} };
   } catch(err) {
     console.log(err);
     return { status: 500, result: err};
   }
 }
 
-module.exports.discardCard = async function(player_id) {
+module.exports.discardCard = async function(player_id,card_id) {
   try{
-   
-  //return { status: 200, result:result };
+    let result = await this.get_deck(player_id)
+    let deck = result.result
+    let cardRow
+
+    for(let row of deck){
+      if ( row.deck_card_id == card_id && row.deck_card_state_id == 1){
+          cardRow = row 
+      } 
+    }
+
+  let newOrder = Math.floor(Math.random() * (deck.length - 6 + 1) + 6) // deck max is the maximum , 6 is the minimum -- new order for the card in the deck
+
+  //console.log("order" +newOrder +'\n' + 'deck id ' + cardRow.deck_id)
+
+  let sql= `UPDATE deck
+            SET deck_order = $1
+            WHERE deck_id = $2`
+    
+  await pool.query(sql,[newOrder,cardRow.deck_id])
+  await this.deck_card_state_change(player_id,cardRow.deck_card_id,2)
+
+  for(let row of deck){
+
+    if(row.deck_id != cardRow.deck_id){
+
+      if ( (row.deck_order > cardRow.deck_order) && (row.deck_order <= newOrder)){
+
+      row.deck_order -=1
+
+      }
+      await pool.query(sql,[row.deck_order,row.deck_id])
+    }
+    
+  }
+  
+  return { status: 200, result:{msm : "card was discarded"} } ;
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
+}
+
+module.exports.destroyDeck = async function(player_id) {
+  try{
+    let sql = `DELETE FROM deck  WHERE deck_player_id = $1 `
+    
+    await pool.query(sql,[player_id])
+
+    return { status: 200, result:{msm : "deck was destroyed"} };
   } catch(err) {
     console.log(err);
     return { status: 500, result: err};
