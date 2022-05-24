@@ -230,7 +230,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 3){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 1 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
     } 
   }
@@ -246,7 +245,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Thomaz Osric Illusion
   if(card.card_id == 5){
     if(tile.id == enemy.player_tile_id){
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -256,7 +254,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 6){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -265,7 +262,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Rain Song
   if(card.card_id == 7){
     if(tile.id == card.card_range){
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -274,7 +270,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Ice Arrow
   if(card.card_id == 8){
     if(tile.id == enemy.player_tile_id){
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -284,7 +279,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 9){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -292,7 +286,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   
   //Shield Up
   if(card.card_id == 10){
-    player.player_mana -= card.card_mana // removes the mana from player 
     card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
   }
@@ -301,7 +294,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 11){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
       //Create Card Logic
     } 
@@ -309,14 +301,12 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   
   //Layla Winifred Command
   if(card.card_id == 12){
-    player.player_mana -= card.card_mana // removes the mana from player 
     card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
   }
   
   //Kazamir Blessing
   if(card.card_id == 13){
-    player.player_mana -= card.card_mana // removes the mana from player 
     card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
   }
@@ -325,7 +315,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 14){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
     } 
   }
@@ -334,12 +323,11 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 15){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
-      player.player_mana -= card.card_mana // removes the mana from player 
       card.deck_card_state_id = 2 // state of the card becomes deck
     } 
   }
 
-
+  player.player_mana -= card.card_mana // removes the mana from player 
   // updating the players enemys and cards information  
   this.player_information_change(player.player_health,
                                   player.player_mana,
