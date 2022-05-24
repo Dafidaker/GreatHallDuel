@@ -242,7 +242,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     } 
     
   }
-<<<<<<< HEAD
 
   //Thomaz Osric Illusion
   if(card.card_id == 5){
@@ -341,15 +340,6 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   }
 
 
-=======
-  if (card.card_id == 2){
-    
-  }
- 
- 
-  player.player_mana -= card.card_mana // removes the mana from player 
-  dModel.discardCard(player.player_id,card.card_id);
->>>>>>> 265f3bd5b79472c686c1f1efe497d11df70f9ddb
   // updating the players enemys and cards information  
   this.player_information_change(player.player_health,
                                   player.player_mana,
