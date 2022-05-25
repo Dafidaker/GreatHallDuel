@@ -30,6 +30,9 @@ header > img {
   margin-left: auto;
   margin-right: auto;
   width: 30%;
+  position: absolute;
+  top: -1%;
+  left: 34.5%;
 }
 
 
@@ -47,18 +50,109 @@ main {
   align-items: center;
   justify-content: center;
 }
+main h3 {
+  font-size: 30px;
+  color: black;
+  position: absolute;
+  left: 39.52%;
+  top: 80%;
+  
+  }
 
-p {
-  border: 0;
-  background: none;
-  display: block;
-  margin: 20px auto;
-  text-align: center;
-  border:3px solid #0367fd;
-  padding:14px 10px;
-  width:240px;
-  outline: none;
-  color:white;
-  border-radius: 24px;
-  transition: 0.25px;
+main h4 input {
+  font-size: 50px;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+  width: 442px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 40.5%;
+  top: 48.3%;
+  border-color: rgba(0,0,0,0);
+}
+
+main h5 input {
+  font-size: 50px;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+  width: 442px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 40.5%;
+  top: 59.1%;
+}
+main h6 input {
+  font-size: 50px;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+  width: 442px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 40.5%;
+  top: 69.9%;
+}
+main input { 
+  font-size: 45px;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+  width: 488px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 39.52%;
+  top: 68%;
+  
+}
+main h7 input {
+  width: 488px;
+  border: none;
+  background: rgba(0, 0, 0, 0);
+  position: absolute;
+  left: 39.52%;
+  top: 79%;
+}
+main h8 {
+    font-size: 30px;
+    color: black;
+    position: absolute;
+    left: 39.52%;
+    top: 92%;
+    
+}
+main h10 {
+font-size: 30px;
+color: darkred;
+position: absolute;
+left: 39.52%;
+top: 77%;
+font-weight: bold;
+font-family: serif;
+}
+
+main h11 {
+  font-size: 30px;
+    color: black;
+    position: absolute;
+    left: 39.52%;
+    top: 89%;
+    font-weight: bold;
+}
+
+main h12 {
+  position:absolute;
+  left: 39.52%;
+  top: 46%;
+}
+main h13 {
+  position:absolute;
+  left: 39.52%;
+  top: 56.8%;
+}
+main h14 {
+  position:absolute;
+  left: 39.52%;
+  top: 67.6%;
 }
