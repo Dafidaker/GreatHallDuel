@@ -108,11 +108,26 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
 
-      for(let row of activeCards){
-        if(row.turn >= 0 ){
-          row.turn -= 1
-          if(row.turn == 0 ){
-            activeCards.remove(row)
+      for (var i = 0; i < pModel.activeCards.length; i ++){
+        if(pModel.activeCards[i].turn >= 0 ){
+          pModel.activeCards[i].turn -= 1
+
+          //Fire Arrow
+          if (pModel.activeCards[i].card === 6){
+            pModel.enemy.player_health -= 1
+          }
+
+          //...
+
+          //Layla Winifred Command
+          if (pModel.activeCards[i].card === 12){
+            pModel.activeCards[i].used = false
+          }
+
+
+          //REMOVE ROW
+          if(pModel.activeCards[i].turn == 0 ){
+            pModel.activeCards.slice(i, 1)
           }
         }
       }

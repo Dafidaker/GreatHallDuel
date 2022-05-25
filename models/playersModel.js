@@ -8,6 +8,7 @@ let rows = []
 let columns = []
 let diagonal = []
 
+module.exports.activeCards = activeCards
 
 module.exports.loginCheck = async function (name,password) {
     try {
@@ -215,12 +216,14 @@ module.exports.playCard = async function(player_id,card,tile) {
 }
 
 module.exports.card_logic = async function(player,card,tile,enemy){
-  //Layla Winifred Help
   
+  this.active_logic(card)
+  
+  //Layla Winifred Help
   if(card.card_id == 1){
-    card.deck_card_state_id = 3 // state of the card becomes deck
+    card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
-    activeCards.push({card:card.card_id,turn:-1})
+    activeCards.push({card:card.card_id,turn: -1})
   }
 
   //Barrel Roll
@@ -251,8 +254,10 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 5){
     if(tile.id == enemy.player_tile_id){
       //Create Card Logic
+      player.player_mana += card.card_mana + 2
+      dModel.drawCard(player.player_id)
     } 
-    card.deck_card_state_id = 3
+    card.deck_card_state_id = 2
   }
 
   //Fire Arrow //
@@ -278,7 +283,9 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 8){
     if(tile.id == enemy.player_tile_id){
       //Create Card Logic
-      activeCards.push({card:card.card_id,turn: 2})
+      //activeCards.push({card:card.card_id,turn: 2})
+      player.player_mana += card.card_mana + 2
+      dModel.drawCard(player.player_id)
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -314,6 +321,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Layla Winifred Command
   if(card.card_id == 12){
     //Create Card Logic
+    activeCards.push({card:card.card_id, turn: 4, used: false})
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
@@ -362,48 +370,61 @@ module.exports.card_logic = async function(player,card,tile,enemy){
 
 
 module.exports.active_logic = async function(card){
-  for (let row of activeCards){
-    //Layla Winifred Help
-    if (card.card_id == 1){
+
+  console.log( "AAAAA" + activeCards)
+  //Layla Winifred Help
+  for (var i = 0; i < activeCards.length; i ++){
+    if (activeCards[i].card === 1) {
+      card.card_mana -= 2
+      activeCards.splice(i, 1);
+    }
+    if (activeCards[i].card === 2){
+      
+    }
+    if (activeCards[i].card === 3){
+      
+    }
+    if (activeCards[i].card === 4){
+      
+    }
+    if (activeCards[i].card === 5){
+      
+    }
+    if (activeCards[i].card === 6){
+      
+    }
+    if (activeCards[i].card === 7){
 
     }
-    
-    //Fire Arrow //
-    if(card.card_id == 6){
-
+    if (activeCards[i].card === 8){
+      
     }
-
-    //Rain Song
-    if(card.card_id == 7){
-
+    if (activeCards[i].card === 9){
+      
     }
-
-    //Ice Arrow
-    if(card.card_id == 8){
-
+    if (activeCards[i].card === 10){
+      
     }
-
-    //Kazamir's Order
-    if(card.card_id == 9){
-
+    if (activeCards[i].card === 11){
+      
     }
-
-    //Osric's Bow
-    if(card.card_id == 11){
-
-    }
-
     //Layla Winifred Command
-    if(card.card_id == 12){
-
+    if (activeCards[i].card === 12){
+      if (activeCards[i].used === false){
+        card.card_mana -= 1
+        activeCards[i].used = true
+      }
     }
-
-    //Kazamir Blessing
-    if(card.card_id == 13){
-
+    if (activeCards[i].card === 13){
+      
     }
-    
-  }
+    if (activeCards[i].card === 14){
+      
+    }
+    if (activeCards[i].card === 15){
+      
+    }
+  } 
 }
 
 
@@ -487,7 +508,7 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
 
       if( (selectedTile.row >= (inicialRow - areaRange)) && (selectedTile.row <= (inicialRow + areaRange)) ){
           if((selectedTile.column >= (inicialColumn - areaRange)) && (selectedTile.column <= (inicialColumn + areaRange))){
-              tile.highlighted = true 
+              return true
           } 
       }
 

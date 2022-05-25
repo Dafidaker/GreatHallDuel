@@ -10,6 +10,7 @@ var boardTiles = []
 
 
 
+
 var gameState = 0
 const basicState = 0
 const myRoundState = 1
@@ -40,6 +41,13 @@ let dogicaPixelBold
 let backgroundImg
 let backgroundImgEnemyState
 
+let b_basicAttack
+let b_basicAttackHighlighted
+let b_drawCard
+let b_drawCardHighlighted
+let b_nextRound
+let b_nextRoundHighlighted
+
 function discardCardTest(){
     requestDiscardCard(selectedCard)
 }
@@ -50,9 +58,19 @@ function preload() {
     dogicaPixel = loadFont('assets/dogicapixel.otf')
     dogicaPixelBold = loadFont('assets/dogicapixelbold.otf')
 
+    //BACKGROUND
     backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
     backgroundImgEnemyState = loadImage('assets/images/Backgrounds/basic.png')
 
+    //BUTTONS  
+    b_basicAttack = loadImage('assets/images/Buttons/basicAttack.png')
+    b_basicAttackHighlighted = loadImage('assets/images/Buttons/basicAttack_highlighted.png')
+    b_drawCard = loadImage('assets/images/Buttons/drawACard.png')
+    b_drawCardHighlighted = loadImage('assets/images/Buttons/drawACard_highlighted.png')
+    b_nextRound = loadImage('assets/images/Buttons/nextRound.png')
+    b_nextRoundHighlighted = loadImage('assets/images/Buttons/nextRound_highlighted.png')
+
+    //CARDS
     for(i = 1 ; i < 16 ;i++ ){
         let a = loadImage('assets/images/cards/'+i+'.png');
         Card.cardImages.push(a)
@@ -186,9 +204,9 @@ async function createHud(){
 async function createButtons(){
     buttonTable =[]
 
-    buttonTable.push ( new Button (0.1,0.75,120,120,'a','Get Card'))
-    buttonTable.push ( new Button (0.2,0.85,120,120,'a','Basic Attack'))
-    buttonTable.push ( new Button (0.75,0.45,300,100,'a','End Turn'))
+    buttonTable.push ( new Button (0.1,0.75,100,100,b_drawCard,'a','Get Card'))
+    buttonTable.push ( new Button (0.2,0.85,100,100,b_basicAttack,'a','Basic Attack'))
+    buttonTable.push ( new Button (0.75,0.45,120,120, b_nextRound,'a','End Turn'))
 
 
 }
