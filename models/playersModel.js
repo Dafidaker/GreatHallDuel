@@ -302,12 +302,12 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Osric's Bow
   if(card.card_id == 11){
     if(tile.id == enemy.player_tile_id){
-      enemy.player_health -= 4 // removes health from enemy player
-      //Create Card Logic
       if (tile.column == columns[5] || tile.column == columns[6] || tile.row == rows[5] || tile.row == rows[6]){
         enemy.player_health -= 6
+      } else {
+        enemy.player_health -= 4
       }
-    } 
+    }
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
