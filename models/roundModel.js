@@ -1,4 +1,5 @@
 var pool = require('./connection.js')
+var pModel = require("../models/playersModel");
 
 module.exports.change_round_number = async function(room_num,newroundnum,newstate) {
       try{
@@ -34,6 +35,32 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
       }
   }
 
+  module.exports.change_player_state = async function(player_id,round,new_state){
+    try{
+      if(round == -1){
+        let sql = `UPDATE room
+            SET room_player_state_id = $1, 
+            WHERE room_player_id = $2`
+
+        await pool.query(sql,[new_state , player_id]);
+
+      }else{
+          let sql = `UPDATE room
+            SET room_player_state_id = $1, 
+            room_round_number = $2
+            WHERE room_player_id = $3`
+
+        await pool.query(sql,[new_state , round, player_id]);
+      }
+      
+
+
+    }catch(err){
+      console.log(err);
+      return { status: 500, result: err};
+    }
+  }
+  
   module.exports.end_round = async function(player_id) {
     try{
       let getsql =`select room_player_id,room_round_number from room
@@ -43,23 +70,22 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       result.rows[0].room_round_number += 1
 
-      //console.log(' 1111' + result.rows[0].room_round_number)
-
-      let updatesql=`UPDATE room
+      /* let updatesql = `UPDATE room
                     SET room_player_state_id = 1 , 
-                    room_round_number = $2
-                    WHERE room_player_id = $1`
+                    room_round_number = $1
+                    WHERE room_player_id = $2`
 
       
-      let updatesql1 =`UPDATE room
+      let updatesql1 = `UPDATE room
                     SET room_player_state_id = 2 , 
                     room_round_number = $1
                     WHERE room_player_id = $2`
                     
-      await pool.query(updatesql,[player_id,result.rows[0].room_round_number]);
-      await pool.query(updatesql1,[result.rows[0].room_round_number,result.rows[0].room_player_id]); 
+      await pool.query(updatesql,[result.rows[0].room_round_number , player_id]);
+      await pool.query(updatesql1,[result.rows[0].room_round_number, result.rows[0].room_player_id]);  */
 
-
+      this.change_player_state(player_id, result.rows[0].room_round_number, 1)
+      this.change_player_state(result.rows[0].room_player_id, result.rows[0].room_round_number, 2)
 
       let getsql1 = `select player_mana , player_total_mana , player_energy
                       from player where player_id = $1` 
@@ -73,8 +99,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
       } 
       player.rows[0].player_energy = 3
 
-      //console.log('aaaaaaaaaaaaaaa ' + JSON.stringify(player.rows))
-
+      //pModel.player_information_change()
       let getsql2 = `UPDATE player
                     SET player_total_mana = $2 , 
                     player_mana = $2,
@@ -83,9 +108,15 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
 
-      
+      for(let row of activeCards){
+        if(row.turn >= 0 ){
+          row.turn -= 1
+          if(row.turn == 0 ){
+            activeCards.remove(row)
+          }
+        }
+      }
 
-      //console.log(result.rows);
       return { status: 200, result:{ msg: "Changed turn" }};
     } catch(err) {
       console.log(err);

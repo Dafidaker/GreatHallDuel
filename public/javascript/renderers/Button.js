@@ -6,6 +6,7 @@ class Button{
         this.height = height ,
         this.clicking = click , 
         this.text = text
+        this.selected = false ,
 
         this.x = x * canvasWidth - width/2 , 
         this.y = y * canvasHeight - height/2,
@@ -42,12 +43,25 @@ class Button{
             y > (this.y - this.height/2) && y < (this.y + this.height/2)){
                 print(this.text + 'clicked')
                 if(this.text == 'Get Card'){
-                    //nextRound()
-                    requestDrawCard()
-                    //updateDeck()
+                    if(playerInfo[0].mana < 2){
+                        alert('Not enough mana')
+                    }else{
+                       requestDrawCard()  
+                    }
+                   
+                    
+                }
+                if(this.text == 'Basic Attack'){
+                    
+                    this.selected = true
+                    gameState = basicAttackState
+                    highlighingTiles()
+                    
                 }
                 
-            } 
+            }else{
+                this.selected = false
+            }
         }else{
             if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
@@ -55,6 +69,8 @@ class Button{
                     //nextRound()
                     requestEndTurn()
                 }
+            }else{
+                this.selected = false
             }
         }
         

@@ -16,6 +16,7 @@ const myRoundState = 1
     const movingState = 1.1
     const playingCardState = 1.2
     const discardCardState = 1.3
+    const basicAttackState = 1.4
 const enemyState = 2
     const counterState = 2.1
 
@@ -52,6 +53,10 @@ function preload() {
     backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
     backgroundImgEnemyState = loadImage('assets/images/Backgrounds/basic.png')
 
+    for(i = 1 ; i < 16 ;i++ ){
+        let a = loadImage('assets/images/cards/'+i+'.png');
+        Card.cardImages.push(a)
+    }
     
 }
 
@@ -65,10 +70,10 @@ async function AddMana(){
     ChangePlayerInfo(2,20,4,4,3)
 }
 
-async function getRoundState(){
+async function updateRoundState(){
     await getBattleRound()
     if(Round.PlayerState == 2){
-        if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState || gameState == discardCardState){
+        if(gameState== myRoundState || gameState == playingCardState ||gameState == movingState || gameState == discardCardState || gameState == basicAttackState){
             return
         }else{
             gameState = myRoundState
@@ -109,7 +114,6 @@ function InicialInformation() {
     getplayerdeck() // gets the deck from one player 
     getplayersposition(player_id) // gets position from both players 
     GameState= MyRoundState
-
 }
 
 async function setup() {
@@ -130,13 +134,9 @@ async function setup() {
 }
 
 async function updateGame(){
-    await getRoundState()
+    await updateRoundState()
     await updatePlayers();
     await updateDeck()
-    /* if(gameState == enemyState){
-       updatePlayers(); 
-    }  */
-    
     
 }
 
@@ -162,9 +162,7 @@ async function updateDeck(){
             if(row.deck_card_id == card.id){
                 card.update(row.deck_card_state_id , row.deck_order)
                 if (row.deck_card_state_id == 1) numCardsHand +=1 ;
-            }
-            
-            
+            } 
         }
     }
     if (numCardsHand >= 5) gameState = discardCardState;
@@ -208,7 +206,6 @@ async function createPlayers(){
                     playerPos.x,playerPos.y,
                     playerif.health,playerif.mana_total,
                     playerif.energy,playerif.num,true))
-    //print('playerInfo'+ JSON.stringify(playerInfo))
     
 
     enemyInfo = []
@@ -218,7 +215,6 @@ async function createPlayers(){
                                 enemyPos.x,enemyPos.y,
                                 enemyif.health,enemyif.mana_total,
                                 enemyif.energy,enemyif.num,false))
-    //print('enemyInfo'+ JSON.stringify(enemyInfo))
    
 }
 
@@ -234,7 +230,7 @@ async function updatePlayers(){
                         playerif.health,playerif.mana_total,
                         playerif.energy)
 
-        if(gameState == enemyState){
+        if(gameState != movingState){
             player.updatePosition(playerif.position,
                                     playerPos.x , playerPos.y) 
         }
@@ -249,7 +245,7 @@ async function updatePlayers(){
                         enemyif.energy)
 
 
-        if(gameState == enemyState){
+    if(gameState != movingState){
             enemy.updatePosition(enemyif.position,
                                     enemyPos.x , enemyPos.y) 
         }
@@ -260,7 +256,7 @@ async function updatePlayers(){
 
 function createboard(){
     let YOffSet = 400 
-    let XOffSet = ((9*60)/2)+60 // number of columns * width / half of the whole square 
+    let XOffSet = ((9*60)/2)+60 
     let i = 1
     boardTiles = []
     if(i < 82){
@@ -293,20 +289,16 @@ function draw() {
     textSize(20)
     fill(0,0,0)
     text(gameState,100,100)
-    //text(Round.PlayerState,100,200)
 
     Card.drawCardsBox()
 
     for(let tile of boardTiles){
         tile.draw()
     }
-    for(let card of playerDeck){
-        card.draw()
+    
+    for(let player of playerInfo){
+        player.draw()
     }
-    
-    
-    playerInfo[0].draw()
-    
 
     for(let enemy of enemyInfo){
         enemy.draw()
@@ -320,6 +312,15 @@ function draw() {
         button.draw()
     }
 
+
+    Hud.drawState()
+
+
+    for(let card of playerDeck){
+            card.draw()
+        }
+
+    
 }
 
 function mouseMoved(){
@@ -333,10 +334,13 @@ function mouseMoved(){
 }
 
 function mouseClicked(){
-    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState ){
+    if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState || gameState == basicAttackState){
        
         for(let button of buttonTable){
             button.click(mouseX,mouseY);
+            if(button.selected == true ){
+                selected = true
+            }
         }
         
         let selected = false 
@@ -349,7 +353,6 @@ function mouseClicked(){
             
             if (card.selected == true) {
                 selected = true
-                //isSelected =+ 1
                 selectedCard = card
 
                 if (playerInfo[0].mana < selectedCard.mana ){
@@ -407,7 +410,6 @@ function mouseClicked(){
         } 
         
 
-        //if(isSelected == 0 ) gameState = myRoundState
         (selected == false)? gameState = myRoundState : null;
         //changeGameState()
         highlighingTiles()
@@ -421,7 +423,7 @@ function mouseClicked(){
     }
 }
 
-function changeGameState(){
+/* function changeGameState(){
 
     let isSelected = 0 ;
 
@@ -435,7 +437,7 @@ function changeGameState(){
 
     if(isSelected == 0 ) gameState = myRoundState
 
-}
+} */
 
 
 function highlighingTiles(){
@@ -449,27 +451,31 @@ function highlighingTiles(){
     
     if(gameState == playingCardState){
         
-        highlightClickable(selectedCard)
+        highlightClickable(selectedCard,1)
 
     }else if(gameState == movingState){
 
-        highlightClickable(selectedPlayer)
+        highlightClickable(selectedPlayer,2)
 
+    }else if(gameState == basicAttackState){
+
+        highlightClickable(null,2)
     }
     
 }
 
-function highlightClickable(object){
+function highlightClickable(object,typeHighlight){
     // get type 
+
     let type = null 
     let range = null
     
-    if (object.player == true){
+    if (typeHighlight == 2){
 
         type = 4
         range = 1
 
-    } else {
+    } else if (typeHighlight == 1){
 
         type = object.type_range
         range = object.range
@@ -496,9 +502,9 @@ function highlightClickable(object){
         columns.push(inicialColumn + i)
         columns.push(inicialColumn - i)
 
+        
         diagonal.push({row: inicialRow + i , column: inicialColumn + i})
         diagonal.push({row: inicialRow + i , column: inicialColumn - i })
-
 
         diagonal.push({row: inicialRow - i , column: inicialColumn + i })
         diagonal.push({row: inicialRow - i , column: inicialColumn - i })
@@ -543,27 +549,41 @@ function highlightClickable(object){
             }
         } 
     }
-  
+
+    if(type == 0){
+        for(let tile of boardTiles){
+            tile.highlighted = true 
+        }
+    }
+    if(type == 10){
+        for(let tile of boardTiles){
+            let areaRange = (range-1)/2
+
+            if( (tile.row >= (inicialRow - areaRange)) && (tile.row <= (inicialRow + areaRange)) ){
+                if((tile.column >= (inicialColumn - areaRange)) && (tile.column <= (inicialColumn + areaRange))){
+                    tile.highlighted = true 
+                } 
+            }
+
+        }
+
+    }
+            
 }
+
+    
+    
     
     
 
 function makePlay() {
     if(gameState == playingCardState){
-        //needs to check and change database 
         if(playerInfo[0].mana >= selectedCard.mana){
             playerInfo[0].mana -= selectedCard.mana
-            selectedCard.x = null 
-            selectedCard.y = null 
-            selectedCard.state = 2  
-            /* ChangeCardState(playerInfo[0].id,selectedCard.id,selectedCard.state)
-            ChangePlayerInfo(playerInfo[0].id,
-                playerInfo[0].health,
-                playerInfo[0].totalMana,
-                playerInfo[0].mana,
-                playerInfo[0].energy) */
-            //useCard(selectedCard,selectedTile)
+            
+            //database
             requestPlayCard(selectedCard,selectedTile)
+            updatePosPlayers()  
         
         }
 
@@ -577,13 +597,10 @@ function makePlay() {
             playerInfo[0].energy -= 1
             playerInfo[0].tileIndex = selectedTile.id
             playerInfo[0].selected = true
-            /* ChangePlayerInfo(playerInfo[0].id,
-                            playerInfo[0].health,
-                            playerInfo[0].totalMana,
-                            playerInfo[0].mana,
-                            playerInfo[0].energy)
-            ChangePlayerPosition(playerInfo[0].id,selectedTile.id) */
+            
             updatePosPlayers()  
+            
+            //database
             requestMove(selectedTile)
 
         }  else if (playerInfo[0].energy == 0){
@@ -593,6 +610,19 @@ function makePlay() {
 
         } 
         
+    }else if(gameState == basicAttackState){
+        if(selectedTile.id == enemyInfo[0].tileIndex && playerInfo[0].energy > 0 ){
+            playerInfo[0].energy -= 1
+            enemyInfo[0].health -= 1
+
+            //database
+            requestBasicAttack(selectedTile)
+
+        } else if (playerInfo[0].energy == 0){
+        alert('Not enough energy')
+        gameState= myRoundState
+
+        }
     }
 }
 
