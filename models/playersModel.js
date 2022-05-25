@@ -387,11 +387,6 @@ module.exports.active_logic = async function(card){
 
     }
 
-    //Osric's Bow
-    if(card.card_id == 11){
-
-    }
-
     //Layla Winifred Command
     if(card.card_id == 12){
 
