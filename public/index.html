@@ -35,27 +35,35 @@
   body {
     background-image: url('assets/images/Backgrounds/Backgroung.png');
     background-repeat: no-repeat;
-     background-attachment: fixed; 
+    background-attachment: fixed; 
     background-size: cover;
   }
   </style>
 
 <body>
+  
    <header>
     <img src="assets/images/logo.png" alt="game logo">
    </header>
    <section> 
     <main>
-      <p> <input type="text" id="name" placeholder="Username">  </p>
-      <p> <input type="password" id="password" placeholder="Password"> </p>
-      <input type="image" src="assets/images/loginscreen/login button.png" width="260px" onmouseover="this.src='assets/images/loginscreen/loginbuttonpressed.png'"
-             onmouseout="this.src='assets/images/loginscreen/login button.png'" onclick="loginUser()">
-      <h3> Not register? <a href="register.html">Register here!</a>  </h3>
-      <h3 id="result"></h3>
+      <br>
+      <h12><img src="assets/images/loginscreen/Text Box.png" alt="text box1" width="340px"></h12>
+      <h13><img src="assets/images/loginscreen/Text Box.png" alt="text box1" width="340px"></h13>
+      <input type="image" src="assets/images/loginscreen/login button.png" width="340px" 
+             onmouseover="this.src='assets/images/loginscreen/loginbuttonpressed.png'"
+             onmouseout="this.src='assets/images/loginscreen/login button.png'" onclick="loginUser()" >
+      <h4><p> <input type="text" id="name" placeholder="Username">  </p></h4>
+      <h5><p> <input type="password" id="password" placeholder="Password"> </p></h5>
+      <h3> Not registered? <a href="register.html">Register here!</a>  </h3>
+      <br>
+      <h10 id="result"></h10>
     </main>
     </section> 
     
+    
     <footer>
+      <br>
       <br>
       Developers:<br>
         Timo Blaauw - Joel Carapinha - Raul Schneider
