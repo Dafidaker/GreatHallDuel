@@ -83,7 +83,14 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
 
       await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
 
-      
+      for(let row of activeCards){
+        if(row.turn >= 0 ){
+          row.turn -= 1
+          if(row.turn == 0 ){
+            activeCards.remove(row)
+          }
+        }
+      }
 
       //console.log(result.rows);
       return { status: 200, result:{ msg: "Changed turn" }};
