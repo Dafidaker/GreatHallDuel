@@ -1,5 +1,6 @@
 var pool = require('./connection.js')
 var pModel = require("../models/playersModel");
+var dModel = require("../models/deckModel");
 
 module.exports.change_round_number = async function(room_num,newroundnum,newstate) {
       try{
@@ -39,7 +40,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
     try{
       if(round == -1){
         let sql = `UPDATE room
-            SET room_player_state_id = $1, 
+            SET room_player_state_id = $1
             WHERE room_player_id = $2`
 
         await pool.query(sql,[new_state , player_id]);
@@ -107,6 +108,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
                     WHERE player_id = $1`
 
       await pool.query(getsql2,[result.rows[0].room_player_id,player.rows[0].player_total_mana,player.rows[0].player_energy]);
+      dModel.drawCard(result.rows[0].room_player_id,false)
 
       for(let row of activeCards){
         if(row.turn >= 0 ){
@@ -116,6 +118,7 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
           }
         }
       }
+      
 
       return { status: 200, result:{ msg: "Changed turn" }};
     } catch(err) {

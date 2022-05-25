@@ -19,6 +19,7 @@ const myRoundState = 1
     const basicAttackState = 1.4
 const enemyState = 2
     const counterState = 2.1
+const finishedGameState = 3
 
 
 
@@ -84,6 +85,8 @@ async function updateRoundState(){
     }else if (Round.PlayerState == 1){
         gameState =  enemyState
         cursor('not-allowed')
+    }else if (Round.PlayerState == 4){
+        gameState = finishedGameState
     }
 
     for(let hud of hudTable){
@@ -320,7 +323,7 @@ function draw() {
             card.draw()
         }
 
-    
+    Hud.drawEndGame()
 }
 
 function mouseMoved(){

@@ -133,7 +133,7 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
       res.status(result.status).send(result.result);
     
     } else  if (action == "drawCard") {
-      let result = await dModel.drawCard(player_id);
+      let result = await dModel.drawCard(player_id,true);
       res.status(result.status).send(result.result);
 
     } else  if (action == "discardCard") {

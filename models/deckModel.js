@@ -129,7 +129,7 @@ module.exports.get_a_card = async function(id){
   }
 } */
 
-module.exports.drawCard = async function(player_id) {
+module.exports.drawCard = async function(player_id,manaNeeded) {
   try{
     let result = await this.get_deck(player_id)
     let deck = result.result
@@ -137,21 +137,31 @@ module.exports.drawCard = async function(player_id) {
     let result1 = await pModel.getPlayerInfo(player_id);
     let player = result1.result[0]
 
-    if(player.player_mana >= 2 ){
-      for(let row of deck){
-      if(row.deck_card_state_id == 2 ){
-        this.deck_card_state_change(player_id,row.deck_card_id,1)
-        player.player_mana -= 2
-        pModel.player_information_change(player.player_health,
-        player.player_mana,
-        player.player_total_mana,
-        player.player_energy,
-        player.player_id)
-        
-        return { status: 200, result:{msm : "the player got the card"} } }
-      }
+    if(manaNeeded == true){
+      if(player.player_mana >= 2 ){
+        for(let row of deck){
+          if(row.deck_card_state_id == 2 ){
+            this.deck_card_state_change(player_id,row.deck_card_id,1)
+            player.player_mana -= 2
+            pModel.player_information_change(player.player_health,
+            player.player_mana,
+            player.player_total_mana,
+            player.player_energy,
+            player.player_id)
+            
+            return { status: 200, result:{msm : "the player got the card"} } }
+        }
       
+      }
+    }else if (manaNeeded == false){
+      for(let row of deck){
+        if(row.deck_card_state_id == 2 ){
+          this.deck_card_state_change(player_id,row.deck_card_id,1)
+          return { status: 200, result:{msm : "the player got the card"} }
+        }      
+      }
     }
+    
     
     return { status: 400, result:{msm : "the player doesnt have enough mana"} };
   } catch(err) {

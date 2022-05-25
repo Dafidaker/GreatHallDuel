@@ -1,3 +1,5 @@
+//const { end_round } = require("../../../models/roundModel")
+
 class Hud{
 
     constructor(id,x,y,width,height,type,click,text){
@@ -44,11 +46,29 @@ class Hud{
             stroke(0,0,0);
             rect(0 , 0 , canvasWidth , canvasHeight)
             fill(255)
-            text(discardScreenText, (0.5*canvasWidth) /* + (this.width/2) */ - (textWidth((discardScreenText))/2) , (0.5*canvasHeight)  + 10 ) 
+            text(discardScreenText, (0.5*canvasWidth)  - (textWidth((discardScreenText))/2) , (0.65*canvasHeight)   ) 
+        }
+    }
+    static drawEndGame(){
+        let atext
+        if(gameState == finishedGameState){
+            if(playerInfo[0].health >= 0 ){
+                fill(4, 169, 34,96)
+                atext = 'VICTORY'
+                
+            }else{
+                fill(169, 4, 15,96)
+                atext = 'DEFEAT'
+            }
+            
+            textSize(150)
+            strokeWeight(4) 
+            stroke(0,0,0);
+            rect(0 , 0 , canvasWidth , canvasHeight)
+            fill(255)
+            text(atext, (0.5*canvasWidth)  - (textWidth((atext))/2) , (0.5*canvasHeight)   ) 
         }
         
-
-
     }
     update(String){
         if(this.id == 1){

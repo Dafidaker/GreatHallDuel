@@ -58,7 +58,7 @@ module.exports.loginCheck = async function (name,password) {
 
   ///////////////////////////////////////////
 
-  module.exports.player_information_change = async function(ply_health,ply_mana,ply_total_mana,ply_energy,ply_id) {
+  module.exports.player_information_change = async function(player_health,player_mana,player_total_mana,player_energy,player_id) {
       try{
         console.log('change player model ')
         sql = `UPDATE player
@@ -68,8 +68,22 @@ module.exports.loginCheck = async function (name,password) {
               player_energy = $4
   
               WHERE player_id = $5`;
-  
-        let result = await pool.query(sql,[ply_health,ply_mana,ply_total_mana,ply_energy,ply_id]);
+        
+        let result = await pool.query(sql,[player_health,player_mana,player_total_mana,player_energy,player_id]);
+        /* if the player_health >= 0 then player_id and enemy_id states are 4  */
+        if(player_health <= 0){
+          let getsql =`select room_player_id,room_round_number from room
+          where room_num = (select room_num as num from room where room_player_id = $1 ) and room_player_id != $1 `;
+
+          let result = await pool.query(getsql,[player_id]);
+
+          result.rows[0].room_round_number += 1
+
+          rModel.change_player_state(player_id, -1 , 4)
+          rModel.change_player_state(result.rows[0].room_player_id, -1 , 4)
+
+        }        
+        
         //console.log(result.rows);
         return {status:200 , result : result};
       } catch(err) {
