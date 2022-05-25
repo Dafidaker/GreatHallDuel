@@ -133,7 +133,6 @@ module.exports.loginCheck = async function (name,password) {
            WHERE player_id = $2`;
     try{
       let result = await pool.query(sql,[player_tile,player_id]);
-      //console.log(result.rows);
       return {status:200 , result : result};
     } catch(err) {
       console.log(err);
@@ -212,7 +211,7 @@ module.exports.playCard = async function(player_id,card,tile) {
 module.exports.card_logic = async function(player,card,tile,enemy){
   //Layla Winifred Help
   if(card.card_id == 1){
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    card.deck_card_state_id = 3 // state of the card becomes deck
     //Create Card Logic
   }
 
@@ -245,7 +244,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       //Create Card Logic
     } 
-    card.deck_card_state_id = 2
+    card.deck_card_state_id = 3
   }
 
   //Fire Arrow //  :)
@@ -284,8 +283,8 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   
   //Shield Up
   if(card.card_id == 10){
-    card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Osric's Bow
@@ -299,14 +298,14 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   
   //Layla Winifred Command
   if(card.card_id == 12){
-    card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Kazamir Blessing
   if(card.card_id == 13){
-    card.deck_card_state_id = 2 // state of the card becomes deck
     //Create Card Logic
+    card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
   //Rissingshire Pebble
@@ -320,7 +319,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Bellbroke Boulder
   if(card.card_id == 15){
     if(tile.id == enemy.player_tile_id){
-      enemy.player_health -= 4 // removes health from enemy player
+      enemy.player_health -= 8 // removes health from enemy player
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -343,6 +342,11 @@ module.exports.card_logic = async function(player,card,tile,enemy){
                                   
   this.player_location_change(enemy.player_id,enemy.player_tile_id)
 
+}
+
+
+module.exports.active_logic = async function(card){
+  
 }
 
 module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,range ,type){
