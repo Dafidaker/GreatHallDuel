@@ -4,6 +4,10 @@ var dModel = require("../models/deckModel");
 var rModel = require("../models/roundModel");
     
 var activeCards = []
+let rows = []
+let columns = []
+let diagonal = []
+
 
 module.exports.loginCheck = async function (name,password) {
     try {
@@ -251,11 +255,12 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     card.deck_card_state_id = 3
   }
 
-  //Fire Arrow //  :)
+  //Fire Arrow //
   if(card.card_id == 6){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
       //Create Card Logic
+      activeCards.push({card:card.card_id,turn: 3})
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -264,6 +269,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 7){
     if(tile.id == card.card_range){
       //Create Card Logic
+      activeCards.push({card:card.card_id,turn: 3})
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -272,6 +278,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   if(card.card_id == 8){
     if(tile.id == enemy.player_tile_id){
       //Create Card Logic
+      activeCards.push({card:card.card_id,turn: 2})
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -281,6 +288,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
       //Create Card Logic
+      activeCards.push({card:card.card_id,turn: -1})
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -294,8 +302,11 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Osric's Bow
   if(card.card_id == 11){
     if(tile.id == enemy.player_tile_id){
-      enemy.player_health -= 2 // removes health from enemy player
+      enemy.player_health -= 4 // removes health from enemy player
       //Create Card Logic
+      if (tile.column == columns[5] || tile.column == columns[6] || tile.row == rows[5] || tile.row == rows[6]){
+        enemy.player_health -= 6
+      }
     } 
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
@@ -350,8 +361,50 @@ module.exports.card_logic = async function(player,card,tile,enemy){
 
 
 module.exports.active_logic = async function(card){
-  
+  for (let row of activeCards){
+    //Layla Winifred Help
+    if (card.card_id == 1){
+
+    }
+    
+    //Fire Arrow //
+    if(card.card_id == 6){
+
+    }
+
+    //Rain Song
+    if(card.card_id == 7){
+
+    }
+
+    //Ice Arrow
+    if(card.card_id == 8){
+
+    }
+
+    //Kazamir's Order
+    if(card.card_id == 9){
+
+    }
+
+    //Osric's Bow
+    if(card.card_id == 11){
+
+    }
+
+    //Layla Winifred Command
+    if(card.card_id == 12){
+
+    }
+
+    //Kazamir Blessing
+    if(card.card_id == 13){
+
+    }
+    
+  }
 }
+
 
 module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,range ,type){
   //get player position
@@ -368,10 +421,6 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
 
 
   //creates tables of nº rows and columns where the tiles are clicable
-  let rows = []
-  let columns = []
-  let diagonal = []
-  
   
   for (i = 1 ; i < range+1 ; i++){
       rows.push (inicialRow + i)
