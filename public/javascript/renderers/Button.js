@@ -46,6 +46,11 @@ class Button{
                     requestDrawCard()
                     //updateDeck()
                 }
+                if(this.text == 'Basic Attack'){
+                    //nextRound()
+                    gameState = basicAttackState
+                    //updateDeck()
+                }
                 
             } 
         }else{

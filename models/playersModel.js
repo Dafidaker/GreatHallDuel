@@ -110,7 +110,7 @@ module.exports.loginCheck = async function (name,password) {
   module.exports.player_tile = async function(playerid) {
     let sqlPlayer = `select player_tile_id 
                 from  player 
-                where  player_id = $1`
+                where  player_id = $1` 
                 
 
     let sqlEnemy = `select player_tile_id , player_num, player_id
@@ -437,7 +437,7 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
 
       if( (selectedTile.row >= (inicialRow - areaRange)) && (selectedTile.row <= (inicialRow + areaRange)) ){
           if((selectedTile.column >= (inicialColumn - areaRange)) && (selectedTile.column <= (inicialColumn + areaRange))){
-              tile.highlighted = true 
+            return true
           } 
       }
 

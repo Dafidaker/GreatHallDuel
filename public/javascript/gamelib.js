@@ -16,6 +16,7 @@ const myRoundState = 1
     const movingState = 1.1
     const playingCardState = 1.2
     const discardCardState = 1.3
+    const basicAttackState = 1.4
 const enemyState = 2
     const counterState = 2.1
 
