@@ -152,11 +152,7 @@ module.exports.drawCard = async function(player_id) {
       }
       
     }
-
     
-    
-
-
     return { status: 400, result:{msm : "the player doesnt have enough mana"} };
   } catch(err) {
     console.log(err);

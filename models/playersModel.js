@@ -3,6 +3,8 @@ var pool = require('./connection.js')
 var dModel = require("../models/deckModel");
 var rModel = require("../models/roundModel");
     
+var activeCards = []
+
 module.exports.loginCheck = async function (name,password) {
     try {
       let sql = `select player_id from player where player_name = $1 and player_password = $2`;
@@ -210,9 +212,11 @@ module.exports.playCard = async function(player_id,card,tile) {
 
 module.exports.card_logic = async function(player,card,tile,enemy){
   //Layla Winifred Help
+  
   if(card.card_id == 1){
     card.deck_card_state_id = 3 // state of the card becomes deck
     //Create Card Logic
+    activeCards.push({card:card.card_id,turn:-1})
   }
 
   //Barrel Roll
@@ -422,8 +426,23 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
           }
       }
   } 
-  
 
+    if(type == 0){
+      return true
+  }
+
+  if(type == 10){
+      
+      let areaRange = (range-1)/2
+
+      if( (selectedTile.row >= (inicialRow - areaRange)) && (selectedTile.row <= (inicialRow + areaRange)) ){
+          if((selectedTile.column >= (inicialColumn - areaRange)) && (selectedTile.column <= (inicialColumn + areaRange))){
+              tile.highlighted = true 
+          } 
+      }
+
+  }
+  
 }
 
 
@@ -476,7 +495,9 @@ module.exports.basicAttack = async function(player_id,tile) {
     if(player.player_energy >= 1){
       if(await this.checkSelectedTile(player.player_tile_id,tile, 1, 4)){  //check if he player selected a tile he could 
         player.player_energy -= 1
-        enemy.player_health -= 1
+        if(tile.id == enemy.player_tile_id){
+          enemy.player_health -= 1 // removes health from enemy player
+        } 
       }
       
     this.player_information_change(player.player_health,
