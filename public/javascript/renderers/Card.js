@@ -1,9 +1,9 @@
 const cardWidth = 140
 const cardHeight = 190 
 const cardsBox ={
-    width: 650,
+    width: 800,
     height: 300,
-    x : 600,
+    x : 635,
     y:850 ,
     color: 100 
 }

@@ -320,6 +320,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
   //Kazamir Blessing
   if(card.card_id == 13){
     //Create Card Logic
+
     card.deck_card_state_id = 2 // state of the card becomes deck
   }
   
@@ -384,6 +385,11 @@ module.exports.active_logic = async function(card){
 
     //Kazamir's Order
     if(card.card_id == 9){
+
+    }
+
+    //Osric's Bow
+    if(card.card_id == 11){
 
     }
 
