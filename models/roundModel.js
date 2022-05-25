@@ -73,8 +73,6 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
       } 
       player.rows[0].player_energy = 3
 
-      //console.log('aaaaaaaaaaaaaaa ' + JSON.stringify(player.rows))
-
       let getsql2 = `UPDATE player
                     SET player_total_mana = $2 , 
                     player_mana = $2,
@@ -92,7 +90,6 @@ module.exports.change_round_number = async function(room_num,newroundnum,newstat
         }
       }
 
-      //console.log(result.rows);
       return { status: 200, result:{ msg: "Changed turn" }};
     } catch(err) {
       console.log(err);
