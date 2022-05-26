@@ -466,7 +466,7 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
       columns.push(inicialColumn + i)
       columns.push(inicialColumn - i)
 
-      if(range == 8){
+      if(type == 8){
         diagonal.push({row: inicialRow + i , column: inicialColumn + i})
         diagonal.push({row: inicialRow + i , column: inicialColumn - i })
 
@@ -496,6 +496,8 @@ module.exports.checkSelectedTile = async function(playerTile  , selectedTile ,ra
   if(type == 8){
      
       for(let possiblediagonal of diagonal){
+        let uuu = 1
+        
           if((selectedTile.row == possiblediagonal.row) && (selectedTile.column == possiblediagonal.column)) return true
       }
 
@@ -602,6 +604,62 @@ module.exports.basicAttack = async function(player_id,tile) {
 
    
  return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result: err};
+  }
+}
+module.exports.reset = async function(player_id){
+  try{
+    //get enemy id 
+   
+    let getsql =`select room_player_id from room
+    where room_num = (select room_num as num from room where room_player_id = $1 ) and 
+    room_player_id != $1 `;
+
+    let result = await pool.query(getsql,[player_id]);
+    let enemyId = result.rows[0]
+
+  //gets enemy´s and player's information 
+    let result1 = await this.getPlayerInfo(enemyId.room_player_id);
+    let enemy = result1.result[0]
+
+    result1 = await this.getPlayerInfo(player_id);
+    let player = result1.result[0]
+
+    player.player_health = 20
+    player.player_mana = 0
+    player.player_total_mana = 0
+    player.player_energy = 3
+    
+    enemy.player_health = 20
+    enemy.player_mana = 0
+    enemy.player_total_mana = 0
+    enemy.player_energy = 3
+      
+    this.player_information_change(player.player_health,
+      player.player_mana,
+      player.player_total_mana,
+      player.player_energy,
+      player.player_id)
+
+
+    this.player_information_change(enemy.player_health,
+      enemy.player_mana,
+      enemy.player_total_mana,
+      enemy.player_energy,
+      enemy.player_id)
+
+    await dModel.destroyDeck(player_id)
+    await dModel.destroyDeck(enemyId)
+
+    dModel.make_deck(player_id)
+    dModel.make_deck(enemyId)
+    
+    rModel.change_player_state(player_id,1,1)
+    rModel.change_player_state(enemyId.room_player_id,1,2)
+   
+   return { status: 200, result : { msg:"game reset" } };
   } catch(err) {
     console.log(err);
     return { status: 500, result: err};

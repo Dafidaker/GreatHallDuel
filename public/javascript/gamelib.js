@@ -81,7 +81,7 @@ function preload() {
 
 
 async function Reset(){
-    SetInicialState()
+    reset()
 }
 
 async function AddMana(){
@@ -117,16 +117,14 @@ function SetInicialState() {
     
     ChangePlayerInfo(1,20,0,0,3) //(id,health,total_mana,mana,energy)
     ChangePlayerPosition(1,68) // (id,position)
-    ChangeCardState(1,1,1)  // (id,card,newstate)
-    ChangeCardState(1,4,1)  // (id,card,newstate)
     
     ChangePlayerInfo(2,20,0,0,3) //(id,health,total_mana,mana,energy)
     ChangePlayerPosition(2,14) // (id,position)
-    ChangeCardState(2,2,1)  // (id,card,newstate)
-    ChangeCardState(2,3,1)  // (id,card,newstate)
+    destroyDeck()
+    MakeDeck()
     
 
-    ChangeRound_Num_State(1,7,1)
+    //ChangeRound_Num_State(1,7,1)
 }
 
 function InicialInformation() {
@@ -207,9 +205,9 @@ async function createHud(){
 async function createButtons(){
     buttonTable =[]
 
-    buttonTable.push ( new Button (0.1,0.75,100,100,b_drawCard,'a','Get Card'))
-    buttonTable.push ( new Button (0.2,0.85,100,100,b_basicAttack,'a','Basic Attack'))
-    buttonTable.push ( new Button (0.75,0.45,120,120, b_nextRound,'a','End Turn'))
+    buttonTable.push ( new Button (0.1,0.75,100,100/* ,b_drawCard */,'a','Get Card'))
+    buttonTable.push ( new Button (0.2,0.85,100,100/* ,b_basicAttack */,'a','Basic Attack'))
+    buttonTable.push ( new Button (0.75,0.45,120,120/* , b_nextRound */,'a','End Turn'))
 
 
 }
@@ -432,7 +430,6 @@ function mouseClicked(){
         
 
         (selected == false)? gameState = myRoundState : null;
-        //changeGameState()
         highlighingTiles()
     }
     if(gameState == discardCardState){
@@ -443,22 +440,6 @@ function mouseClicked(){
         }
     }
 }
-
-/* function changeGameState(){
-
-    let isSelected = 0 ;
-
-    for(let card of playerDeck){
-        if(card.selected == true) isSelected =+ 1
-    }
-
-    for(let player of playerInfo){
-        if(player.selected == true) isSelected =+ 1
-    }
-
-    if(isSelected == 0 ) gameState = myRoundState
-
-} */
 
 
 function highlighingTiles(){
@@ -600,7 +581,7 @@ function highlightClickable(object,typeHighlight){
 function makePlay() {
     if(gameState == playingCardState){
         if(playerInfo[0].mana >= selectedCard.mana){
-            playerInfo[0].mana -= selectedCard.mana
+            //playerInfo[0].mana -= selectedCard.mana
             
             //database
             requestPlayCard(selectedCard,selectedTile)
@@ -633,8 +614,8 @@ function makePlay() {
         
     }else if(gameState == basicAttackState){
         if(selectedTile.id == enemyInfo[0].tileIndex && playerInfo[0].energy > 0 ){
-            playerInfo[0].energy -= 1
-            enemyInfo[0].health -= 1
+            //playerInfo[0].energy -= 1
+            //enemyInfo[0].health -= 1
 
             //database
             requestBasicAttack(selectedTile)
@@ -667,4 +648,10 @@ function receiveObject(table, id){
         if(row.id == id) return row 
     }
     return null
+}
+
+function keyPressed() {
+    if (keyCode == 82 ) {
+        reset()
+    }
 }

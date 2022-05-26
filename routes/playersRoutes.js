@@ -40,6 +40,12 @@ router.get('/profile', auth.checkAuthentication, async function(req, res, next) 
 
 ////////////////////////////////////////////////////////
 
+router.post('/reset',auth.checkAuthentication, async function(req,res,next) {
+  console.log("reset game information");
+  let result = await pModel.reset(req.userId);
+  res.status(result.status).send(result.result);
+})
+
 router.post('/player_information_change', async function(req, res, next) {
     console.log("Change Player Info")
     let ply_health = req.body.ply_health;

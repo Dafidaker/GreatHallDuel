@@ -79,7 +79,7 @@ async function MakeDeck() {
     }
 }
 
-async function getallcards() {
+/* async function getallcards() {
     try {
         const response = await fetch(`/api/deck/get_cards`);
         if (response.status == 200) {
@@ -96,9 +96,9 @@ async function getallcards() {
         // Treat 500 errors here
         console.log(err);
     }
-} 
+}  */
 
-async function useCard(card,tile){
+/* async function useCard(card,tile){
     try {
         const response = await fetch('api/deck/use_card',
         {
@@ -120,7 +120,7 @@ async function useCard(card,tile){
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
 async function destroyDeck() {
     try {

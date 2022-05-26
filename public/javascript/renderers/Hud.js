@@ -52,7 +52,7 @@ class Hud{
     static drawEndGame(){
         let atext
         if(gameState == finishedGameState){
-            if(playerInfo[0].health >= 0 ){
+            if(playerInfo[0].health > 0 ){
                 fill(4, 169, 34,96)
                 atext = 'VICTORY'
                 

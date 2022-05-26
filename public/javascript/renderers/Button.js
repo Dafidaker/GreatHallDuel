@@ -58,6 +58,11 @@ class Button{
                     highlighingTiles()
                     
                 }
+
+                if(this.text == 'End Turn'){
+                    //nextRound()
+                    requestEndTurn()
+                }
                 
             }else{
                 this.selected = false

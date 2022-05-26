@@ -225,6 +225,29 @@ async function login(name, password) {
     }
 }
 
+async function reset(){
+    try {
+        const response = await fetch(`api/players/reset`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
+            body: null
+        });
+        if (response.status == 200) {
+            var  result= await response.json();
+            //print(result);
+         } else {
+             // Treat errors like 404 here
+             console.log(response);
+         }
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+}
+
 async function requestAction(data) {
     try {
         const response = await fetch(`/api/players/action`, 
