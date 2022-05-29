@@ -41,7 +41,7 @@ router.post('/use_card',auth.checkAuthentication, async function( req, res, next
 
 router.post('/destroy_deck',auth.checkAuthentication, async function( req, res, next) {
     console.log("destroy player`s deck");
-    let result = await dModel.destroyDeck(req.userId);
+    let result = await dModel.destroy_deck(req.userId);
     res.status(result.status).send(result.result);
 });
 

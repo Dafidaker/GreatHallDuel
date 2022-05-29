@@ -22,11 +22,9 @@ async function getplayerinformation() {
     try {
         const response = await fetch(`/api/players/player_info`);
         if (response.status == 200) {
-            /* player_id = response.player_id 
-            print('user id ' + player_id) */
+            
            var playerinfo = await response.json();
-           /* print('player id ' + playerinfo.result[0].player_id)
-           print('user id ' + playerinfo.player_id) */
+           
            if(playerinfo.result[0].player_id == playerinfo.player_id ){
                var playerindex = 0
                var enemyindex = 1
@@ -34,8 +32,6 @@ async function getplayerinformation() {
                 var playerindex = 1
                 var enemyindex = 0
             }
-                /* console.log('playerindex' + playerindex)
-                console.log('enemyindex' + enemyindex) */
 
            
             let playerif = {
@@ -70,7 +66,7 @@ async function getplayerinformation() {
     }
 } 
 
-async function ChangePlayerInfo(id,health,total_mana,mana,energy) {
+/* async function ChangePlayerInfo(id,health,total_mana,mana,energy) {
     try {
         
         const response = await fetch('/api/players/player_information_change',
@@ -92,26 +88,18 @@ async function ChangePlayerInfo(id,health,total_mana,mana,energy) {
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
 async function getplayersposition() {
     try {
         const response = await fetch(`api/players/player_tile`);
         if (response.status == 200) {
            let result = await response.json();
-           /* if (playersposition.player_num == 1) {
-            player_tile = playersposition[0].player_tile_id
-            enemy_tile = playersposition[1].player_tile_id
-
-           }else {
-            player_tile = playersposition[1].player_tile_id
-            enemy_tile = playersposition[0].player_tile_id
-           } */
+           
            let player_tile = result.player.resultPlayer.player_tile_id
            let enemy_tile = result.enemy.resultEnemy.player_tile_id
 
-           /* print('players position '+ playersposition[0].player_tile_id);
-           print('players position '+ playersposition[1].player_tile_id); */
+           
            return{player_tile , enemy_tile}
         } else {
             // Treat errors like 404 here
@@ -123,7 +111,7 @@ async function getplayersposition() {
     }
 } 
 
-async function ChangePlayerPosition(id,position) {
+/* async function ChangePlayerPosition(id,position) {
     try {
         
         const response = await fetch('api/players/player_location_change',
@@ -145,9 +133,9 @@ async function ChangePlayerPosition(id,position) {
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
-async function Play(id,room_id,round_number,play_num,play_tp_id,play_tile_id,play_state_id) {
+/* async function Play(id,room_id,round_number,play_num,play_tp_id,play_tile_id,play_state_id) {
     try {
         
         const response = await fetch('api/players/play',
@@ -171,9 +159,9 @@ async function Play(id,room_id,round_number,play_num,play_tp_id,play_tile_id,pla
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
-async function GetPlays(player_id) {
+/* async function GetPlays(player_id) {
     try {
        const response = await fetch(`api/players/getplays/${player_id}`);
        if (response.status == 200) {
@@ -191,7 +179,7 @@ async function GetPlays(player_id) {
                round: JSON.stringify(AllPlays[i].play_round_number)
            
            } 
-           print(Plays[0].type) */
+           print(Plays[0].type) 
        
            
           
@@ -203,7 +191,7 @@ async function GetPlays(player_id) {
        // Treat 500 errors here
        console.log(err);
    } 
-} 
+}  */
 
 async function login(name, password) {
     try {
@@ -260,7 +248,6 @@ async function requestAction(data) {
           body: JSON.stringify(data)
         });
         var result = await response.json();
-        // We are not checking for errors (considering the GUI is only allowing correct choices)
         return result;
     } catch (err) {
         // Treat 500 errors here

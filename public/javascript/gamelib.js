@@ -9,8 +9,6 @@ var playerDeck = []
 var boardTiles = []
 
 
-
-
 var gameState = 0
 const basicState = 0
 const myRoundState = 1
@@ -84,10 +82,10 @@ async function Reset(){
     reset()
 }
 
-async function AddMana(){
+/* async function AddMana(){
     ChangePlayerInfo(1,20,4,4,3)
     ChangePlayerInfo(2,20,4,4,3)
-}
+} */
 
 async function updateRoundState(){
     await getBattleRound()
@@ -113,27 +111,6 @@ async function updateRoundState(){
 
 }
 
-function SetInicialState() {
-    
-    ChangePlayerInfo(1,20,0,0,3) //(id,health,total_mana,mana,energy)
-    ChangePlayerPosition(1,68) // (id,position)
-    
-    ChangePlayerInfo(2,20,0,0,3) //(id,health,total_mana,mana,energy)
-    ChangePlayerPosition(2,14) // (id,position)
-    destroyDeck()
-    MakeDeck()
-    
-
-    //ChangeRound_Num_State(1,7,1)
-}
-
-function InicialInformation() {
-    getBattleRound() //Gets the round number and state as a nice string
-    getplayerinformation(player_id) // gets all the information from one player , 
-    getplayerdeck() // gets the deck from one player 
-    getplayersposition(player_id) // gets position from both players 
-    GameState= MyRoundState
-}
 
 async function setup() {
     noLoop();

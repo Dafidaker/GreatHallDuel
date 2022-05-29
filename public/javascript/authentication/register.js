@@ -11,7 +11,7 @@ async function registerUser(){
             let result = await register(player);
             if(result.inserted){
                 alert("Register was successful");
-                window.location = "index.html"
+                window.location = "./index.html"
             }else{
                 document.getElementById("result").innerHTML = "Not able to register";
             }

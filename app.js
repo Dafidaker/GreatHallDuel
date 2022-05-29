@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-//var roomsRouter = require('./routes/roomsRoutes');
+var roomsRouter = require('./routes/roomsRoutes');
 var playersRouter = require('./routes/playersRoutes');
 var deckRouter = require('./routes/deckRoutes');
 var roundRouter = require('./routes/roundRoutes');
@@ -21,7 +21,7 @@ app.use(cookieParser('BIG SECRET'));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-//app.use('/api/rooms', roomsRouter);
+app.use('/api/rooms', roomsRouter);
 app.use('/api/players',playersRouter);
 app.use('/api/deck',deckRouter);
 app.use('/api/round',roundRouter);

@@ -3,25 +3,9 @@ async function getplayerdeck() {
         const response = await fetch(`/api/deck/get_deck`);
         if (response.status == 200) {
            var playerdeck = await response.json();
-           //print(playerdeck);
-           //print(playerdeck.length)
-           /* for(i = 0; i < playerdeck.length; i++){
-                let playerdk[i] = {
-                    card_id: playerdeck[i].deck_card_id,
-                    card_name : playerdeck[i].card_name,
-                    card_state: playerdeck[i].card_state_name,
-                    card_state_id: playerdeck[i].deck_card_state_id,
-                    card_mana_cost: playerdeck[i].card_mana,
-                    card_range: playerdeck[i].card_range,
-                    card_type_range_id: playerdeck[i].card_type_range_id,
-                    card_type_range: playerdeck[i].type_range_name,
-                    card_cast : playerdeck[i].type_cast_name
-                    
-                }
-           } */
-           //print(playerdk)
+           
            return playerdeck ;
-           //print('num of cards per deck' + Object.keys(playerdk).length)
+           
         } else {
             // Treat errors like 404 here
             console.log(response);
@@ -32,7 +16,7 @@ async function getplayerdeck() {
     }
 } 
 
-async function ChangeCardState(id,card,newstate) {
+/* async function ChangeCardState(id,card,newstate) {
     try {
         
         const response = await fetch('api/deck/deck_card_state_change',
@@ -77,7 +61,7 @@ async function MakeDeck() {
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
 /* async function getallcards() {
     try {
@@ -122,7 +106,7 @@ async function MakeDeck() {
     }
 } */
 
-async function destroyDeck() {
+/* async function destroyDeck() {
     try {
         const response = await fetch(`api/deck/destroy_deck`,
         {
@@ -143,4 +127,4 @@ async function destroyDeck() {
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */

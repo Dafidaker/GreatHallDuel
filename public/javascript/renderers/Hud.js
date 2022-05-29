@@ -66,7 +66,10 @@ class Hud{
             stroke(0,0,0);
             rect(0 , 0 , canvasWidth , canvasHeight)
             fill(255)
-            text(atext, (0.5*canvasWidth)  - (textWidth((atext))/2) , (0.5*canvasHeight)   ) 
+            text(atext, (0.5*canvasWidth)  - (textWidth((atext))/2) , (0.5*canvasHeight)  ) 
+            textSize(50)
+            text('PRESS R TO RESTART THE GAME', (0.5*canvasWidth)  - (textWidth(('PRESS R TO RESTART THE GAME'))/2) , (0.5*canvasHeight) +100  ) 
+
         }
         
     }

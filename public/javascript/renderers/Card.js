@@ -103,7 +103,8 @@ class Card{
     }
 
     static mouseMoved(x,y){ 
-        if(x > cardsBox.x && x < (cardsBox.x+cardsBox.width) &&
+        if(gameState != discardCardState){
+            if(x > cardsBox.x && x < (cardsBox.x+cardsBox.width) &&
             y > cardsBox.y && y < (cardsBox.y+cardsBox.height)){
                 
                     cardsBox.color = 200
@@ -129,6 +130,12 @@ class Card{
                 
 
         }
+        }else{
+            for(let card of playerDeck){
+                card.y = yMin
+            }
+        }
+        
     }
     static drawCardsBox(){
         //fill(cardsBox.color)

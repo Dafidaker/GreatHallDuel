@@ -11,7 +11,7 @@ router.post('/register', async function(req,res,next) {
     let player_password = req.body.player_password;
     console.log("Register user with info: ");
     //console.log(player);
-    let result = await pModel.registerPlayer(player_name, player_password);
+    let result = await pModel.register_player(player_name, player_password);
     res.status(result.status).send(result.result);
 })
             
@@ -19,7 +19,7 @@ router.post('/login', async function(req, res, next) {
     console.log("Login")
     let name = req.body.player_name;
     let password = req.body.player_password;
-    let result = await pModel.loginCheck(name,password);
+    let result = await pModel.login_check(name,password);
     if (result.status == 200) {
         auth.saveUserId(res,result.result.userId); 
         res.status(result.status).send({msg:"User logged in"});
@@ -34,7 +34,7 @@ router.post('/logout', auth.checkAuthentication, async function(req, res, next) 
 
 router.get('/profile', auth.checkAuthentication, async function(req, res, next) {
     console.log("Get profile of logged user ");
-    let result = await pModel.getLoggedUserInfo(req.userId);
+    let result = await pModel.get_logged_user_info(req.userId);
     res.status(result.status).send(result.result);
 });
 
@@ -104,7 +104,7 @@ router.post('/play', async function( req, res) {
 router.get('/getplays/:playerid', async function( req, res) {
     console.log("Gets the plays") 
     let playerid = req.params.playerid;
-    let result = await pModel.getplays(playerid);
+    let result = await pModel.get_plays(playerid);
     res.status(result.status).send(result.result);
   })
 
@@ -127,9 +127,9 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
     } else if (action == "playCard"){
       let card = req.body.card;
       let tile = req.body.tile;
-      let result = await pModel.playCard(player_id,card,tile);
+      let result = await pModel.play_card(player_id,card,tile);
       if(result.status == 200){
-        result = await dModel.discardCard(player_id,card.id);
+        result = await dModel.discard_card(player_id,card.id);
       }
       res.status(result.status).send(result.result);  
     
@@ -139,17 +139,17 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
       res.status(result.status).send(result.result);
     
     } else  if (action == "drawCard") {
-      let result = await dModel.drawCard(player_id,true);
+      let result = await dModel.draw_card(player_id,true);
       res.status(result.status).send(result.result);
 
     } else  if (action == "discardCard") {
       let card = req.body.card;
-      let result = await dModel.discardCard(player_id,card.id);
+      let result = await dModel.discard_card(player_id,card.id);
       res.status(result.status).send(result.result);
 
     } else  if (action == "basicAttack") {
       let tile = req.body.tile;
-      let result = await pModel.basicAttack(player_id,tile);
+      let result = await pModel.basic_attack(player_id,tile);
       res.status(result.status).send(result.result);
 
     } else

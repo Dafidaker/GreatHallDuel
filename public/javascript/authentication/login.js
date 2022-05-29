@@ -6,7 +6,8 @@ async function loginUser() {
         let result = await login(name, password);
         console.log(result)
         if (result.logged == 200 ) {
-            window.location = "game.html"
+            /* window.location = "./game.html" */
+            window.location.assign("game.html")
         } else {
             document.getElementById("result").innerHTML = "Wrong username or password";
         }

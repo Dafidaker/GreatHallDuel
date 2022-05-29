@@ -1,4 +1,4 @@
-async function ChangeRound_Num_State(room_num,newroundnum,newstate) {
+/* async function ChangeRound_Num_State(room_num,newroundnum,newstate) {
     try {
         
         const response = await fetch('api/round/change_round_number',
@@ -21,7 +21,7 @@ async function ChangeRound_Num_State(room_num,newroundnum,newstate) {
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */
 
 async function getBattleRound() {
     try {
@@ -55,7 +55,7 @@ async function getBattleRound() {
     }
 }   
 
-async function nextRound(){
+/* async function nextRound(){
     try {
         const response = await fetch('api/round/next_round',
         {
@@ -77,4 +77,4 @@ async function nextRound(){
         // Treat 500 errors here
         console.log(err);
     }
-}
+} */

@@ -14,34 +14,34 @@ module.exports.get_deck = async function(playerid){
       }
   }
 
-  module.exports.get_deck_card = async function(playerid,card){
-    let sql = `select  *
-    from deck ,card  
-    where deck_player_id = $1 and 
-    deck_card_id = $2 and card_id = deck_card_id  `;
-      try{
-        let result = await pool.query(sql,[playerid,card]);
-        //console.log(result.rows);
-        return { status: 200, result: result.rows }
-      } catch(err) {
-        console.log(err);
-        return { status: 500, result:err }
-      }
-  }
-
-  module.exports.deck_card_state_change = async function(ply_id, card_id, card_state_id) {
+module.exports.get_deck_card = async function(playerid,card){
+  let sql = `select  *
+  from deck ,card  
+  where deck_player_id = $1 and 
+  deck_card_id = $2 and card_id = deck_card_id  `;
     try{
-      sql = `UPDATE deck
-            SET deck_card_state_id = $1
-            WHERE deck_player_id = $2 and deck_card_id = $3`;
-      //console.log(sql)
-      let result = await pool.query(sql,[card_state_id,ply_id,card_id]);
+      let result = await pool.query(sql,[playerid,card]);
       //console.log(result.rows);
-      return { status: 200, result:result };
+      return { status: 200, result: result.rows }
     } catch(err) {
       console.log(err);
-      return { status: 500, result:err };
+      return { status: 500, result:err }
     }
+}
+
+module.exports.deck_card_state_change = async function(ply_id, card_id, card_state_id) {
+  try{
+    sql = `UPDATE deck
+          SET deck_card_state_id = $1
+          WHERE deck_player_id = $2 and deck_card_id = $3`;
+    //console.log(sql)
+    let result = await pool.query(sql,[card_state_id,ply_id,card_id]);
+    //console.log(result.rows);
+    return { status: 200, result:result };
+  } catch(err) {
+    console.log(err);
+    return { status: 500, result:err };
+  }
 }
 
 module.exports.make_deck = async function(plyId) {
@@ -129,12 +129,12 @@ module.exports.get_a_card = async function(id){
   }
 } */
 
-module.exports.drawCard = async function(player_id,manaNeeded) {
+module.exports.draw_card = async function(player_id,manaNeeded) {
   try{
     let result = await this.get_deck(player_id)
     let deck = result.result
 
-    let result1 = await pModel.getPlayerInfo(player_id);
+    let result1 = await pModel.get_players_info(player_id);
     let player = result1.result[0]
 
     if(manaNeeded == true){
@@ -170,7 +170,7 @@ module.exports.drawCard = async function(player_id,manaNeeded) {
   }
 }
 
-module.exports.discardCard = async function(player_id,card_id) {
+module.exports.discard_card = async function(player_id,card_id) {
   try{
     let result = await this.get_deck(player_id)
     let deck = result.result
@@ -207,14 +207,14 @@ module.exports.discardCard = async function(player_id,card_id) {
     
   }
   
-  return { status: 200, result:{msm : "card was discarded"} } ;
+return { status: 200, result:{msm : "card was discarded"} } ;
   } catch(err) {
     console.log(err);
     return { status: 500, result: err};
   }
 }
 
-module.exports.destroyDeck = async function(player_id) {
+module.exports.destroy_deck = async function(player_id) {
   try{
     let sql = `DELETE FROM deck  WHERE deck_player_id = $1 `
     
