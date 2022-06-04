@@ -39,7 +39,6 @@ async function getplayerinformation() {
                 mana_total:playerinfo.result[playerindex].player_total_mana,
                 health:playerinfo.result[playerindex].player_health,
                 energy:playerinfo.result[playerindex].player_energy,
-                num:playerinfo.result[playerindex].player_num,
                 name:playerinfo.result[playerindex].player_name,
                 id:playerinfo.result[playerindex].player_id,
                 position:playerinfo.result[playerindex].player_tile_id}
@@ -49,7 +48,6 @@ async function getplayerinformation() {
                 mana_total:playerinfo.result[enemyindex].player_total_mana,
                 health:playerinfo.result[enemyindex].player_health,
                 energy:playerinfo.result[enemyindex].player_energy,
-                num:playerinfo.result[enemyindex].player_num,
                 name:playerinfo.result[enemyindex].player_name,
                 id:playerinfo.result[enemyindex].player_id,
                 position:playerinfo.result[enemyindex].player_tile_id}

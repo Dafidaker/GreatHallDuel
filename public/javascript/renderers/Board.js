@@ -23,12 +23,12 @@ class Board {
         //stroke(0)
         
         strokeWeight(1) 
-        stroke(0,0,0)
+        stroke(Color.black)
 
         if (this.id % 2 == 0){
-            fill(0,0,0)
+            fill(Color.black)
         } else {
-            fill(127, 101, 57) 
+            fill(Color.brown) 
         }
         rect(this.x , this.y, this.width, this.height)
 
@@ -36,9 +36,9 @@ class Board {
         //text
         textSize(12)
         if (this.id % 2 == 0){
-            fill(127, 101, 57)
+            fill(Color.brown)
         } else {
-            fill(0,0,0)
+            fill(Color.black)
         } 
         text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 )
         
@@ -48,7 +48,7 @@ class Board {
             this.valueHighlight +=  1.5;
             if (this.valueHighlight > 200) this.valueHighlight = 100;
 
-            stroke(100, 200, 100,/* this.valueHighligh */)
+            stroke(Color.green)
             strokeWeight(4) 
             noFill()
             rect(this.x+5 , this.y + 5 , 50, 50)
@@ -60,9 +60,9 @@ class Board {
             this.value += 3;
             if (this.value > 200) this.value = 70;
             
-            stroke(255, 255, 255/* ,this.value */);
+            stroke(Color.white);
             strokeWeight(4) 
-            fill(255,255,255,0)
+            noFill()
             rect(this.x+5 , this.y + 5 , 50, 50)
             
 

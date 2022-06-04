@@ -12,6 +12,8 @@ const yMax = 1050
 const yMin = 880
 const spaceBetweenCards = 150 
 const cardsXOffset = 500 
+const activeCardsXOffset = 1200 
+
 
 
 const imgCenterVertical = 1; //0.4
@@ -37,7 +39,10 @@ class Card{
             this.x = (order * spaceBetweenCards) + cardsXOffset ;
             this.y = yMax;
         }
-         
+        if(state == 3){
+            this.x = (Math.abs(order) * spaceBetweenCards) + activeCardsXOffset;
+            this.y = canvasHeight * 0.5;
+        }
     }
     /* static initImgs(imgHash) {
         Card.cardImages = imgHash;
@@ -59,7 +64,7 @@ class Card{
             text(this.name ,this.x+(this.width/2) - (textWidth(this.name)/2) ,this.y+(this.height/2))
         } */
         
-        if (this.id && this.state == 1 ) {
+        if (this.id && this.state != 2 ) {
             //imageMode(CENTER);
             let img = Card.cardImages[this.id - 1];
             let ratio = (this.width*imgRelWidth)/img.width;
@@ -76,17 +81,22 @@ class Card{
             this.y = yMax 
         }
 
-        if(state != 1){
+        if(state == 2){
             this.x = null ;
-        }else if( state == 1 ){
-            this.x = (order * spaceBetweenCards) + cardsXOffset ;
+        }else {
+            if( state == 1 ) this.x = (order * spaceBetweenCards) + cardsXOffset ;
+            if( state == 3 ){ 
+                this.x = (Math.abs(order) * spaceBetweenCards) + activeCardsXOffset;
+                this.y = canvasHeight * 0.5;
+            }
         }
         
         this.state = state;
         this.order = order ;
     }
     click(x,y) {
-        if(x > this.x && x < (this.x+this.width) &&
+        if(this.state != 3){
+            if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
                 
                 if(gameState == discardCardState){
@@ -99,7 +109,9 @@ class Card{
             }else{
                 this.selected = false
                 
-            }
+            } 
+        }
+       
     }
 
     static mouseMoved(x,y){ 
@@ -111,7 +123,7 @@ class Card{
 
                 if(inside == false){
                     for(let card of playerDeck){
-                        card.y = yMin
+                        if(card.state == 1) card.y = yMin
                     }
                     inside = true    
                 }
@@ -124,7 +136,7 @@ class Card{
                 cardsBox.color = 100
 
                 for(let card of playerDeck){
-                    card.y = yMax
+                    if(card.state == 1)card.y = yMax
                 }
             }
                 
@@ -132,7 +144,7 @@ class Card{
         }
         }else{
             for(let card of playerDeck){
-                card.y = yMin
+                if(card.state == 1) card.y = yMin
             }
         }
         

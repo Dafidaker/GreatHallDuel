@@ -5,7 +5,7 @@ var auth = require("../models/authentication")
 
 router.get('/get_deck',auth.checkAuthentication,  async function(req, res, next) {
     console.log("Get deck of player ");
-    let result = await dModel.get_deck(req.userId);
+    let result = await dModel.get_deck(req.userId,'all');
     res.status(result.status).send(result.result);
 });
 

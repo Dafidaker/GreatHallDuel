@@ -25,7 +25,7 @@
 
 async function getBattleRound() {
     try {
-        //console.log('request');
+        console.log('geting battle round ');
         const response = await fetch(`api/round/round_number`);
         if (response.status == 200) {
             
@@ -55,9 +55,9 @@ async function getBattleRound() {
     }
 }   
 
-/* async function nextRound(){
+async function startGame(){
     try {
-        const response = await fetch('api/round/next_round',
+        const response = await fetch('api/round/start_game',
         {
             method: "POST",
             headers: {
@@ -66,9 +66,8 @@ async function getBattleRound() {
             body: null 
         });
         if (response.status == 200) {
-            //getBattleRound()
-           var  result= await response.json();
-           print(result);
+           /* var  result= await response.json();
+           print(result); */
         } else {
             // Treat errors like 404 here
             console.log(response);
@@ -77,4 +76,28 @@ async function getBattleRound() {
         // Treat 500 errors here
         console.log(err);
     }
-} */
+} 
+
+async function exitGame(){
+    try {
+        const response = await fetch('api/round/exit_game',
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+              },
+            body: null 
+        });
+        if (response.status == 200) {
+           /* var  result= await response.json();
+           print(result); */
+           
+        } else {
+            // Treat errors like 404 here
+            console.log(response);
+        }
+    } catch (err) {
+        // Treat 500 errors here
+        console.log(err);
+    }
+} 

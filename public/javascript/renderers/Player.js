@@ -22,50 +22,51 @@ class Player {
     draw(){
         
         if(this.player == true){
-            fill(255,255,255)
+            fill(Color.white)
             strokeWeight(1)
             rect((canvasWidth * 0.8) ,(canvasHeight * 0.79),(canvasWidth * 0.18),(canvasHeight * 0.18))
             noStroke()
             textSize(20)
-            fill(255)
+            fill(Color.white)
             text(this.name,(canvasWidth * 0.8)  ,(canvasHeight * 0.78))
-            fill(0, 153, 15)
+            fill(Color.green)
             text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.8) +10 ,(canvasHeight * 0.84) )
-            fill(0, 175, 235)
+            fill(Color.blue)
             text('MANA : ' + this.mana + '/' + this.totalMana,(canvasWidth * 0.8) +10 ,(canvasHeight * 0.89) )
-            fill(228, 164, 7)
+            fill(Color.orange)
             text('ENERGY : ' + this.energy +' /3',(canvasWidth * 0.8) +10 ,(canvasHeight * 0.94) )
         
-            fill(239, 87, 87)
+            
+            fill(Color.blue)
             //if(GameState == MovingState){fill(200, 20, 20)}
-            if(this.selected == true){fill(200, 20, 20)}
+            //if(this.selected == true){fill(200, 20, 20)}
             circle(this.x + 30 ,this.y + 30,60)
             textSize(10)
-            fill(255,255,255)
+            fill(Color.white)
             text('Player',this.x + 30 - textWidth('Player') / 2 ,this.y + 30)
 
 
         }
 
         if(this.player == false){
-            fill(255,255,255)
+            fill(Color.white)
             stroke(51)
             strokeWeight(1)
             rect((canvasWidth * 0.1) ,(canvasHeight * 0.05),(canvasWidth * 0.18),(canvasHeight * 0.18))
             noStroke()
             textSize(20)
-            fill(0,0,0)
+            fill(Color.black)
             text(this.name,(canvasWidth * 0.1)  ,(canvasHeight * 0.04))
-            fill(0, 153, 15)
+            fill(Color.green)
             text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.09) )
-            fill(0, 175, 235)
+            fill(Color.blue)
             text('MANA : ' + this.mana + '/' + this.totalMana,(canvasWidth * 0.1) +10 ,(canvasHeight * 0.14) )
-            fill(228, 164, 7)
+            fill(Color.orange)
             text('ENERGY : ' + this.energy +' /3',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.19) )
        
-            fill(87, 135, 239)
+            fill(Color.red)
             circle(this.x + 30 ,this.y + 30,60)
-            fill(255,255,255)
+            fill(Color.white)
             textSize(10)
             text('enemy',this.x + 30 - textWidth('Enemy') / 2 ,this.y + 30)
         }

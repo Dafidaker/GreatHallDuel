@@ -15,7 +15,7 @@ var clicablebuttons = {}
 
 let player_tile = 2
 let enemy_tile = 2
-let player_num = 1
+//let player_num = 1
 
 var n = 0 
 var CardSelect_index

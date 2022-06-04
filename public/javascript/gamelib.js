@@ -19,7 +19,7 @@ const myRoundState = 1
 const enemyState = 2
     const counterState = 2.1
 const finishedGameState = 3
-
+const incompleteGameState = 4 
 
 
 let selectedCard
@@ -101,8 +101,10 @@ async function updateRoundState(){
     }else if (Round.PlayerState == 1){
         gameState =  enemyState
         cursor('not-allowed')
-    }else if (Round.PlayerState == 4){
+    }else if (Round.PlayerState == 4 ){
         gameState = finishedGameState
+    }else if (Round.PlayerState == 5 ){
+        gameState = incompleteGameState
     }
 
     for(let hud of hudTable){
@@ -131,8 +133,11 @@ async function setup() {
 
 async function updateGame(){
     await updateRoundState()
-    await updatePlayers();
+    if( gameState != incompleteGameState){
+        await updatePlayers();
     await updateDeck()
+    }
+    
     
 }
 
@@ -182,9 +187,9 @@ async function createHud(){
 async function createButtons(){
     buttonTable =[]
 
-    buttonTable.push ( new Button (0.1,0.75,100,100/* ,b_drawCard */,'a','Get Card'))
-    buttonTable.push ( new Button (0.2,0.85,100,100/* ,b_basicAttack */,'a','Basic Attack'))
-    buttonTable.push ( new Button (0.75,0.45,120,120/* , b_nextRound */,'a','End Turn'))
+    buttonTable.push ( new Button (0.1,0.75,100,100,'Get Card',-1))
+    buttonTable.push ( new Button (0.2,0.85,100,100,'Basic Attack',-1))
+    buttonTable.push ( new Button (0.75,0.45,120,120,'End Turn',-1))
 
 
 }
@@ -629,6 +634,7 @@ function receiveObject(table, id){
 
 function keyPressed() {
     if (keyCode == 82 ) {
-        reset()
+        exitGame()
+        window.location='./lobby.html'
     }
 }

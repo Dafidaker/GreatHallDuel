@@ -24,13 +24,13 @@ class Hud{
             textSize(18)
         }
         textSize(24)
-        fill(200)
+        fill(Color.grey)
         strokeWeight(4) 
         stroke(0,0,0);
         //textSize(18)
         rect(this.x , this.y , this.width , this.height)
         //print(this.text)
-        fill(255)
+        fill(Color.white)
         text(this.text, this.x + (this.width/2) - (textWidth((this.text)/* .toString() */)/2) , this.y + (this.height/2) + 10  )
         
 
@@ -43,9 +43,9 @@ class Hud{
             textSize(55)
             fill(0,0,0,90)
             strokeWeight(4) 
-            stroke(0,0,0);
+            stroke(Color.black);
             rect(0 , 0 , canvasWidth , canvasHeight)
-            fill(255)
+            fill(Color.white)
             text(discardScreenText, (0.5*canvasWidth)  - (textWidth((discardScreenText))/2) , (0.65*canvasHeight)   ) 
         }
     }
@@ -63,12 +63,27 @@ class Hud{
             
             textSize(150)
             strokeWeight(4) 
-            stroke(0,0,0);
+            stroke(Color.black);
             rect(0 , 0 , canvasWidth , canvasHeight)
-            fill(255)
+            fill(Color.white)
             text(atext, (0.5*canvasWidth)  - (textWidth((atext))/2) , (0.5*canvasHeight)  ) 
             textSize(50)
-            text('PRESS R TO RESTART THE GAME', (0.5*canvasWidth)  - (textWidth(('PRESS R TO RESTART THE GAME'))/2) , (0.5*canvasHeight) +100  ) 
+            text('PRESS R TO EXIT THE GAME', (0.5*canvasWidth)  - (textWidth(('PRESS R TO RESTART THE GAME'))/2) , (0.5*canvasHeight) +100  ) 
+
+        }else if(gameState == incompleteGameState){
+            atext = 'GAME ENDED'
+            fill(Color.grey,96)
+            textSize(150)
+            strokeWeight(4) 
+            stroke(Color.black);
+            rect(0 , 0 , canvasWidth , canvasHeight)
+            fill(Color.white)
+            text(atext, (0.5*canvasWidth)  - (textWidth((atext))/2) , (0.5*canvasHeight)  ) 
+            textSize(50)
+            text('THE ENEMY LEFT THE GAME', (0.5*canvasWidth)  - (textWidth(('THE ENEMY LEFT THE GAME'))/2) , (0.5*canvasHeight) +100  ) 
+            textSize(40)
+            text('PRESS R TO EXIT THE GAME', (0.5*canvasWidth)  - (textWidth(('PRESS R TO EXIT THE GAME'))/2) , (0.7*canvasHeight) +100  ) 
+
 
         }
         

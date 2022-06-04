@@ -61,7 +61,7 @@ router.post('/player_information_change', async function(req, res, next) {
 router.get('/player_info',auth.checkAuthentication, async function( req, res) {
   //console.log("Get Player Info") 
   //console.log(req.userId)
-    let result = await pModel.get_player_info(req.userId);
+    let result = await pModel.get_players_info(req.userId);
     //console.log('result' + JSON.stringify(result.result))
     res.status(result.status).send(result.result);
   })
@@ -128,9 +128,9 @@ router.post('/action',auth.checkAuthentication, async function(req, res, next) {
       let card = req.body.card;
       let tile = req.body.tile;
       let result = await pModel.play_card(player_id,card,tile);
-      if(result.status == 200){
+      /* if(result.status == 200){
         result = await dModel.discard_card(player_id,card.id);
-      }
+      } */
       res.status(result.status).send(result.result);  
     
     } else if (action == "move") {

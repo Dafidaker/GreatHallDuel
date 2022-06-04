@@ -13,7 +13,7 @@ async function registerUser(){
                 alert("Register was successful");
                 window.location = "./index.html"
             }else{
-                document.getElementById("result").innerHTML = "Not able to register";
+                document.getElementById("result").innerHTML = "name already taken";
             }
         } else {
             alert("Password dosen't match")
