@@ -40,7 +40,7 @@ class Board {
         } else {
             fill(Color.black)
         } 
-        text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 )
+       // text(this.id, this.x +30 - (textWidth(this.id.toString())/2) , this.y + 30 )
         
         //if highlighted
          if (this.highlighted == true){

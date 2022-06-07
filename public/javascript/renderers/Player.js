@@ -2,9 +2,14 @@
 
 const playerWidth = 60
 const playerHeight = 60 
+const imgsRelWidth = 1
+
+let hudWidth
+let hudRatio
 
 class Player {
     static effects = [];
+    static playerImages =[];
     constructor(name,id,selected,tileIndex,mana,x,y,health,totalMana,energy,order,player) {
         this.width = playerWidth;
         this.height = playerHeight;
@@ -28,23 +33,33 @@ class Player {
 
         this.effects = [];
 
+        hudWidth = Player.playerImages.playerHud.width
+        hudRatio = (canvasWidth * 0.18*imgsRelWidth)/hudWidth;
     }
     draw(){
-        
+
         if(this.player == true){
             fill(Color.white)
             strokeWeight(1)
-            rect((canvasWidth * 0.8) ,(canvasHeight * 0.79),(canvasWidth * 0.18),(canvasHeight * 0.18))
+            //rect((canvasWidth * 0.8) ,(canvasHeight * 0.79),(canvasWidth * 0.18),(canvasHeight * 0.18))
+
+            let img = Player.playerImages.playerHud
+            image(img,(canvasWidth * 0.8),(canvasHeight * 0.7),img.width*hudRatio,img.height*hudRatio)
+
+
+            let y = 0.78
+            let x = 0.9
+            let spacing = 0.045
             noStroke()
             textSize(20)
             fill(Color.white)
-            text(this.name,(canvasWidth * 0.8)  ,(canvasHeight * 0.78))
+            text(this.name,(canvasWidth * 0.86)  ,(canvasHeight * 0.75))
             fill(Color.green)
-            text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.8) +10 ,(canvasHeight * 0.84) )
+            text( this.health + ' /20',(canvasWidth * x) +10 ,(canvasHeight * (y+spacing)) )
             fill(Color.blue)
-            text('MANA : ' + this.mana + '/' + this.totalMana,(canvasWidth * 0.8) +10 ,(canvasHeight * 0.89) )
+            text( this.mana + '/' + this.totalMana,(canvasWidth * x) +10 ,(canvasHeight * (y+(spacing*2))) )
             fill(Color.orange)
-            text('ENERGY : ' + this.energy +' /3',(canvasWidth * 0.8) +10 ,(canvasHeight * 0.94) )
+            text(this.energy +' /3',(canvasWidth * x) +10 ,(canvasHeight * (y+(spacing*3))) )
         
             
             fill(Color.blue)
@@ -82,17 +97,27 @@ class Player {
             fill(Color.white)
             stroke(51)
             strokeWeight(1)
-            rect((canvasWidth * 0.1) ,(canvasHeight * 0.05),(canvasWidth * 0.18),(canvasHeight * 0.18))
+            //rect((canvasWidth * 0.1) ,(canvasHeight * 0.05),(canvasWidth * 0.18),(canvasHeight * 0.18))
+
+
+
+            let img = Player.playerImages.enemyHud
+            image(img,(canvasWidth * 0.1),(canvasHeight * 0.05),img.width*hudRatio,img.height*hudRatio)
+
+            let y = 0.13
+            let x = 0.165
+            let spacing = 0.045
             noStroke()
             textSize(20)
-            fill(Color.black)
-            text(this.name,(canvasWidth * 0.1)  ,(canvasHeight * 0.04))
+            fill(Color.white)
+            text(this.name,(canvasWidth * 0.16)  ,(canvasHeight * 0.1))
             fill(Color.green)
-            text('HEALTH : ' + this.health + ' /20',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.09) )
+            text( this.health + ' /20',(canvasWidth * x) +10 ,(canvasHeight * (y+spacing)) )
             fill(Color.blue)
-            text('MANA : ' + this.mana + '/' + this.totalMana,(canvasWidth * 0.1) +10 ,(canvasHeight * 0.14) )
+            text( this.mana + '/' + this.totalMana,(canvasWidth * x) +10 ,(canvasHeight * (y+(spacing*2))) )
             fill(Color.orange)
-            text('ENERGY : ' + this.energy +' /3',(canvasWidth * 0.1) +10 ,(canvasHeight * 0.19) )
+            text(this.energy +' /3',(canvasWidth * x) +10 ,(canvasHeight * (y+(spacing*3))) )
+
        
             fill(Color.red)
             circle(this.x + 30 ,this.y + 30,60)

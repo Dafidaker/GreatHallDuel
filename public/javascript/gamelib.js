@@ -61,13 +61,13 @@ function preload() {
     backgroundImg = loadImage('assets/images/Backgrounds/Backgroung.png')
     backgroundImgEnemyState = loadImage('assets/images/Backgrounds/basic.png')
 
-    //BUTTONS  
+    /* //BUTTONS  
     b_basicAttack = loadImage('assets/images/Buttons/basicAttack.png')
     b_basicAttackHighlighted = loadImage('assets/images/Buttons/basicAttack_highlighted.png')
     b_drawCard = loadImage('assets/images/Buttons/drawACard.png')
     b_drawCardHighlighted = loadImage('assets/images/Buttons/drawACard_highlighted.png')
     b_nextRound = loadImage('assets/images/Buttons/nextRound.png')
-    b_nextRoundHighlighted = loadImage('assets/images/Buttons/nextRound_highlighted.png')
+    b_nextRoundHighlighted = loadImage('assets/images/Buttons/nextRound_highlighted.png') */
 
     //CARDS
     for(i = 1 ; i < 16 ; i++){
@@ -80,7 +80,23 @@ function preload() {
         let a = loadImage('assets/images/effects/'+i+'.png');
         Player.effects.push(a)
     }
-    
+
+    //Buttons
+    for(i = 1 ; i < 4 ; i++){
+        let img = loadImage('assets/images/Buttons/'+i+'.png');
+        Button.buttonImages.push(img)
+        let img1 = loadImage('assets/images/Buttons/'+i+'_h.png');
+        Button.buttonHighImages.push(img1)
+
+    }
+
+    //Players
+
+    let playerHud = loadImage('assets/images/player/playerInfo.png')
+    let enemyHud = loadImage('assets/images/player/enemyInfo.png')
+
+    Player.playerImages.playerHud = playerHud
+    Player.playerImages.enemyHud = enemyHud
 }
 
 
@@ -197,9 +213,9 @@ async function createHud(){
 async function createButtons(){
     buttonTable =[]
 
-    buttonTable.push ( new Button (0.1,0.75,100,100,'Get Card',-1))
-    buttonTable.push ( new Button (0.2,0.85,100,100,'Basic Attack',-1))
-    buttonTable.push ( new Button (0.75,0.45,120,120,'End Turn',-1))
+    buttonTable.push ( new Button (0.1,0.75,100,100,'Get Card',1))
+    buttonTable.push ( new Button (0.2,0.85,100,100,'Basic Attack',2))
+    buttonTable.push ( new Button (0.75,0.4,120,120,'End Turn',3))
 
 
 }
@@ -373,9 +389,9 @@ function draw() {
     
     textSize(20)
     fill(0,0,0)
-    text(gameState,100,100)
+    //text(gameState,100,100)
 
-    Card.drawCardsBox()
+    //Card.drawCardsBox()
 
     for(let tile of boardTiles){
         tile.draw()

@@ -2,28 +2,43 @@ let buttonColor = 100
 let realWidthButtonsImage = 1
 
 class Button{
-    static buttonsImages = [];
+    static buttonImages = [];
+    static buttonHighImages = [];
     constructor(x,y,width,height,text,imgIndex){
         this.width = width,
         this.height = height ,
         this.text = text
         this.selected = false ,
-        this.img = imgIndex ,
+        this.imgIndex = imgIndex ,
 
         this.x = x * canvasWidth - width/2 , 
         this.y = y * canvasHeight - height/2,
 
         this.inside = false
         this.color = Color.darkGrey
+
+        this.img = Button.buttonImages[this.imgIndex-1]
+        this.imgHighlighted = Button.buttonHighImages[this.imgIndex-1]
+        if(window.location.href == "http://localhost:3000/game.html") this.ratio = (this.width*realWidthButtonsImage)/(this.img).width ;
+
     }
     draw(){
-        if(this.img != -1){
-            /* let img = Button.buttonsImages[this.img-1]
-            let ratio = (this.width*realWidthButtonsImage)/img.width;
-            image(img,this.x,this.y,img.width *ratio,img.height *ratio); */
+        if(this.imgIndex != -1){
+        
 
-            //fill(this.color)
-            //rect(this.x , this.y , this.width , this.height)
+            if(this.inside == false){
+                image(this.img,
+                    this.x,this.y,
+                    this.img.width *this.ratio,
+                    this.img.height *this.ratio); 
+
+            }else if(this.inside == true){
+                image(this.imgHighlighted,
+                    this.x,this.y,
+                    this.img.width *this.ratio,
+                    this.img.height *this.ratio); 
+            }
+            
         }else{
           textSize(10)
         strokeWeight(4) 
@@ -51,8 +66,8 @@ class Button{
         
         //if(this.type == 'info') return ;
         if(this.width == this.height){
-           if(x > (this.x - this.width/2) && x < (this.x + this.width/2) &&
-            y > (this.y - this.height/2) && y < (this.y + this.height/2)){
+            if(x > this.x && x < (this.x+this.width) &&
+            y > this.y && y < (this.y+this.height)){
                 print(this.text + 'clicked')
                 if(this.text == 'Get Card'){
                     if(playerInfo[0].mana < 2){
@@ -125,8 +140,8 @@ class Button{
 
     mouseMoved(x,y){ 
         if(this.width == this.height){
-            if(x > (this.x - this.width/2) && x < (this.x + this.width/2) &&
-            y > (this.y - this.height/2) && y < (this.y + this.height/2)){
+            if(x > this.x && x < (this.x+this.width) &&
+            y > this.y && y < (this.y+this.height)){
 
                 if (gameState == enemyState || gameState == discardCardState){ 
                     this.color = Color.red 

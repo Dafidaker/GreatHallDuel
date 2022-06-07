@@ -180,7 +180,7 @@ module.exports.start_game = async function(player_id) {
     //let player = result1.result[0]
     if(player.player_room_id == null){
       player.player_health = 20
-    player.player_mana = 100
+    player.player_mana = 1
     player.player_total_mana =  1
     player.player_energy = 3
     
