@@ -18,9 +18,9 @@ class Button{
     }
     draw(){
         if(this.img != -1){
-            let img = Button.buttonsImages[this.img-1]
+            /* let img = Button.buttonsImages[this.img-1]
             let ratio = (this.width*realWidthButtonsImage)/img.width;
-            image(img,this.x,this.y,img.width *ratio,img.height *ratio);
+            image(img,this.x,this.y,img.width *ratio,img.height *ratio); */
 
             //fill(this.color)
             //rect(this.x , this.y , this.width , this.height)
@@ -64,11 +64,13 @@ class Button{
                     
                 }
                 if(this.text == 'Basic Attack'){
-                    
-                    this.selected = true
-                    gameState = basicAttackState
-                    highlighingTiles()
-                    
+                    if(playerInfo[0].polymorph == true){
+                        alert('While polymorphed the player cant play cards or do basic attacks')
+                    }else{
+                        this.selected = true
+                        gameState = basicAttackState
+                        highlighingTiles()
+                    }
                 }
 
                 if(this.text == 'End Turn'){

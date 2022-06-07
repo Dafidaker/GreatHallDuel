@@ -240,7 +240,11 @@ module.exports.discard_card = async function(player_id,card_id) {
     
   await pool.query(sql,[newOrder,cardRow.deck_id]) */
   //await this.deck_card_state_change(player_id,cardRow.deck_card_id,2)
-  await this.change_deck_card_information(2,newOrder,cardRow.deck_card_turns,cardRow.deck_card_enable,player_id,cardRow.deck_card_id)
+  await this.change_deck_card_information(2, newOrder,
+                                            cardRow.deck_card_turns,
+                                            cardRow.deck_card_enable,
+                                            player_id,
+                                            cardRow.deck_card_id)
 
 
   for(let row of deck){
@@ -251,18 +255,20 @@ module.exports.discard_card = async function(player_id,card_id) {
 
       row.deck_order -=1
 
-      }
       await this.change_deck_card_information(row.deck_card_state_id,
                                               row.deck_order,
                                               row.deck_card_turns,
                                               row.deck_card_enable,
                                               player_id,
                                               row.deck_card_id)
+
+      }
+      
     }
     
   }
   
-return { status: 200, result:{msm : "card was discarded"} } ;
+  return { status: 200, result:{msm : "card was discarded"} } ;
   } catch(err) {
     console.log(err);
     return { status: 500, result: err};
@@ -276,22 +282,28 @@ module.exports.discard_active_card = async function(player_id,card_id) {
     let deck = result.result
     let cardRow
 
-    for(let row of deck){
-      if ( row.deck_card_id == card_id && row.deck_card_state_id == 3){
-          cardRow = row 
+
+    for (var i = 0; i < deck.length; i ++){
+      if ( deck[i].deck_card_id == card_id && deck[i].deck_card_state_id == 3){
+          cardRow = deck[i] 
       } 
-      if(row.deck_card_state_id == 3 ){
-        deck.splice(deck.indexOf(row),1) // see if it works
+      if(deck[i].deck_card_state_id == 3 ){
+        deck.splice(i,1) // see if it works
+        i-- 
       }
     }
+    
+    pModel.remove_player_effect(cardRow.deck_id)
 
     let newOrder = Math.floor(Math.random() * (deck.length - 6 + 1) + 6) // deck max is the maximum , 6 is the minimum -- new order for the card in the deck
 
+    //cardRow
+
+    //deck.push
+
 
     await this.change_deck_card_information(2,
-                                            newOrder,
-                                            cardRow.deck_card_turns,
-                                            cardRow.deck_card_enable,
+                                            newOrder,null,null,
                                             player_id,
                                             cardRow.deck_card_id)
 
@@ -307,10 +319,10 @@ module.exports.discard_active_card = async function(player_id,card_id) {
         }
         await this.change_deck_card_information(row.deck_card_state_id,
                                                 row.deck_order,
-                                                cardRow.deck_card_turns,
-                                                cardRow.deck_card_enable,
+                                                row.deck_card_turns,
+                                                row.deck_card_enable,
                                                 player_id,
-                                                cardRow.deck_card_id)
+                                                row.deck_card_id)
       }
       
     }
@@ -456,26 +468,28 @@ module.exports.change_card_with_active_cards =async function(player_id,card){
 module.exports.update_active_cards_information =async function(player_id,card){
   //change the information of the active cards and upadating the database
   
-    let deck = await this.get_deck(player_id,'active')
-  
-    /* for(i=0 ; i < deck.length ; i++){
-      if(deck[i].deck_card_state_id != 3){
-        deck.splice(i,1)
-        i--
-      }
-    } */
+    let result = await this.get_deck(player_id,'active')
+    deck = result.result
+   
   
     for (var i = 0; i < deck.length; i ++){
       if(deck[i].deck_card_enable == true){
   
         //Layla Winifred Help
         if (deck[i].deck_card_id === 1) {
-          this.discard_active_card(player_id,deck[i].deck_card_id)
+          await this.discard_active_card(player_id,deck[i].deck_card_id)
+          //pModel.remove_player_effect(deck[i].deck_id)
         }
 
         //Layla Winifred Command
         if (deck[i].deck_card_id === 12){
           deck[i].deck_card_enable = false
+          await this.change_deck_card_information(deck[i].deck_card_state_id,
+                                          deck[i].deck_order,
+                                          deck[i].deck_card_turns,
+                                          deck[i].deck_card_enable,
+                                          player_id,
+                                          deck[i].deck_card_id)
         }
         
         //if the card is a ability
@@ -486,7 +500,8 @@ module.exports.update_active_cards_information =async function(player_id,card){
 
           //Kazamir’s order
           if (deck[i].deck_card_id === 9){
-            this.discard_active_card(player_id,deck[i].deck_card_id)
+            await this.discard_active_card(player_id,deck[i].deck_card_id)
+           // pModel.remove_player_effect(deck[i].deck_id)
 
           }
 
@@ -497,12 +512,7 @@ module.exports.update_active_cards_information =async function(player_id,card){
 
         }
 
-        this.change_deck_card_information(deck[i].deck_card_state_id,
-                                          deck[i].deck_order,
-                                          deck[i].deck_card_turns,
-                                          deck[i].deck_card_enable,
-                                          player_id,
-                                          card.card_id)
+        
         
       }
       
@@ -525,7 +535,7 @@ module.exports.destroy_deck = async function(player_id) {
   }
 }
 
-module.exports.update_information_of_deck_card = async function(player_id,deck_id,) {
+/* module.exports.update_information_of_deck_card = async function(player_id,deck_id,) {
   try{
     let sql = `DELETE FROM deck  WHERE deck_player_id = $1 `
     
@@ -536,4 +546,4 @@ module.exports.update_information_of_deck_card = async function(player_id,deck_i
     console.log(err);
     return { status: 500, result: err};
   }
-}
+} */

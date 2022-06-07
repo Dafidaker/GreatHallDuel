@@ -1,7 +1,10 @@
+//const { get } = require("express/lib/response");
+
 const playerWidth = 60
 const playerHeight = 60 
 
 class Player {
+    static effects = [];
     constructor(name,id,selected,tileIndex,mana,x,y,health,totalMana,energy,order,player) {
         this.width = playerWidth;
         this.height = playerHeight;
@@ -17,6 +20,13 @@ class Player {
         this.id = id; 
         this.order = order;
         this.player = player;
+
+        this.burn= false;
+        this.polymorph = false;
+        this.shield = false;
+        this.slow = false;
+
+        this.effects = [];
 
     }
     draw(){
@@ -46,6 +56,26 @@ class Player {
             text('Player',this.x + 30 - textWidth('Player') / 2 ,this.y + 30)
 
 
+            if(this.effects.length > 0) {
+                for( i = 0 ; i < this.effects.length ; i++){
+                    textSize(25)
+                    fill(Color.black)
+                    let a = 70
+                    //text(this.effects[i].player_effect_effect_id,(canvasWidth * 0.75),(canvasHeight * 0.78)+(a*i))
+                    image(Player.effects[this.effects[i].player_effect_effect_id - 1 ],(canvasWidth * 0.75),(canvasHeight * 0.78)+(a*i))
+
+
+                    //fill(Color.orange)
+                    /* rect((canvasWidth * 0.8)+(70*1),(canvasHeight * 0.7),60,60)
+                    rect((canvasWidth * 0.8)+(70*2),(canvasHeight * 0.7),60,60)
+                    rect((canvasWidth * 0.8)+(70*3),(canvasHeight * 0.7),60,60)  */
+                    
+                    /*  rect((canvasWidth * 0.75),(canvasHeight * 0.78)+(a*0),60,60)
+                    rect((canvasWidth * 0.75),(canvasHeight * 0.78)+(a*1),60,60)
+                    rect((canvasWidth * 0.75),(canvasHeight * 0.78)+(a*2),60,60)   */
+                }
+            }
+
         }
 
         if(this.player == false){
@@ -69,6 +99,17 @@ class Player {
             fill(Color.white)
             textSize(10)
             text('enemy',this.x + 30 - textWidth('Enemy') / 2 ,this.y + 30)
+
+
+            if(this.effects.length > 0) {
+                for( i = 0 ; i < this.effects.length ; i++){
+                    textSize(25)
+                    fill(Color.black)
+                    let a = 70
+                    //text(this.effects[i].player_effect_effect_id,(canvasWidth * 0.3),(canvasHeight * 0.06)+(a*i))
+                    image(Player.effects[this.effects[i].player_effect_effect_id - 1 ],(canvasWidth * 0.3),(canvasHeight * 0.06)+(a*i))
+                }
+            }
         }
     }
     click(x,y) {
@@ -94,4 +135,29 @@ class Player {
         this.x = x ;
         this.y = y ;
     }
+    burned(){
+        this.burn = true;
+    }
+    polymorphed(){
+        this.polymorph = true;
+    }
+    slowed(){
+        this.slow = true;
+    }
+    shielded(){
+        this.shield = true;
+    }
+    resetEffects(){
+        this.burn= false;
+        this.polymorph = false;
+        this.shield = false;
+        this.slow = false;
+    }
+    /* updateInfo(table ){
+        this.mana = mana;
+        this.health = health;
+        this.totalMana = totalMana;
+        this.energy = energy;
+
+    } */
 }

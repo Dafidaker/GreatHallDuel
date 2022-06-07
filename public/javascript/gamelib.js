@@ -70,9 +70,15 @@ function preload() {
     b_nextRoundHighlighted = loadImage('assets/images/Buttons/nextRound_highlighted.png')
 
     //CARDS
-    for(i = 1 ; i < 16 ;i++ ){
+    for(i = 1 ; i < 16 ; i++){
         let a = loadImage('assets/images/cards/'+i+'.png');
         Card.cardImages.push(a)
+    }
+
+    //Effects
+    for(i = 1 ; i < 5 ; i++){
+        let a = loadImage('assets/images/effects/'+i+'.png');
+        Player.effects.push(a)
     }
     
 }
@@ -135,7 +141,7 @@ async function updateGame(){
     await updateRoundState()
     if( gameState != incompleteGameState){
         await updatePlayers();
-    await updateDeck()
+        await updateDeck()
     }
     
     
@@ -166,9 +172,13 @@ async function updateDeck(){
             } 
         }
     }
-    if (numCardsHand >= 5) gameState = discardCardState;
+    if (numCardsHand >= 5 && gameState != finishedGameState && gameState != incompleteGameState && gameState != enemyState) {
+        gameState = discardCardState;
+    }
+    
     if(gameState == discardCardState && numCardsHand <= 4 ){
         gameState = myRoundState
+        
     }
     
 }
@@ -195,8 +205,17 @@ async function createButtons(){
 }
 
 async function createPlayers(){
-    let playerif =  (await getplayerinformation()).playerif
-    let enemyif =  (await getplayerinformation()).enemyif
+    let result = await getplayerinformation()
+    let playerif = result.playerif
+    let enemyif = result.enemyif
+
+    let enemyEffects
+    let playerEffects
+
+   
+    /* let playerif =  (await getplayerinformation()).playerif
+    let enemyif =  (await getplayerinformation()).enemyif */
+
     let playerPos = await receiveObject(boardTiles, playerif.position)
     let enemyPos = await receiveObject(boardTiles, enemyif.position)
 
@@ -207,7 +226,7 @@ async function createPlayers(){
                     playerPos.x,playerPos.y,
                     playerif.health,playerif.mana_total,
                     playerif.energy,playerif.num,true))
-    
+
 
     enemyInfo = []
     enemyInfo.push(new Player(enemyif.name,enemyif.id,
@@ -216,12 +235,41 @@ async function createPlayers(){
                                 enemyPos.x,enemyPos.y,
                                 enemyif.health,enemyif.mana_total,
                                 enemyif.energy,enemyif.num,false))
+
+    if(result.effectsActive == true ){
+
+        if(result.player_effects.length > 0){
+            playerEffects = result.player_effects
+            for(let effect of playerEffects){
+                playerInfo[0].effects.push(effect)
+            }
+
+        }
+
+        if(result.enemy_effects.length > 0){
+            enemyEffects = result.enemy_effects
+            for(let effect of enemyEffects){
+                enemyInfo[0].effects.push(effect)
+            }
+
+        }
+
+    }
    
 }
 
 async function updatePlayers(){
-    let playerif =  (await getplayerinformation()).playerif
-    let enemyif =  (await getplayerinformation()).enemyif
+    let result = await getplayerinformation()
+    let playerif = result.playerif
+    let enemyif = result.enemyif
+
+    let enemyEffects
+    let playerEffects
+    
+    /* let playerif =  (await getplayerinformation()).playerif
+    let enemyif =  (await getplayerinformation()).enemyif */
+
+
     let playerPos = await receiveObject(boardTiles, playerif.position)
     let enemyPos = await receiveObject(boardTiles, enemyif.position)
 
@@ -235,10 +283,8 @@ async function updatePlayers(){
             player.updatePosition(playerif.position,
                                     playerPos.x , playerPos.y) 
         }
-    
-
     }
-
+ 
     
     for(let enemy of enemyInfo){
         enemy.updateInfo(enemyif.mana,
@@ -249,6 +295,42 @@ async function updatePlayers(){
     if(gameState != movingState){
             enemy.updatePosition(enemyif.position,
                                     enemyPos.x , enemyPos.y) 
+        }
+    }
+
+    enemyInfo[0].resetEffects()
+    enemyInfo[0].effects = []
+    playerInfo[0].resetEffects()
+    playerInfo[0].effects = []
+
+    if(result.effectsActive == true ){
+
+        if(result.player_effects.length > 0){
+            playerEffects = result.player_effects
+            /* playerInfo[0].resetEffects()
+            playerInfo[0].effects = [] */
+            for(let effect of playerEffects){
+                if(effect.player_effect_effect_id ==1)playerInfo[0].slowed();
+                if(effect.player_effect_effect_id ==2)playerInfo[0].burned();
+                if(effect.player_effect_effect_id ==3)playerInfo[0].polymorphed();
+                if(effect.player_effect_effect_id ==4)playerInfo[0].shielded();
+                playerInfo[0].effects.push(effect)
+            }
+
+        }
+
+        if(result.enemy_effects.length > 0){
+            enemyEffects = result.enemy_effects
+            /* enemyInfo[0].resetEffects()
+            enemyInfo[0].effects = [] */
+            for(let effect of enemyEffects){
+                if(effect.player_effect_effect_id ==1)enemyInfo[0].slowed();
+                if(effect.player_effect_effect_id ==2)enemyInfo[0].burned();
+                if(effect.player_effect_effect_id ==3)enemyInfo[0].polymorphed();
+                if(effect.player_effect_effect_id ==4)enemyInfo[0].shielded();
+                enemyInfo[0].effects.push(effect)
+            }
+
         }
     }
 }
@@ -278,6 +360,8 @@ function createboard(){
 
 
 function draw() {
+    clear()
+
     background(220); 
     if(gameState == enemyState){
         image(backgroundImgEnemyState,0,0)
@@ -313,6 +397,9 @@ function draw() {
         button.draw()
     }
 
+    if (gameState == discardCardState){
+        filter(BLUR,3)
+    } 
 
     Hud.drawState()
 
@@ -321,12 +408,20 @@ function draw() {
             card.draw()
         }
 
+    if (gameState == finishedGameState || gameState == incompleteGameState){
+        filter(BLUR,3)
+    }
+
     Hud.drawEndGame()
 }
 
 function mouseMoved(){
     if ( gameState == myRoundState || gameState == movingState || gameState == playingCardState || gameState == counterState || gameState == enemyState || gameState == discardCardState ){
         Card.mouseMoved(mouseX,mouseY)
+
+        for(let card of playerDeck){
+            card.mouseMoved(mouseX,mouseY)
+        }
 
         for(let button of buttonTable){
             button.mouseMoved(mouseX,mouseY)
@@ -576,36 +671,65 @@ function makePlay() {
             alert('Can`t move into the enemy')
             playerInfo[0].selected = false
             gameState = myRoundState
-
-        }else if(playerInfo[0].energy > 0){
-            playerInfo[0].energy -= 1
-            playerInfo[0].tileIndex = selectedTile.id
-            playerInfo[0].selected = true
-            
-            updatePosPlayers()  
-            
-            //database
-            requestMove(selectedTile)
-
-        }  else if (playerInfo[0].energy == 0){
+        }else if (playerInfo[0].energy == 0){
             alert('Not enough energy')
             playerInfo[0].selected = false
             gameState= myRoundState
 
-        } 
+        } else if (playerInfo[0].slow == true && playerInfo[0].energy == 1){
+            alert('THe player is slowed then energy cost 2x')
+            playerInfo[0].selected = false
+            gameState= myRoundState
+
+        }else if (playerInfo[0].slow == true){
+            if(playerInfo[0].energy >= 2){
+                playerInfo[0].energy -= 2
+                playerInfo[0].tileIndex = selectedTile.id
+                playerInfo[0].selected = true
+                
+                updatePosPlayers()  
+                
+                //database
+                requestMove(selectedTile)
+
+            }
+        }else if (playerInfo[0].slow == false){
+            if(playerInfo[0].energy >= 1){
+                playerInfo[0].energy -= 1
+                playerInfo[0].tileIndex = selectedTile.id
+                playerInfo[0].selected = true
+                
+                updatePosPlayers()  
+                
+                //database
+                requestMove(selectedTile)
+
+            }
+        }
         
     }else if(gameState == basicAttackState){
-        if(selectedTile.id == enemyInfo[0].tileIndex && playerInfo[0].energy > 0 ){
-            //playerInfo[0].energy -= 1
-            //enemyInfo[0].health -= 1
+        if(playerInfo[0].energy == 0){
+            alert('Not enough energy')
+            gameState= myRoundState
+        }else if(playerInfo[0].slow == true){
+            if(selectedTile.id == enemyInfo[0].tileIndex && playerInfo[0].energy >= 2 ){
+                playerInfo[0].energy -= 2
+                enemyInfo[0].health -= 1
 
-            //database
-            requestBasicAttack(selectedTile)
+                //database
+                requestBasicAttack(selectedTile)
+            }
+        
+        }else if(playerInfo[0].slow == false){
+            if(selectedTile.id == enemyInfo[0].tileIndex && playerInfo[0].energy >= 1 ){
+                playerInfo[0].energy -= 1
+                enemyInfo[0].health -= 1
 
-        } else if (playerInfo[0].energy == 0){
-        alert('Not enough energy')
-        gameState= myRoundState
+                //database
+                requestBasicAttack(selectedTile)
 
+            }
+        
         }
     }
 }

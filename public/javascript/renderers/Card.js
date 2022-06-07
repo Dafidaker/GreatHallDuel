@@ -14,7 +14,7 @@ const spaceBetweenCards = 150
 const cardsXOffset = 500 
 const activeCardsXOffset = 1200 
 
-
+let img
 
 const imgCenterVertical = 1; //0.4
 const imgRelWidth = 1; //0.6
@@ -34,7 +34,10 @@ class Card{
         this.type_range = type_range;
         this.type_cast = type_cast;
         this.name = name
-        
+
+    
+        this.mouseOver = false 
+
         if(state == 1){
             this.x = (order * spaceBetweenCards) + cardsXOffset ;
             this.y = yMax;
@@ -48,6 +51,7 @@ class Card{
         Card.cardImages = imgHash;
     }  */
     draw() {
+        //clear()
         /* strokeWeight(4) 
         stroke(0,0,0);
         if(this.selected){
@@ -66,13 +70,22 @@ class Card{
         
         if (this.id && this.state != 2 ) {
             //imageMode(CENTER);
-            let img = Card.cardImages[this.id - 1];
+            if(this.state == 3 && gameState == discardCardState){
+
+            }else{
+            img = Card.cardImages[this.id - 1];  
+            //if(this.id == 7) {img.filter(BLUR,1)}
             let ratio = (this.width*imgRelWidth)/img.width;
+            //img.filter(DILATE)
             /* image(img,this.x+this.width/2,
                   this.y+this.height*imgCenterVertical,
                  this.width*imgRelWidth,img.height*ratio); */
-        image(img,this.x,this.y,img.width *ratio,img.height *ratio);
-        }  
+            image(img,this.x,this.y,img.width *ratio,img.height *ratio); 
+            }
+            /* if(this.mouseOver == true ){
+                img.filter(BLUR , 3 )
+            } */
+        }   
     }
     getCard() { return this.card; }
     update(state,order){
@@ -98,13 +111,17 @@ class Card{
         if(this.state != 3){
             if(x > this.x && x < (this.x+this.width) &&
             y > this.y && y < (this.y+this.height)){
-                
-                if(gameState == discardCardState){
-                    requestDiscardCard(this)
-                }else{
-                   this.selected = true
-                    gameState = playingCardState  
-                }
+                   if(gameState == discardCardState){
+                        requestDiscardCard(this)
+                    }else{
+                        if(playerInfo[0].polymorph == true){
+                            alert('While polymorphed the player cant play cards or do basic attacks')
+                        }else{
+                           this.selected = true
+                            gameState = playingCardState   
+                        }
+                        
+                    } 
 
             }else{
                 this.selected = false
@@ -113,7 +130,30 @@ class Card{
         }
        
     }
+    mouseMoved(x,y){ 
+        img = Card.cardImages[this.id - 1];  
+            if(x > this.x && x < (this.x+this.width) &&
+            y > this.y && y < (this.y+this.height)){
+                
+                    
 
+                if(this.mouseOver == false){
+                   
+                    this.mouseOver = true    
+                }
+                
+        }else{
+            if(this.mouseOver == true){
+                
+                this.mouseOver = false
+                
+            }
+                
+
+        }
+
+        
+    }
     static mouseMoved(x,y){ 
         if(gameState != discardCardState){
             if(x > cardsBox.x && x < (cardsBox.x+cardsBox.width) &&

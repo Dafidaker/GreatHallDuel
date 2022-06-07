@@ -2,6 +2,7 @@ var pool = require('./connection.js')
 
 var dModel = require("../models/deckModel");
 var rModel = require("../models/roundModel");
+const res = require('express/lib/response');
     
 var activeCards = []
 let rows = []
@@ -111,8 +112,9 @@ module.exports.get_players_info =  async function(player_id) {
     let result = await pool.query(sql,[player_id])
     //console.log(result.rows);
     
+    let resultEffects = await this.get_player_effect(player_id)
 
-    return {status:200 , result: { result:result.rows,  player_id: player_id } };
+    return {status:200 , result: { result:result.rows ,player_id: player_id , result_players_effects: resultEffects} };
   } catch(err) {
     console.log(err);
     return {status:500 , result : err};
@@ -159,6 +161,36 @@ module.exports.get_player_info =  async function(player_id,type) {
       console.log(err);
       return {status:500 , result : err};
     }
+} 
+
+module.exports.get_player_effect =  async function(player_id) {
+  try{
+    let result
+
+      let getsql =`select room_player_id from room
+                  where room_num = (select room_num as num from room where room_player_id = $1 ) and 
+                  room_player_id != $1`;
+
+      let resultEnemyId = await pool.query(getsql,[player_id]);
+      let enemyId = resultEnemyId.rows[0]
+
+      let sqlEffects = `select * from player_effect 
+                where player_effect_player_id = $1 or player_effect_player_id = $2 `
+
+      result = await pool.query(sqlEffects,[player_id,enemyId.room_player_id])
+    
+
+    if(result.rows.length >= 1){
+      return {players_effects:result.rows , effects: true };
+    }else{
+      if(result.rows.length == 0) return { result: {msm:"the player doesnt have effects"}, effects: false};
+    }
+    
+    
+  } catch(err) {
+    console.log(err);
+    return {status:500 , result : err};
+  }
 } 
 
 module.exports.player_tile = async function(playerid) {
@@ -242,47 +274,32 @@ module.exports.get_plays = async function(playerid) {
 
 module.exports.play_card = async function(player_id,card,tile) {
   try{
-    //get enemy id 
-    
-    /* let getsql =`select room_player_id from room
-    where room_num = (select room_num as num from room where room_player_id = $1 ) and 
-    room_player_id != $1 `;
-
-    let result = await pool.query(getsql,[player_id]);
-    let enemyId = result.rows[0] */
 
   //gets enemy´s and player's information 
     let enemy = await this.get_player_info(player_id,2);
-    //let enemy = result1.result[0]
-
+    
     let player = await this.get_player_info(player_id,1);
-    //let player = result1.result[0]
-
+    
     //get the card
     result = await dModel.get_deck_card(player_id,card.id) 
     let cardPlayed = result.result[0]
 
-    //cardPlayed = this.chance_card_with_active_cards(cardPlayed)
+    
 
 //apply the active effects
     cardPlayed = await dModel.change_card_with_active_cards(player_id,cardPlayed)
 
 //check if the player can use it
     if(cardPlayed.deck_card_state_id == 1 && player.player_mana >= cardPlayed.card_mana){ //checks if card is in the hand and if the player has the energy to play the card 
+
       if(await this.check_selected_tile(player.player_tile_id,tile, cardPlayed.card_range, cardPlayed.card_type_range_id)){ //check if he player selected a tile he could 
-//Use it
-        await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
+
 //Update the active cards usage
         await dModel.update_active_cards_information(player_id,cardPlayed)
-//discard or activate it 
-        if(cardPlayed.deck_card_id == 1 || cardPlayed.deck_card_id == 5
-          || cardPlayed.deck_card_id == 6 || cardPlayed.deck_card_id == 8 
-          || cardPlayed.deck_card_id == 9 || cardPlayed.deck_card_id == 10
-          || cardPlayed.deck_card_id == 12|| cardPlayed.deck_card_id == 13){
-            await dModel.activate_card(player_id,cardPlayed.card_id)
-          }else{
-            await dModel.discard_card(player_id,cardPlayed.card_id)
-          }
+
+//Use it
+        await this.card_logic(player,cardPlayed,tile,enemy); //check if the card is in player´s hand 
+
         return { status: 200, result: {msm:"The card was played"} };
       }else{  
         return { status: 400, result: {msm:"the player can`t select that tile"} };
@@ -299,24 +316,39 @@ module.exports.play_card = async function(player_id,card,tile) {
 
 module.exports.card_logic = async function(player,card,tile,enemy){
   
+  //get enemy's effect
+  let result = await this.get_player_effect(player.player_id)
+  let playersEffects = result.players_effects
+  let enemyEffects = []
+  let enemyshielded = false 
+
+  if(result.effects == true){
+    for(let effect of playersEffects){
+      if(effect.player_effect_player_id != player.player_id) {
+        enemyEffects.push(playersEffects)
+        if(effect.player_effect_effect_id == 4) enemyshielded = true ;
+      }
+    }
+  }
   //this.active_logic(card)
   
-  //Layla Winifred Help
-  if(card.card_id == 1){
-    card.deck_card_state_id = 2 // state of the card becomes deck
-    //Create Card Logic
+  //add this if card isnt working
     /* player.player_mana += card.card_mana 
     dModel.draw_card(player.player_id,false) */
-    //activeCards.push({card:card.card_id,turn: -1})
-    dModel.activate_card(card)
+  let enemyInicialHealth = enemy.player_health
+
+  //Layla Winifred Help
+  if(card.card_id == 1){
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
+    await dModel.activate_card(player.player_id,card.card_id)
   }
 
   //Barrel Roll
   if(card.card_id == 2){ 
     
     player.player_tile_id = tile.id // move player to tile
-    
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.discard_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
 
   //Shot Dart
@@ -325,7 +357,9 @@ module.exports.card_logic = async function(player,card,tile,enemy){
       enemy.player_health -= 1 // removes health from enemy player
       dModel.draw_card(player.player_id,false)
     }
-     card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.discard_card(player.player_id,card.card_id)
+
+     /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
 
   //Dorugham Cobble
@@ -333,70 +367,70 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 4 // removes health from enemy player
     } 
-    card.deck_card_state_id = 2
+    await dModel.discard_card(player.player_id,card.card_id)
+
+    /*card.deck_card_state_id = 2 */
   }
 
   //Thomaz Osric Illusion
   if(card.card_id == 5){
     if(tile.id == enemy.player_tile_id){
       //Create Card Logic
-      dModel.activate_card(card)
-    } 
+      await dModel.activate_card(player.player_id,card.card_id)
+      await this.add_player_effect(player.player_id,3,card.deck_id,'enemy')
+    }else{
+      await dModel.discard_card(player.player_id,card.card_id)
+    }
     /* player.player_mana += card.card_mana 
     dModel.draw_card(player.player_id,false) */
-    card.deck_card_state_id = 2
+    /*card.deck_card_state_id = 2 */
   }
 
   //Fire Arrow //
   if(card.card_id == 6){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      //Create Card Logic
-      //activeCards.push({card:card.card_id,turn: 3})
-      dModel.activate_card(card)
-    } 
-    card.deck_card_state_id = 2 // state of the card becomes deck
+      await dModel.activate_card(player.player_id,card.card_id)
+      await this.add_player_effect(player.player_id,2,card.deck_id,'enemy')
+    }else{
+      await dModel.discard_card(player.player_id,card.card_id)
+    }
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
 
   //Rain Song
   if(card.card_id == 7){
-    if(tile.id == card.card_range){
-      //Create Card Logic
-      //activeCards.push({card:card.card_id,turn: 3})
-      } 
-      /* player.player_mana += card.card_mana 
-      dModel.draw_card(player.player_id,false) */
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    player.player_mana += card.card_mana 
+    dModel.draw_card(player.player_id,false) 
+    await dModel.discard_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
    
   //Ice Arrow
   if(card.card_id == 8){
     if(tile.id == enemy.player_tile_id){
-      //Create Card Logic
-      //activeCards.push({card:card.card_id,turn: 2})
-      dModel.activate_card(card)
-    } 
-    /* player.player_mana += card.card_mana 
-    dModel.draw_card(player.player_id,false) */
-    card.deck_card_state_id = 2 // state of the card becomes deck
+      await dModel.activate_card(player.player_id,card.card_id)
+      await this.add_player_effect(player.player_id,1,card.deck_id,'enemy')
+    }else{
+      await dModel.discard_card(player.player_id,card.card_id)
+    }
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Kazamir's Order
   if(card.card_id == 9){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
-      //Create Card Logic
-      //activeCards.push({card:card.card_id,turn: -1})
-      dModel.activate_card(card)
     } 
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.activate_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Shield Up
   if(card.card_id == 10){
-    //Create Card Logic
-    card.deck_card_state_id = 2 // state of the card becomes deck
-    dModel.activate_card(card)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
+    await dModel.activate_card(player.player_id,card.card_id)
+    await this.add_player_effect(player.player_id,4,card.deck_id,'player')
   }
   
   //Osric's Bow
@@ -408,26 +442,20 @@ module.exports.card_logic = async function(player,card,tile,enemy){
         enemy.player_health -= 4
       }
     }
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.discard_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Layla Winifred Command
   if(card.card_id == 12){
-    //Create Card Logic
-    /* player.player_mana += card.card_mana 
-    dModel.draw_card(player.player_id,false)
-    activeCards.push({card:card.card_id, turn: 4, used: false}) */
-    dModel.activate_card(card)
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.activate_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Kazamir Blessing
   if(card.card_id == 13){
-    //Create Card Logic
-    /* player.player_mana += card.card_mana 
-    dModel.draw_card(player.player_id,false) */
-    dModel.activate_card(card)
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.activate_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Rissingshire Pebble
@@ -435,7 +463,9 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 2 // removes health from enemy player
     } 
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.discard_card(player.player_id,card.card_id)
+
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
   
   //Bellbroke Boulder
@@ -443,10 +473,24 @@ module.exports.card_logic = async function(player,card,tile,enemy){
     if(tile.id == enemy.player_tile_id){
       enemy.player_health -= 8 // removes health from enemy player
     } 
-    card.deck_card_state_id = 2 // state of the card becomes deck
+    await dModel.discard_card(player.player_id,card.card_id)
+    /*card.deck_card_state_id = 2 */ // state of the card becomes deck
   }
 
   player.player_mana -= card.card_mana // removes the mana from player 
+
+  if(enemyshielded == true && enemy.player_health != enemyInicialHealth){ 
+    //discard and remove thing :)
+    enemy.player_health = enemyInicialHealth
+    for(let effect of enemyEffects){
+      if(effect.players_effect_effect_id ==4){
+        //this.remove_player_effect(effect.player_effect_deck_id)
+        dModel.discard_active_card(effect.player_effect_player_id,10)
+      }
+    }
+    
+  }
+
   // updating the players enemys and cards information  
   this.player_information_change(player.player_health,
                                   player.player_mana,
@@ -466,7 +510,7 @@ module.exports.card_logic = async function(player,card,tile,enemy){
 
 }
 
-module.exports.chance_card_with_active_cards = async function(card){
+/* module.exports.chance_card_with_active_cards = async function(card){
 
   //console.log( "AAAAA" + activeCards)
   //Layla Winifred Help
@@ -524,96 +568,6 @@ module.exports.chance_card_with_active_cards = async function(card){
       
     }
   } 
-}
-
-/* module.exports.check_selected_tile = async function(playerTile  , selectedTile ,range ,type){
-  //get player position
-  let getSql = `select * from tile`
-    let result= await pool.query(getSql)
-    let boardTiles = result.rows
-
-  for(let tile of boardTiles){
-    if(tile.tile_id == playerTile) playerTile = tile 
-  }
-
-  let inicialRow = playerTile.tile_row
-  let inicialColumn = playerTile.tile_column
-
-
-  //creates tables of nº rows and columns where the tiles are clicable
-  
-  for (i = 1 ; i < range+1 ; i++){
-      rows.push (inicialRow + i)
-      rows.push (inicialRow - i)
-
-
-      columns.push(inicialColumn + i)
-      columns.push(inicialColumn - i)
-
-      if(type == 8){
-        diagonal.push({row: inicialRow + i , column: inicialColumn + i})
-        diagonal.push({row: inicialRow + i , column: inicialColumn - i })
-
-
-        diagonal.push({row: inicialRow - i , column: inicialColumn + i })
-        diagonal.push({row: inicialRow - i , column: inicialColumn - i })
-      }
-      
-
-  }
-
-  //see if the tile is 'permited'
-  if(type == 4) {
-      if(selectedTile.column == inicialColumn){
-          for(let possibleRow of rows){
-              if(selectedTile.row == possibleRow) return true
-          }
-      }
-
-      if(selectedTile.row == inicialRow){
-          for(let possiblecolumn of columns){
-              if(selectedTile.column == possiblecolumn)  return true
-          }
-      }
-  }
-
-  if(type == 8){
-     
-      for(let possiblediagonal of diagonal){
-        let uuu = 1
-        
-          if((selectedTile.row == possiblediagonal.row) && (selectedTile.column == possiblediagonal.column)) return true
-      }
-
-      if(selectedTile.column == inicialColumn){
-          for(let possibleRow of rows){
-              if(selectedTile.row == possibleRow) return true
-          }
-      }
-
-      if(selectedTile.row == inicialRow){
-          for(let possiblecolumn of columns){
-              if(selectedTile.column == possiblecolumn) return true
-          }
-      }
-  } 
-
-    if(type == 0){
-      return true
-  }
-
-  if(type == 10){
-      
-      let areaRange = (range-1)/2
-
-      if( (selectedTile.row >= (inicialRow - areaRange)) && (selectedTile.row <= (inicialRow + areaRange)) ){
-          if((selectedTile.column >= (inicialColumn - areaRange)) && (selectedTile.column <= (inicialColumn + areaRange))){
-              return true
-          } 
-      }
-
-  }
-  
 } */
 
 module.exports.check_selected_tile = async function(playerTile  , selectedTile ,range ,type){
@@ -703,13 +657,38 @@ module.exports.move = async function(player_id,tile) {
 
     let player = await this.get_player_info(player_id,1)
 
+    let result = await this.get_player_effect(player_id)
+    let playersEffects = result.players_effects
+    let playerEffects =[]
+    let playerSlowed = false 
+
+    if(result.effects == true){
+      for(let effect of playersEffects){
+        if(effect.player_effect_player_id == player_id) {
+          playerEffects.push(effect)
+          if(effect.player_effect_effect_id == 1) playerSlowed = true ;
+        }
+      }
+    }
+
+
     //let player = resultplayer.result[0]
 
     //check if the tile that is passed is possible
-    if( (this.check_selected_tile(player.player_tile_id,tile,1,4))  && player.player_energy > 0 ){
+    let requireEnergy
+
+    if(playerSlowed == true){
+      requireEnergy = 2
+    }else if(playerSlowed == false){
+      requireEnergy = 1
+    }
+  
+    
+
+    if( (this.check_selected_tile(player.player_tile_id,tile,1,4))  && player.player_energy >= requireEnergy ){
       //If everthing is correct 
       await this.player_location_change(player_id,tile.id)
-      player.player_energy -= 1
+      player.player_energy -= requireEnergy
       await this.player_information_change(player.player_health,player.player_mana,player.player_total_mana,player.player_energy,player.player_id)
       return { status: 200, result : { msg:"Player moved" } };
 
@@ -741,9 +720,36 @@ module.exports.basic_attack = async function(player_id,tile) {
     let player = await this.get_player_info(player_id,1);
     //let player = result1.result[0]
 
-    if(player.player_energy >= 1){
+    let result = await this.get_player_effect(player_id)
+    let playersEffects = result.players_effects
+    let playerEffects =[]
+    let playerSlowed = false 
+
+    if(result.effects == true){
+      for(let effect of playersEffects){
+        if(effect.player_effect_player_id == player_id) {
+          playerEffects.push(effect)
+          if(effect.player_effect_effect_id == 1) playerSlowed = true ;
+        }
+      }
+    }
+
+
+    //let player = resultplayer.result[0]
+
+    //check if the tile that is passed is possible
+    let requireEnergy
+    let costEnergy
+    
+    if(playerSlowed == true){
+      requireEnergy = 2
+    }else if(playerSlowed == false){
+      requireEnergy = 1
+    }
+
+    if(player.player_energy >= requireEnergy){
       if(await this.check_selected_tile(player.player_tile_id,tile, 1, 4)){  //check if he player selected a tile he could 
-        player.player_energy -= 1
+        player.player_energy -= requireEnergy
         if(tile.id == enemy.player_tile_id){
           enemy.player_health -= 1 // removes health from enemy player
         } 
@@ -832,3 +838,46 @@ module.exports.reset = async function(player_id){
     return { status: 500, result: err};
   }
 }
+
+module.exports.add_player_effect =  async function(player_id,effect_id,deck_id,type) {
+  try{
+    let ply_id 
+    if(type == 'player'){ //gets the player's information
+      ply_id = player_id
+
+    } else if (type == 'enemy'){ //gets the enemy's information
+      let getsql =`select room_player_id from room
+                  where room_num = (select room_num from room where room_player_id = $1 ) and 
+                  room_player_id != $1`;
+
+      let resultEnemyId = await pool.query(getsql,[player_id]);
+      let enemyId = resultEnemyId.rows[0]
+
+      ply_id = enemyId.room_player_id
+    }
+
+    let sql = `insert into player_effect(player_effect_player_id,player_effect_effect_id,player_effect_deck_id) values($1,$2,$3) `
+    let result = await pool.query(sql,[ply_id,effect_id,deck_id])
+    console.log('aabb');
+    
+
+    return {status:200 , result: {msm:"a effect was added"} };
+  } catch(err) {
+    console.log(err);
+    return {status:500 , result : err};
+  }
+} 
+
+module.exports.remove_player_effect =  async function(deck_id) {
+  try{
+    let sql = `DELETE FROM player_effect  WHERE player_effect_deck_id = $1; `
+    let result = await pool.query(sql,[deck_id])
+    //console.log(result.rows);
+    
+
+    return {status:200 , result: {msm:"a effect was removed"} };
+  } catch(err) {
+    console.log(err);
+    return {status:500 , result : err};
+  }
+} 

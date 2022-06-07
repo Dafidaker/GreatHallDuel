@@ -97,6 +97,20 @@ create table type_cast (
 					primary key (type_cast_id)
 );
 
+create table player_effect (
+					player_effect_id SERIAL not null,
+					player_effect_player_id INT null,
+					player_effect_effect_id INT null,
+					player_effect_deck_id INT null,
+					primary key (player_effect_id)	
+);
+
+create table effect (
+					effect_id SERIAL not null,
+					effect_name VARCHAR(60) not null,
+					primary key (effect_id)	
+);
+
 -----------------------------------------------------------------------------------------------------------------------------------------------
 -- foreign keys
 alter table play
@@ -164,6 +178,21 @@ add constraint card_fk_type_cast
 foreign key (card_type_cast_id) references type_cast(type_cast_id) 
 ON DELETE NO ACTION ON UPDATE NO ACTION;
 
+alter table player_effect
+add constraint player_effect_fk_player
+foreign key (player_effect_player_id) references player(player_id) 
+ON DELETE NO ACTION ON UPDATE NO ACTION;  
+
+alter table player_effect
+add constraint player_effect_fk_effect
+foreign key (player_effect_effect_id) references effect(effect_id) 
+ON DELETE NO ACTION ON UPDATE NO ACTION;  
+
+alter table player_effect
+add constraint player_effect_fk_deck
+foreign key (player_effect_deck_id) references deck(deck_id) 
+ON DELETE NO ACTION ON UPDATE NO ACTION;  
+
 -------------------------------------------------------------------------------------------------------------------------------------------
 
 insert into battle_states (state_name) values ('Waiting'); 
@@ -176,6 +205,12 @@ insert into battle_states (state_name) values ('Incomplete');
 insert into card_state (card_state_name) values ('hand');
 insert into card_state (card_state_name) values ('deck');
 insert into card_state (card_state_name) values ('active');
+
+insert into effect (effect_name) values ('Slow');
+insert into effect (effect_name) values ('Burn');
+insert into effect (effect_name) values ('Polymorph');
+insert into effect (effect_name) values ('Shield');
+
 
 insert into tile (tile_row,tile_column) values (1,1);  -- its adding the 81 tiles based on the letter and number(correponding to rows and columns)
 insert into tile (tile_row,tile_column) values (1,2);  

@@ -51,9 +51,31 @@ async function getplayerinformation() {
                 name:playerinfo.result[enemyindex].player_name,
                 id:playerinfo.result[enemyindex].player_id,
                 position:playerinfo.result[enemyindex].player_tile_id}
-        
 
-           return{ playerif , enemyif };
+            let effects = playerinfo.result_players_effects
+            let effectsActive = effects.effects
+        
+            if(effectsActive == true ){
+                let player_effects = []
+                let enemy_effects = []
+
+                
+
+                for(let effect of effects.players_effects){
+                    if(effect.player_effect_player_id == playerinfo.player_id) {player_effects.push(effect)}
+                    if(effect.player_effect_player_id != playerinfo.player_id) {enemy_effects.push(effect)}
+                }
+                
+                let a = 'aaaaa'
+
+                return{ playerif: playerif , enemyif: enemyif, effectsActive: effectsActive , player_effects: player_effects , enemy_effects: enemy_effects};
+            
+            }else if (effectsActive == false ){
+                
+                return{ playerif: playerif , enemyif: enemyif, effectsActive: effectsActive };
+            } 
+
+
         } else {
             // Treat errors like 404 here
             console.log(response);
