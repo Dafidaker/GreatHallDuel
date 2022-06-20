@@ -57,6 +57,7 @@ async function checkRoomFull(){
         let string
         if (response.status == 200) {
             var  result= await response.json();
+            console.log(result)
             if( result.numPlayers == 2 ){
                 menuState = fullRoomState
                 string = 'In room nº ' +result.room_num + ' with '+ result.numPlayers + '/2'

@@ -52,7 +52,7 @@ function draw() {
     fill(Color.white)
     stroke(Color.black)
     textSize(25)
-    text(menuState,10,100)
+    //text(menuState,10,100)
 
     text(string,(0.5 * canvasWidth) - (textWidth((string))/2) ,200)
     for(let button of buttonTable){
